@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:id="@+id/destination_jobs"
+            android:title="@string/menu_jobs" />
+    <item
+            android:id="@+id/destination_add"
+            android:icon="@drawable/ic_add_circle_outline_white_36dp"
+            android:title="@string/menu_add"/>
+    <item
+            android:id="@+id/destination_proposals"
+            android:title="@string/menu_proposals" />
+</menu>

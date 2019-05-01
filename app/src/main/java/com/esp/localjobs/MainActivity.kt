@@ -2,17 +2,17 @@ package com.esp.localjobs
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
+import android.view.View
 import androidx.appcompat.widget.Toolbar
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
-import com.google.android.material.navigation.NavigationView
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
 /*
@@ -29,48 +29,48 @@ Resources:
 
 -> safe args doc:
     https://developer.android.com/guide/navigation/navigation-pass-data#kotlin
-
--> material design navigation drawer:
-    https://material.io/design/components/navigation-drawer.html#
 */
 
-/**
- *
- */
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setSupportActionBar(toolbar)
-
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
-        setupSideNavigationMenu(navController)
-        setupActionBar(navController)
+        navController.addOnDestinationChangedListener { _, destination, _ -> onDestinationChangeListener(destination) }
+        //declare top destinations - these won't show the upp button
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.destination_jobs, R.id.destination_proposals))
+
+        setupToolbar(navController, appBarConfiguration)
+        //setupActionBarWithNavController(navController, appBarConfiguration)  //use with default action bar
+        setupBottomNavigationMenu(navController)
+    }
+
+    private fun setupBottomNavigationMenu(navController: NavController) {
+        findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+            .setupWithNavController(navController)
+    }
+
+    private fun setupToolbar(navController: NavController, appBarConfiguration: AppBarConfiguration) {
+        setSupportActionBar(toolbar)
+        findViewById<Toolbar>(R.id.toolbar)
+            .setupWithNavController(navController, appBarConfiguration) //automatically show/handle up button
     }
 
     /**
-     * Bind the nav controller with the NavigationView menu
+     * Handle destination change.
+     * Hide bottom navigation and menu nav items when not in jobs or proposals fragment
      */
-    private fun setupSideNavigationMenu(navController: NavController) {
-        findViewById<NavigationView>(R.id.nav_view).let {
-            NavigationUI.setupWithNavController(it, navController)
-
-            //it.setNavigationItemSelectedListener { item: MenuItem ->  menuItemHandler(item) }
+    private fun onDestinationChangeListener(destination: NavDestination) {
+        if(destination.id == R.id.destination_jobs || destination.id == R.id.destination_proposals) {
+            //toolbar.visibility = View.VISIBLE
+            bottom_nav_view.visibility = View.VISIBLE
+        } else {
+            //toolbar.visibility = View.GONE
+            bottom_nav_view.visibility = View.GONE
         }
-    }
-
-    /**
-     * Bind the nav controller with the drawer layout, declaring the top-level destinations
-     */
-    private fun setupActionBar(navController: NavController) {
-        val drawerLayout = findViewById<DrawerLayout>(R.id.drawer_layout)
-        //setOf(..IDs..) are the top-level destinations where the nav (hamburger menu) will be visible
-        appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.destination_home, R.id.destination_sign_in, R.id.destination_sign_up),
-            drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
     /**
@@ -88,5 +88,10 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onSupportNavigateUp(): Boolean {
         return findNavController(R.id.nav_host_fragment).navigateUp(appBarConfiguration)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_navigation, menu)
+        return true
     }
 }

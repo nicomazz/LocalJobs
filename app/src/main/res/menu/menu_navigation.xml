@@ -1,20 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!--
     Using the same destinations ID on the items ID, the navigation component will automatically bind these items with
     the corresponding fragment.
      -->
     <item
-            android:id="@id/destination_sign_in"
-            android:icon="@android:drawable/arrow_down_float"
-            android:title="Sign in" />
-    <item
-            android:id="@id/destination_sign_up"
-            android:icon="@android:drawable/arrow_down_float"
-            android:title="Sign up" />
-    <item
             android:id="@id/destination_user_profile"
-            android:icon="@android:drawable/arrow_down_float"
-            android:title="Profile" />
+            android:icon="@drawable/ic_account_circle_white_24dp"
+            app:showAsAction="always"
+            android:title="@string/menu_profile" />
 </menu>

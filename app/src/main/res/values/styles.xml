@@ -1,5 +1,4 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
@@ -8,9 +7,4 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
-
-    <style name="ToolbarTheme" parent="ThemeOverlay.MaterialComponents.ActionBar">
-        <item name="android:textColorPrimary">@android:color/white</item>
-    </style>
-
 </resources>

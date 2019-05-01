@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">LocalJobs</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_add">Add</string>
+    <string name="menu_jobs">Jobs</string>
+    <string name="menu_proposals">Proposals</string>
 </resources>

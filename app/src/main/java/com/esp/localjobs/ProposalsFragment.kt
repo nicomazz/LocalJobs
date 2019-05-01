@@ -8,14 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 
 /**
- * Fragment used to push a job to remote db
+ * Fragment used to display a list of proposals
  */
-class AddJobFragment : Fragment() {
+class ProposalsFragment : Fragment() {
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_add_job, container, false)
+        return inflater.inflate(R.layout.fragment_proposals, container, false)
     }
 
 }
