@@ -2,7 +2,6 @@ package com.esp.localjobs
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -11,7 +10,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
-import androidx.navigation.ui.*
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -40,11 +42,11 @@ class MainActivity : AppCompatActivity() {
 
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ -> onDestinationChangeListener(destination) }
-        //declare top destinations - these won't show the upp button
+        // declare top destinations - these won't show the upp button
         appBarConfiguration = AppBarConfiguration(setOf(R.id.destination_jobs, R.id.destination_proposals))
 
         setupToolbar(navController, appBarConfiguration)
-        //setupActionBarWithNavController(navController, appBarConfiguration)  //use with default action bar
+        // setupActionBarWithNavController(navController, appBarConfiguration)  //use with default action bar
         setupBottomNavigationMenu(navController)
     }
 
@@ -56,7 +58,7 @@ class MainActivity : AppCompatActivity() {
     private fun setupToolbar(navController: NavController, appBarConfiguration: AppBarConfiguration) {
         setSupportActionBar(toolbar)
         findViewById<Toolbar>(R.id.toolbar)
-            .setupWithNavController(navController, appBarConfiguration) //automatically show/handle up button
+            .setupWithNavController(navController, appBarConfiguration) // automatically show/handle up button
     }
 
     /**
@@ -64,11 +66,11 @@ class MainActivity : AppCompatActivity() {
      * Hide bottom navigation and menu nav items when not in jobs or proposals fragment
      */
     private fun onDestinationChangeListener(destination: NavDestination) {
-        if(destination.id == R.id.destination_jobs || destination.id == R.id.destination_proposals) {
-            //toolbar.visibility = View.VISIBLE
+        if (destination.id == R.id.destination_jobs || destination.id == R.id.destination_proposals) {
+            // toolbar.visibility = View.VISIBLE
             bottom_nav_view.visibility = View.VISIBLE
         } else {
-            //toolbar.visibility = View.GONE
+            // toolbar.visibility = View.GONE
             bottom_nav_view.visibility = View.GONE
         }
     }
@@ -79,7 +81,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         val navigated = NavigationUI.onNavDestinationSelected(item!!, navController)
-        //if the clicked item is not recognized by the navController then pass it to super.onOptionsItemSelected
+        // if the clicked item is not recognized by the navController then pass it to super.onOptionsItemSelected
         return navigated || super.onOptionsItemSelected(item)
     }
 
