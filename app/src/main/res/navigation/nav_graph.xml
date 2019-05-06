@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools" android:id="@+id/nav_graph"
+            app:startDestination="@id/destination_jobs">
+
+    <fragment android:id="@+id/destination_jobs" android:name="com.esp.localjobs.JobsFragment" android:label="LocalJobs"
+              tools:layout="@layout/fragment_jobs">
+
+        <action android:id="@+id/action_destination_jobs_to_destination_user_profile"
+                app:destination="@id/destination_user_profile" app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left" app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
+        <action android:id="@+id/action_destination_jobs_to_destination_job_details"
+                app:destination="@id/destination_job_details" app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left" app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
+        <action android:id="@+id/action_destination_jobs_to_destination_filter"
+                app:destination="@id/destination_filter" app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left" app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment android:id="@+id/destination_add" android:name="com.esp.localjobs.AddFragment"
+              android:label="Add " tools:layout="@layout/fragment_add"/>
+    <fragment android:id="@+id/destination_job_details" android:name="com.esp.localjobs.JobDetailsFragment"
+              android:label="Job details" tools:layout="@layout/fragment_job_details">
+        <argument android:name="jobID" app:argType="string"/>
+    </fragment>
+    <fragment android:id="@+id/destination_user_profile" android:name="com.esp.localjobs.UserProfileFragment"
+              android:label="Profile" tools:layout="@layout/fragment_user_profile">
+        <argument android:name="userID" app:argType="string" app:nullable="true" android:defaultValue="@null"/>
+    </fragment>
+    <fragment android:id="@+id/destination_filter" android:name="com.esp.localjobs.FilterResultsFragment"
+              android:label="Filter" tools:layout="@layout/fragment_filter_results">
+        <action android:id="@+id/action_destination_filter_to_destination_jobs"
+                app:destination="@id/destination_jobs" app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left" app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
+        <action android:id="@+id/action_destination_filter_to_destination_proposals"
+                app:destination="@id/destination_proposals" app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left" app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
+    <fragment android:id="@+id/destination_proposals" android:name="com.esp.localjobs.ProposalsFragment"
+              android:label="LocalJobs" tools:layout="@layout/fragment_proposals">
+        <action android:id="@+id/action_destination_proposals_to_destination_user_profile"
+                app:destination="@id/destination_user_profile" app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left" app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
+        <action android:id="@+id/action_destination_proposals_to_destination_filter"
+                app:destination="@id/destination_filter" app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left" app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
+        <action android:id="@+id/action_destination_proposals_to_destination_proposal_details"
+                app:destination="@id/destination_proposal_details"/>
+    </fragment>
+    <fragment android:id="@+id/destination_proposal_details" android:name="com.esp.localjobs.ProposalDetailsFragment"
+              android:label="Proposal details" tools:layout="@layout/fragment_proposal_details"
+              app:enterAnim="@anim/slide_in_right"
+              app:exitAnim="@anim/slide_out_left" app:popEnterAnim="@anim/slide_in_left"
+              app:popExitAnim="@anim/slide_out_right">
+        <argument android:name="proposalID" app:argType="string"/>
+    </fragment>
+</navigation>
