@@ -13,4 +13,4 @@ android:
       - extra
 
 script:
-   - ./graldew build check
+   - ./gradlew build check
