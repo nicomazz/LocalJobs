@@ -1,8 +1,11 @@
 package com.esp.localjobs
 
-
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import kotlinx.android.synthetic.main.fragment_user_profile.*
@@ -18,7 +21,8 @@ class UserProfileFragment : Fragment() {
     private val args: UserProfileFragmentArgs by navArgs()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
@@ -29,16 +33,14 @@ class UserProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val userID: String? = args.userID
-        //user_profile_text_view.text = userID ?: getCurrentUserID()
-        //safe args example
+        // user_profile_text_view.text = userID ?: getCurrentUserID()
+        // safe args example
         user_profile_text_view.text = userID ?: "Current user profile"
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_navigation, menu)
         for (i in 0.until(menu.size()))
-            menu.getItem(i).setVisible(false)
+            menu.getItem(i).isVisible = false
     }
-
 }
