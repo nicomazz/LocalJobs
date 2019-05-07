@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_user_profile.*
 
 /**
@@ -32,10 +33,13 @@ class UserProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val userID: String? = args.userID
-        // user_profile_text_view.text = userID ?: getCurrentUserID()
-        // safe args example
-        user_profile_text_view.text = userID ?: "Current user profile"
+        name.text = getString(R.string.not_logged_in)
+        FirebaseAuth.getInstance().currentUser?.run {
+            name.text = displayName
+            mail.text = email
+            phone.text = phoneNumber
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

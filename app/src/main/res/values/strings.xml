@@ -5,4 +5,5 @@
     <string name="menu_add">Add</string>
     <string name="menu_jobs">Jobs</string>
     <string name="menu_proposals">Proposals</string>
+    <string name="not_logged_in">Not logged in</string>
 </resources>
