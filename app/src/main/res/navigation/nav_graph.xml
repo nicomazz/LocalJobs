@@ -3,25 +3,29 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/nav_graph"
-            app:startDestination="@id/destination_jobs">
+            app:startDestination="@id/destination_login">
 
     <fragment
             android:id="@+id/destination_login"
             android:name="com.esp.localjobs.LoginFragment"
-            android:label="login_fragment"/>
+            android:label="Login"
+            tools:layout="@layout/fragment_login">
+        <action
+                android:id="@+id/action_destination_login_to_destination_jobs"
+                app:destination="@id/destination_jobs"
+                app:popUpTo="@+id/nav_graph"
+                app:popUpToInclusive="true"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
 
     <fragment
             android:id="@+id/destination_jobs"
             android:name="com.esp.localjobs.JobsFragment"
             android:label="LocalJobs"
             tools:layout="@layout/fragment_jobs">
-        <action
-                android:id="@+id/action_destination_login"
-                app:destination="@id/destination_login"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"/>
 
         <action
                 android:id="@+id/action_destination_jobs_to_destination_user_profile"
@@ -44,6 +48,15 @@
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
                 app:popExitAnim="@anim/slide_out_right"/>
+        <action
+                android:id="@+id/action_destination_jobs_to_destination_login"
+                app:destination="@id/destination_login"
+                app:popUpTo="@+id/nav_graph"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"
+                app:popUpToInclusive="true"/>
     </fragment>
     <fragment
             android:id="@+id/destination_add"

@@ -32,10 +32,11 @@ class JobsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val navController = findNavController()
+
         viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
                 AUTHENTICATED -> showWelcomeMessage()
-                UNAUTHENTICATED -> navController.navigate(R.id.action_destination_login)
+                UNAUTHENTICATED -> navController.navigate(R.id.action_destination_jobs_to_destination_login)
                 INVALID_AUTHENTICATION -> TODO()
                 else -> TODO()
             }
