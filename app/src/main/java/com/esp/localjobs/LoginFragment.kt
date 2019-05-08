@@ -48,7 +48,7 @@ class LoginFragment : Fragment() {
                         R.string.invalid_credentials,
                         Snackbar.LENGTH_SHORT
                     ).show()
-                UNAUTHENTICATED -> { } //do nothing
+                UNAUTHENTICATED -> { } // do nothing
                 else -> TODO()
             }
         })
