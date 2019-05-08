@@ -1,10 +1,10 @@
 package com.esp.localjobs
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
@@ -43,7 +43,9 @@ class MainActivity : AppCompatActivity() {
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ -> onDestinationChangeListener(destination) }
         // declare top destinations - these won't show the upp button
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.destination_jobs, R.id.destination_proposals))
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.destination_jobs,
+                                                        R.id.destination_proposals,
+                                                        R.id.destination_login))
 
         setupToolbar(navController, appBarConfiguration)
         // setupActionBarWithNavController(navController, appBarConfiguration)  //use with default action bar
@@ -66,12 +68,10 @@ class MainActivity : AppCompatActivity() {
      * Hide bottom navigation and menu nav items when not in jobs or proposals fragment
      */
     private fun onDestinationChangeListener(destination: NavDestination) {
-        if (destination.id == R.id.destination_jobs || destination.id == R.id.destination_proposals) {
-            // toolbar.visibility = View.VISIBLE
-            bottom_nav_view.visibility = View.VISIBLE
-        } else {
-            // toolbar.visibility = View.GONE
-            bottom_nav_view.visibility = View.GONE
+        // bottom bar
+        when (destination.id) {
+            R.id.destination_jobs, R.id.destination_proposals -> bottom_nav_view.visibility = View.VISIBLE
+            else -> bottom_nav_view.visibility = View.GONE
         }
     }
 
