@@ -7,6 +7,8 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_user_profile.*
@@ -21,6 +23,7 @@ import kotlinx.android.synthetic.main.fragment_user_profile.*
 class UserProfileFragment : Fragment() {
     private val args: UserProfileFragmentArgs by navArgs()
 
+    private val viewModel: LoginViewModel by activityViewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -34,12 +37,18 @@ class UserProfileFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         name.text = getString(R.string.not_logged_in)
+        logout.visibility = View.GONE
         FirebaseAuth.getInstance().currentUser?.run {
             name.text = displayName
             mail.text = email
             phone.text = phoneNumber
+            logout.visibility = View.VISIBLE
         }
 
+        logout.setOnClickListener {
+            viewModel.logOut()
+            findNavController().navigate(R.id.action_destination_logout)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
