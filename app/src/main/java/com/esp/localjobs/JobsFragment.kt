@@ -2,6 +2,7 @@ package com.esp.localjobs
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
@@ -36,6 +37,7 @@ class JobsFragment : Fragment() {
 
         // setup search toolbar
         searchToolbar.inflateMenu(R.menu.menu_search)
+        searchToolbar.setOnMenuItemClickListener { menuItem -> handleSearchMenuItemClick(menuItem) }
 
         viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
@@ -53,5 +55,18 @@ class JobsFragment : Fragment() {
             "Welcome ${FirebaseAuth.getInstance().currentUser?.displayName ?: "error"}",
             Snackbar.LENGTH_SHORT
         ).show()
+    }
+
+    /**
+     * Handle search toolbar item click.
+     * On filter item click: navigate to filter fragment
+     */
+    private fun handleSearchMenuItemClick(menuItem: MenuItem): Boolean {
+        when (menuItem.itemId) {
+            R.id.filter_search_item -> findNavController().navigate(R.id.action_destination_jobs_to_destination_filter)
+            else -> TODO()
+        }
+
+        return true
     }
 }
