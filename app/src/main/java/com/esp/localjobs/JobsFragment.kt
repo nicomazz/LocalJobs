@@ -13,6 +13,7 @@ import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
 import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.android.synthetic.main.fragment_jobs.*
 
 /**
  * Fragment used to display a list of jobs
@@ -32,6 +33,9 @@ class JobsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val navController = findNavController()
+
+        // setup search toolbar
+        searchToolbar.inflateMenu(R.menu.menu_search)
 
         viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {

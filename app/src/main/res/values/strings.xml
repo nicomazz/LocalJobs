@@ -9,4 +9,6 @@
     <string name="invalid_credentials">Invalid credentials</string>
     <string name="logout">Logout</string>
     <string name="login">Login</string>
+    <string name="menu_filter">Filter</string>
+    <string name="menu_search">Search</string>
 </resources>
