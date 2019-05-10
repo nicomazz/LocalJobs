@@ -5,6 +5,28 @@
              android:layout_height="match_parent"
              tools:context=".FilterResultsFragment">
 
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp">
+        <EditText
+                android:id="@+id/query_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Query text"/>
+        <SeekBar
+                android:id="@+id/range_seek_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        <EditText
+                android:id="@+id/range_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="numberDecimal"
+                android:hint="Km"/>
+    </LinearLayout>
+
     <!-- TODO fix scrauso color-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
