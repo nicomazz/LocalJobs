@@ -25,6 +25,11 @@
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal"
                 android:hint="Km"/>
+        <Button
+                android:id="@+id/reset_default_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reset default"/>
     </LinearLayout>
 
     <!-- TODO fix scrauso color-->

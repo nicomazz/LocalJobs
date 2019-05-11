@@ -20,7 +20,8 @@ import kotlinx.android.synthetic.main.fragment_jobs.*
  * Fragment used to display a list of jobs
  */
 class JobsFragment : Fragment() {
-    private val viewModel: LoginViewModel by activityViewModels()
+    private val loginViewModel: LoginViewModel by activityViewModels()
+    private val filterViewModel: FilterViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,13 +40,18 @@ class JobsFragment : Fragment() {
         searchToolbar.inflateMenu(R.menu.menu_search)
         searchToolbar.setOnMenuItemClickListener { menuItem -> handleSearchMenuItemClick(menuItem) }
 
-        viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
+        loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
                 AUTHENTICATED -> showWelcomeMessage()
                 UNAUTHENTICATED -> navController.navigate(R.id.action_destination_jobs_to_destination_login)
                 INVALID_AUTHENTICATION -> TODO()
                 else -> TODO()
             }
+        })
+
+        filterViewModel.userRequestedFilteredResults.observe(viewLifecycleOwner, Observer {
+            filterViewModel.userRequestedFilteredResults.value = false
+            // fetch filtered data and update view
         })
     }
 
@@ -66,7 +72,6 @@ class JobsFragment : Fragment() {
             R.id.filter_search_item -> findNavController().navigate(R.id.action_destination_jobs_to_destination_filter)
             else -> TODO()
         }
-
         return true
     }
 }
