@@ -13,4 +13,8 @@
     <string name="description">Description</string>
     <string name="address">Address</string>
     <string name="publish">Publish</string>
+    <string name="radio_job">Job</string>
+    <string name="radio_proposal">Proposal</string>
+    <string name="add_type">Type: </string>
+    <string name="range_text_view">Range: </string>
 </resources>
