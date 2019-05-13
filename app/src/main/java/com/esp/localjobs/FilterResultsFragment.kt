@@ -9,10 +9,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.SeekBar
+import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputLayout
 
 /**
  * Fragment used to set filter params (longitude, latitude, range, text)
@@ -21,7 +23,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
  */
 class FilterResultsFragment : Fragment() {
     private val args: FilterResultsFragmentArgs by navArgs()
-    private lateinit var rangeEditText: EditText
+    private lateinit var rangeTextView: TextView
     private lateinit var queryEditText: EditText
     private lateinit var rangeSeekBar: SeekBar
 
@@ -38,8 +40,8 @@ class FilterResultsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rangeEditText = view.findViewById(R.id.range_edit_text)
-        queryEditText = view.findViewById(R.id.query_edit_text)
+        rangeTextView = view.findViewById(R.id.range_text_view)
+        queryEditText = view.findViewById<TextInputLayout>(R.id.query_edit_text).editText!!
         rangeSeekBar = view.findViewById(R.id.range_seek_bar)
         // I'm not observing values to avoid loosing changes on screen rotation
         updateView()
@@ -65,20 +67,20 @@ class FilterResultsFragment : Fragment() {
     }
 
     private fun updateView() {
-        rangeEditText.setText(filterViewModel.range.value.toString())
+        rangeTextView.text = filterViewModel.range.value.toString()
         queryEditText.setText(filterViewModel.query.value)
         rangeSeekBar.progress = filterViewModel.range.value ?: -1
     }
 
     private fun updateViewModel() {
         filterViewModel.query.value = queryEditText.text.toString()
-        filterViewModel.range.value = rangeEditText.text.toString().toInt()
+        filterViewModel.range.value = rangeTextView.text.toString().toInt()
         filterViewModel.location.value = Location(0.0, 0.0)
     }
 
     private val seekBarHandler = object : SeekBar.OnSeekBarChangeListener {
         override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-            rangeEditText.setText(progress.toString())
+            rangeTextView.text = progress.toString()
         }
         override fun onStartTrackingTouch(seekBar: SeekBar?) { }
         override fun onStopTrackingTouch(seekBar: SeekBar?) { }

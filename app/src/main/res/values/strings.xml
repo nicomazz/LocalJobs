@@ -11,4 +11,7 @@
     <string name="login">Login</string>
     <string name="menu_filter">Filter</string>
     <string name="menu_search">Search</string>
+    <string name="filter_query_hint">Search for:</string>
+    <string name="filter_reset_default">Reset default</string>
+    <string name="filter_max_range">50</string>
 </resources>
