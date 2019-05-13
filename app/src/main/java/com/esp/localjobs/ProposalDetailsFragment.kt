@@ -12,7 +12,7 @@ import androidx.navigation.fragment.navArgs
 class ProposalDetailsFragment : Fragment() {
     private val args: ProposalDetailsFragmentArgs by navArgs()
     private val filterViewModel: FilterViewModel by activityViewModels()
-    
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -23,7 +23,7 @@ class ProposalDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val proposalID = args.proposalID
+        // val proposalID = args.proposalID
 
         filterViewModel.userRequestedFilteredResults.observe(viewLifecycleOwner, Observer {
             filterViewModel.userRequestedFilteredResults.value = false

@@ -15,7 +15,6 @@ import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
 import com.esp.localjobs.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
 import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -72,7 +71,7 @@ class LoginFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
-            val response = IdpResponse.fromResultIntent(data)
+            // val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
