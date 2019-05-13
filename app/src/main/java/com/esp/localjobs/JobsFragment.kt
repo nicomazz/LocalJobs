@@ -2,9 +2,11 @@ package com.esp.localjobs
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -14,7 +16,6 @@ import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
 import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.fragment_jobs.*
 
 /**
  * Fragment used to display a list of jobs
@@ -28,6 +29,7 @@ class JobsFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_jobs, container, false)
     }
 
@@ -35,10 +37,6 @@ class JobsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val navController = findNavController()
-
-        // setup search toolbar
-        searchToolbar.inflateMenu(R.menu.menu_search)
-        searchToolbar.setOnMenuItemClickListener { menuItem -> handleSearchMenuItemClick(menuItem) }
 
         loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
@@ -63,15 +61,11 @@ class JobsFragment : Fragment() {
         ).show()
     }
 
-    /**
-     * Handle search toolbar item click.
-     * On filter item click: navigate to filter fragment
-     */
-    private fun handleSearchMenuItemClick(menuItem: MenuItem): Boolean {
-        when (menuItem.itemId) {
-            R.id.filter_search_item -> findNavController().navigate(R.id.action_destination_jobs_to_destination_filter)
-            else -> TODO()
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_search, menu)
+        val searchView = menu.findItem(R.id.action_search_item).actionView as SearchView
+        searchView.setOnSearchClickListener {
+            findNavController().navigate(R.id.action_destination_jobs_to_destination_filter)
         }
-        return true
     }
 }

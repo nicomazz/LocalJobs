@@ -8,8 +8,9 @@ import androidx.lifecycle.ViewModel
  * Shared view model between filter, jobs and proposals fragment.
  * When the user asks to filter results @variable userRequestedFilterResults is set to true.
  */
-const val MAX_RANGE_KM = 50
+
 class FilterViewModel : ViewModel() {
+    val MAX_RANGE_KM = 50
     val range = MutableLiveData<Int>()
     val query = MutableLiveData<String>()
     val location = MutableLiveData<Location>()
