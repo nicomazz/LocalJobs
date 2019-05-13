@@ -27,6 +27,7 @@ android {
 }
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 
@@ -56,6 +57,9 @@ dependencies {
 
     implementation 'com.google.android.material:material:1.1.0-alpha06'
 
+    implementation ('com.mapbox.mapboxsdk:mapbox-android-sdk:7.3.2'){
+        exclude group: 'group_name', module: 'module_name'
+    }
 }
 
 // ktlint
