@@ -13,5 +13,5 @@
     <string name="menu_search">Search</string>
     <string name="filter_query_hint">Search for:</string>
     <string name="filter_reset_default">Reset default</string>
-    <string name="filter_max_range">50</string>
+    <string name="filter_range_text">Range:</string>
 </resources>

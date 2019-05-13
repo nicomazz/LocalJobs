@@ -2,6 +2,7 @@ package com.esp.localjobs
 
 import com.esp.localjobs.models.Location
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -9,6 +10,8 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.SearchView
 import android.widget.SeekBar
 import android.widget.TextView
@@ -16,6 +19,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.maps.MapView
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.Style
 
 /**
  * Fragment used to set filter params (longitude, latitude, range, text)
@@ -27,7 +34,7 @@ class FilterResultsFragment : Fragment() {
     private lateinit var rangeTextView: TextView
     private lateinit var rangeSeekBar: SeekBar
     private lateinit var searchView: SearchView
-
+    private lateinit var mapBoxMap: MapboxMap
     private val filterViewModel: FilterViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -36,13 +43,14 @@ class FilterResultsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
+        Mapbox.getInstance(activity!!.applicationContext, "pk.eyJ1IjoibHVjYW1vcm8iLCJhIjoiY2p2aWZpMjF3MDUydDQ4cnV1aXNoajg3aCJ9.oHLaI83cBQT1TzikU6oA8Q")
         return inflater.inflate(R.layout.fragment_filter_results, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rangeTextView = view.findViewById(R.id.range_text_view)
+        rangeTextView = view.findViewById(R.id.range_value)
         rangeSeekBar = view.findViewById(R.id.range_seek_bar)
 
         // I'm not observing values to avoid loosing changes on screen rotation
@@ -55,8 +63,9 @@ class FilterResultsFragment : Fragment() {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 rangeTextView.text = progress.toString()
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) { }
-            override fun onStopTrackingTouch(seekBar: SeekBar?) { }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         }
 
         rangeSeekBar.max = filterViewModel.MAX_RANGE_KM
@@ -67,6 +76,10 @@ class FilterResultsFragment : Fragment() {
             filterViewModel.setDefaultValues()
             updateView()
         }
+
+        val mapView = view.findViewById<MapView>(R.id.map_view)
+        mapView.onCreate(savedInstanceState)
+        setupMapView(mapView)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -82,6 +95,8 @@ class FilterResultsFragment : Fragment() {
     }
 
     private fun updateViewModel() {
+        val mapTargetLatLng = mapBoxMap.cameraPosition.target
+        filterViewModel.location.value = Location(mapTargetLatLng.latitude, mapTargetLatLng.longitude)
         filterViewModel.query.value = searchView.query.toString()
         filterViewModel.range.value = rangeTextView.text.toString().toInt()
         filterViewModel.location.value = Location(0.0, 0.0)
@@ -116,5 +131,24 @@ class FilterResultsFragment : Fragment() {
             findNavController().navigate(R.id.action_destination_filter_to_destination_jobs)
         else
             findNavController().navigate(R.id.action_destination_filter_to_destination_proposals)
+    }
+
+    private fun setupMapView(mapView: MapView) {
+        mapView.getMapAsync { map ->
+            mapBoxMap = map
+
+            mapBoxMap.setStyle(Style.MAPBOX_STREETS) {
+                // add central position marker
+                val hoveringMarker = ImageView(context)
+                hoveringMarker.setImageResource(R.drawable.ic_location_on_red_900_36dp)
+                val params = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    Gravity.CENTER
+                )
+                hoveringMarker.layoutParams = params
+                mapView.addView(hoveringMarker)
+            }
+        }
     }
 }
