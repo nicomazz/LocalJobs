@@ -43,12 +43,15 @@ class MainActivity : AppCompatActivity() {
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ -> onDestinationChangeListener(destination) }
         // declare top destinations - these won't show the upp button
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.destination_jobs,
-                                                        R.id.destination_proposals,
-                                                        R.id.destination_login))
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.destination_jobs,
+                R.id.destination_proposals,
+                R.id.destination_login
+            )
+        )
 
         setupToolbar(navController, appBarConfiguration)
-        // setupActionBarWithNavController(navController, appBarConfiguration)  //use with default action bar
         setupBottomNavigationMenu(navController)
     }
 
@@ -69,9 +72,9 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onDestinationChangeListener(destination: NavDestination) {
         // bottom bar
-        when (destination.id) {
-            R.id.destination_jobs, R.id.destination_proposals -> bottom_nav_view.visibility = View.VISIBLE
-            else -> bottom_nav_view.visibility = View.GONE
+        bottom_nav_view.visibility = when (destination.id) {
+            R.id.destination_jobs, R.id.destination_proposals -> View.VISIBLE
+            else -> View.GONE
         }
     }
 
