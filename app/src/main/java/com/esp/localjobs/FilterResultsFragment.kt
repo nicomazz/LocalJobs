@@ -59,17 +59,14 @@ class FilterResultsFragment : Fragment() {
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener { onSearchClick() }
 
-        val seekBarHandler = object : SeekBar.OnSeekBarChangeListener {
+        rangeSeekBar.max = filterViewModel.MAX_RANGE_KM
+        rangeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 rangeTextView.text = progress.toString()
             }
-
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        }
-
-        rangeSeekBar.max = filterViewModel.MAX_RANGE_KM
-        rangeSeekBar.setOnSeekBarChangeListener(seekBarHandler)
+        })
 
         val resetDefaultButton = view.findViewById<Button>(R.id.reset_default_button)
         resetDefaultButton.setOnClickListener {
@@ -82,41 +79,18 @@ class FilterResultsFragment : Fragment() {
         setupMapView(mapView)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        menu.clear()
-        inflater.inflate(R.menu.menu_search, menu)
-        searchView = menu.findItem(R.id.action_search_item).actionView as SearchView
-        setupSearchView()
-    }
-
     private fun updateView() {
         rangeTextView.text = filterViewModel.range.value.toString()
         rangeSeekBar.progress = filterViewModel.range.value ?: -1
     }
 
     private fun updateViewModel() {
+        // get location coordinates of the center of the map-view
         val mapTargetLatLng = mapBoxMap.cameraPosition.target
         filterViewModel.location.value = Location(mapTargetLatLng.latitude, mapTargetLatLng.longitude)
         filterViewModel.query.value = searchView.query.toString()
         filterViewModel.range.value = rangeTextView.text.toString().toInt()
         filterViewModel.location.value = Location(0.0, 0.0)
-    }
-
-    /**
-     * Setup search view icon.
-     * The search view is expanded by default and focused on fragment creation.
-     */
-    private fun setupSearchView() {
-        searchView.setIconifiedByDefault(false) // expand search view
-        searchView.requestFocus()
-        val queryTextListener = object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                onSearchClick()
-                return true
-            }
-            override fun onQueryTextChange(newText: String?): Boolean { return true }
-        }
-        searchView.setOnQueryTextListener(queryTextListener)
     }
 
     /**
@@ -133,6 +107,9 @@ class FilterResultsFragment : Fragment() {
             findNavController().navigate(R.id.action_destination_filter_to_destination_proposals)
     }
 
+    /**
+     * Get map-view and create an hovering marker at the center of the map.
+     */
     private fun setupMapView(mapView: MapView) {
         mapView.getMapAsync { map ->
             mapBoxMap = map
@@ -150,5 +127,28 @@ class FilterResultsFragment : Fragment() {
                 mapView.addView(hoveringMarker)
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_search, menu)
+        searchView = menu.findItem(R.id.action_search_item).actionView as SearchView
+        setupSearchView()
+    }
+
+    /**
+     * Setup search view icon.
+     * The search view is expanded by default and focused on fragment creation.
+     */
+    private fun setupSearchView() {
+        searchView.setIconifiedByDefault(false) // expand search view
+        searchView.requestFocus()
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                onSearchClick()
+                return true
+            }
+            override fun onQueryTextChange(newText: String?): Boolean { return true }
+        })
     }
 }
