@@ -17,4 +17,6 @@
     <string name="radio_proposal">Proposal</string>
     <string name="add_type">Type: </string>
     <string name="range_text_view">Range: </string>
+    <string name="salary_edit_text">Salary</string>
+    <string name="price_per_hour">€/h</string>
 </resources>

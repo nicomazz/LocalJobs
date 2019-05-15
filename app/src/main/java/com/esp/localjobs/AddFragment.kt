@@ -26,11 +26,12 @@ class AddFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_navigation, menu)
         for (i in 0.until(menu.size()))
-            menu.getItem(i).setVisible(false)
+            menu.getItem(i).isVisible = false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setSeekBarValue(range_seekbar.progress)
         range_seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
 
@@ -41,8 +42,12 @@ class AddFragment : Fragment() {
             }
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                range_value.text = if(progress==0) "Inf" else progress.toString() + " km"
+                setSeekBarValue(progress)
             }
         })
+    }
+
+    private fun setSeekBarValue(value: Int){
+        range_value.text = value.toString() + " km"
     }
 }
