@@ -19,4 +19,7 @@
     <string name="range_text_view">Range: </string>
     <string name="salary_edit_text">Salary</string>
     <string name="price_per_hour">€/h</string>
+    <string name="type_tag_job">job</string>
+    <string name="type_tag_proposal">proposal</string>
+    <string name="distance">"%1$d km"</string>
 </resources>
