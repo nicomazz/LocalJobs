@@ -14,4 +14,5 @@
     <string name="filter_query_hint">Search for:</string>
     <string name="filter_reset_default">Reset default</string>
     <string name="filter_range_text">Range:</string>
+    <string name="mabBoxToken">pk.eyJ1IjoibHVjYW1vcm8iLCJhIjoiY2p2aWZpMjF3MDUydDQ4cnV1aXNoajg3aCJ9.oHLaI83cBQT1TzikU6oA8Q</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.esp.localjobs
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -16,6 +17,15 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
+import android.Manifest
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import com.esp.localjobs.managers.PositionManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /*
 Resources:
@@ -35,10 +45,18 @@ Resources:
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
-
+    private val REQUEST_LOCATION_PERMISSION_CODE = 100
+    private var positionServiceJob: Job? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        requestLocationPermissions()
+
+        // TODO check if GPS is enabled
+        if (!PositionManager.getInstance(applicationContext).startListeningForPosition()) {
+            positionServiceJob = GlobalScope.launch(Dispatchers.Main) { tryUntilOk() }
+        }
 
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ -> onDestinationChangeListener(destination) }
@@ -95,5 +113,46 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_navigation, menu)
         return true
+    }
+
+    /**
+     * Show dialog to request location permissions
+     */
+    private fun requestLocationPermissions() {
+
+        ActivityCompat.requestPermissions(this@MainActivity,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+            REQUEST_LOCATION_PERMISSION_CODE)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQUEST_LOCATION_PERMISSION_CODE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    finish()
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        PositionManager.getInstance(applicationContext).stopListeningForPosition()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        positionServiceJob?.cancel(null)
+    }
+
+    /**
+     * Tries to start listening position ( non-blocking )
+     */
+    private suspend fun tryUntilOk() {
+        Toast.makeText(this, "Failed to start listening for position", Toast.LENGTH_LONG).show()
+        delay(1000)
+        if (!PositionManager.getInstance(applicationContext).startListeningForPosition()) {
+            tryUntilOk()
+        } else
+            Toast.makeText(this, "Started location service", Toast.LENGTH_LONG).show()
     }
 }

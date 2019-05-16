@@ -47,11 +47,24 @@
                     mapbox:layout_constraintLeft_toLeftOf="parent"
                     mapbox:layout_constraintTop_toBottomOf="@id/range_div"
                     mapbox:layout_constraintBottom_toTopOf="@id/reset_default_button"
-                    mapbox:mapbox_cameraTargetLat="41.885"
-                    mapbox:mapbox_cameraTargetLng="-87.679"
-                    mapbox:mapbox_cameraTilt="60"
-                    mapbox:mapbox_cameraZoom="12"
-                    android:layout_margin="20dp"/>
+                    android:layout_margin="20dp">
+                <ImageView
+                        android:id="@+id/center_user_position_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_location_searching_blue_900_48dp"
+                        android:gravity="start"
+                        android:padding="10dp"
+                        tools:ignore="contentDescription"/>
+                <ImageView
+                        android:id="@+id/hovering_marker"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_location_on_blue_900_36dp"
+                        android:layout_gravity="center"
+                        android:visibility="invisible"
+                        tools:ignore="contentDescription"/>
+            </com.mapbox.mapboxsdk.maps.MapView>
 
             <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/reset_default_button"
