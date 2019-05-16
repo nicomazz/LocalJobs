@@ -79,6 +79,11 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_destination_jobs_to_destination_login">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                             <entry key="action_destination_jobs_to_destination_user_profile">
                               <value>
                                 <LayoutPositions />
@@ -94,8 +99,8 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="-2066" />
-                            <option name="y" value="91" />
+                            <option name="x" value="12" />
+                            <option name="y" value="12" />
                           </Point>
                         </option>
                         <option name="myPositions">

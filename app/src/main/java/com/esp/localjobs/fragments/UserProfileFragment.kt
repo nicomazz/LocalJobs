@@ -10,9 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.esp.localjobs.LoginViewModel
+import com.esp.localjobs.viewModels.LoginViewModel
 import com.esp.localjobs.R
-import com.esp.localjobs.UserProfileFragmentArgs
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_user_profile.*
 

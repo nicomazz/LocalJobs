@@ -44,6 +44,8 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.firebase:firebase-core:16.0.9'
     implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
+    implementation 'com.firebaseui:firebase-ui-database:4.3.2'
+
     ktlint "com.pinterest:ktlint:0.32.0"
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.1.1'
@@ -55,6 +57,11 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version" // For Kotlin use navigation-ui-ktx
 
     implementation 'com.google.android.material:material:1.1.0-alpha06'
+
+
+    //recycle view
+    implementation 'com.xwray:groupie:2.3.0'
+    implementation 'com.xwray:groupie-kotlin-android-extensions:2.3.0'
 
 }
 

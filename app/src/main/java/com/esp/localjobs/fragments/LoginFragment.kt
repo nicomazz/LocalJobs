@@ -11,10 +11,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.esp.localjobs.LoginViewModel
-import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
-import com.esp.localjobs.LoginViewModel.AuthenticationState.UNAUTHENTICATED
-import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
+import com.esp.localjobs.viewModels.LoginViewModel
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.AUTHENTICATED
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENTICATED
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
 import com.esp.localjobs.R
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
