@@ -48,8 +48,17 @@ class AddFragment : Fragment() {
             }
         })
 
-        // set on submit button click
+        // on submit button click
         submit_button.setOnClickListener { onSubmit() }
+
+        // on location edit text click
+        address_edit_text.setOnClickListener {
+            val fm = activity?.supportFragmentManager
+            if(fm != null) {
+                val locationPickerFragment = LocationPickerFragment.newInstance("temp", "temp")
+                locationPickerFragment.show(fm, "location_picker_fragment")
+            }
+        }
     }
 
     /**
