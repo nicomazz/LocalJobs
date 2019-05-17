@@ -1,11 +1,14 @@
 package com.esp.localjobs
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.fragment.app.DialogFragment
 import com.esp.localjobs.managers.PositionManager
@@ -50,6 +53,7 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
         return inflater.inflate(R.layout.fragment_location_picker, container, false)
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -61,6 +65,10 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
         }
         mapView.onCreate(savedInstanceState)
         setupMapView()
+        startObservingPosition()
+
+        val centerPositionButton = view.findViewById<ImageView>(R.id.center_user_position_button)
+        centerPositionButton.setOnClickListener(this)
 
         // initialize seekbar and set listener
         setRangeTextView(range_seekbar.progress)
