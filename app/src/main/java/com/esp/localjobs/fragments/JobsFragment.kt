@@ -10,13 +10,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.esp.localjobs.LoginViewModel
+import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
+import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
+import com.esp.localjobs.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
 import com.esp.localjobs.viewModels.JobsViewModel
-import com.esp.localjobs.viewModels.LoginViewModel
-import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.AUTHENTICATED
-import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
-import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.xwray.groupie.GroupAdapter
@@ -57,15 +57,15 @@ class JobsFragment : Fragment() {
         })
 
         jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
-            Log.d("JobFragment","reported ${jobs?.size ?: 0} jobs")
+            Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
             adapter.update(jobs?.map { JobItem(it) } ?: listOf())
         })
         jobsViewModel.loadJobs()
 
     }
 
-    private fun setupJobList(view: View){
-        view.jobList.let{
+    private fun setupJobList(view: View) {
+        view.jobList.let {
             it.adapter = adapter
             it.layoutManager = LinearLayoutManager(context)
         }

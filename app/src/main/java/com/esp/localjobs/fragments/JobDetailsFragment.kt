@@ -27,6 +27,6 @@ class JobDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val jobID: String = args.jobID
+        // val jobID: String = args.jobID
     }
 }
