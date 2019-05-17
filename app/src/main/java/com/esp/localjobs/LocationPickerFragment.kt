@@ -1,16 +1,14 @@
 package com.esp.localjobs
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.managers.PositionManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -19,34 +17,20 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import kotlinx.android.synthetic.main.fragment_filter_results.*
 import androidx.lifecycle.Observer
-import kotlinx.android.synthetic.main.fragment_add.*
+import com.esp.localjobs.models.Location
+import kotlinx.android.synthetic.main.fragment_add.range_seekbar
 import kotlinx.android.synthetic.main.fragment_filter_results.range_value
-
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import kotlinx.android.synthetic.main.fragment_location_picker.*
 
 class LocationPickerFragment : DialogFragment(), View.OnClickListener {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
     private var mapBoxMap: MapboxMap? = null
     private lateinit var mapView: MapView
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private val filterViewModel: FilterViewModel by activityViewModels()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         Mapbox.getInstance(activity!!.applicationContext, getString(R.string.mabBoxToken))
@@ -72,11 +56,9 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
 
         // initialize seekbar and set listener
         setRangeTextView(range_seekbar.progress)
-        range_seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-
+        range_seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStopTrackingTouch(seekBar: SeekBar?) { }
+            override fun onStartTrackingTouch(seekBar: SeekBar?) { }
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 setRangeTextView(progress)
             }
@@ -86,43 +68,21 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
     override fun onResume() {
         super.onResume()
 
-        //set dialog fragment size (width and height values in fragment_ingredients_details.xml do not work)
+        // set dialog fragment size (width and height values in fragment_ingredients_details.xml do not work)
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-    }
-
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment LocationPickerFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            LocationPickerFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
     }
 
     /**
      * For setting the value next to seek bar
      * @param value The value corresponding to the seekbar position
      */
-    private fun setRangeTextView(value: Int){
+    private fun setRangeTextView(value: Int) {
         range_value.text = getString(R.string.distance, value)
     }
 
-
-
-    /*****************************************************
+    /* ****************************************************
      * MAP RELATED METHODS BELOW
-     ******************************************************/
+     ***************************************************** */
 
     /**
      * Get map-view and create an hovering marker at the center of the map.
@@ -142,6 +102,7 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
         when (v?.id) {
             R.id.map_view -> stopObservingPosition()
             R.id.center_user_position_button -> startObservingPosition()
+            R.id.apply_button -> updateViewModel() // TODO close dialog fragment
         }
     }
 
@@ -156,6 +117,15 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
             startListeningForPosition()
             currentBestLocation.observe(viewLifecycleOwner, locationObserver)
         }
+    }
+
+    private fun updateViewModel() {
+        // get location coordinates of the center of the map-view
+        if (mapBoxMap != null) {
+            val latLng = (mapBoxMap as MapboxMap).cameraPosition.target
+            filterViewModel.location = Location(latLng.latitude, latLng.longitude)
+        } else
+            filterViewModel.location = null
     }
 
     /**

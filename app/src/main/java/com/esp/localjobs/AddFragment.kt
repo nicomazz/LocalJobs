@@ -38,7 +38,7 @@ class AddFragment : Fragment() {
 
         // initialize seekbar and set listener
         setRangeTextView(range_seekbar.progress)
-        range_seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        range_seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -54,8 +54,8 @@ class AddFragment : Fragment() {
         // on location edit text click
         address_edit_text.setOnClickListener {
             val fm = activity?.supportFragmentManager
-            if(fm != null) {
-                val locationPickerFragment = LocationPickerFragment.newInstance("temp", "temp")
+            if (fm != null) {
+                val locationPickerFragment = LocationPickerFragment()
                 locationPickerFragment.show(fm, "location_picker_fragment")
             }
         }
@@ -64,29 +64,29 @@ class AddFragment : Fragment() {
     /**
      * Called when submit button is pressed
      */
-    private fun onSubmit(){
+    private fun onSubmit() {
         // retrieve content of the form
-        val selectedTypeId= type_radio_group.checkedRadioButtonId
-        val type = view?.findViewById<RadioButton>(selectedTypeId)?.tag //the tag is how we identify the type inside data object
+        val selectedTypeId = type_radio_group.checkedRadioButtonId
+        val type = view?.findViewById<RadioButton>(selectedTypeId)?.tag // the tag is how we identify the type inside data object
         val title = title_edit_text.text.toString()
         val address = address_edit_text.text.toString()
         val range = range_seekbar.progress
         val salary = salary_edit_text.text.toString()
         val description = description_edit_text.text.toString()
 
-        //check for required fields
-        if(type == null) Log.e(TAG, "null radio button selection")
-        title_view.error = if(title.isEmpty()) "Title is required" else null
+        // check for required fields
+        if (type == null) Log.e(TAG, "null radio button selection")
+        title_view.error = if (title.isEmpty()) "Title is required" else null
 
-        Log.d(TAG,"$type, $title, $address, $range, $salary, $description")
-        //TODO submit content
+        Log.d(TAG, "$type, $title, $address, $range, $salary, $description")
+        // TODO submit content
     }
 
     /**
      * For setting the value next to seek bar
      * @param value The value corresponding to the seekbar position
      */
-    private fun setRangeTextView(value: Int){
+    private fun setRangeTextView(value: Int) {
         range_value.text = getString(R.string.distance, value)
     }
 }

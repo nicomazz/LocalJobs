@@ -15,6 +15,7 @@ class FilterViewModel : ViewModel() {
     var range: Int = MAX_RANGE_KM
     var query: String = ""
     var location: Location? = null
+    var minSalary: Int = 0
     val userRequestedFilteredResults = MutableLiveData<Boolean>()
 
     init {
