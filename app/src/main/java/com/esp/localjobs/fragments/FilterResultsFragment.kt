@@ -1,4 +1,4 @@
-package com.esp.localjobs
+package com.esp.localjobs.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -14,7 +14,9 @@ import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.esp.localjobs.managers.PositionManager
+import com.esp.localjobs.FilterViewModel
+import com.esp.localjobs.LocationPickerFragment
+import com.esp.localjobs.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 

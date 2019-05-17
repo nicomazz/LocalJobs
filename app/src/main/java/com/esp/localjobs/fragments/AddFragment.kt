@@ -1,4 +1,4 @@
-package com.esp.localjobs
+package com.esp.localjobs.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -10,7 +10,11 @@ import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
+import com.esp.localjobs.LocationPickerFragment
+import com.esp.localjobs.R
+import kotlinx.android.synthetic.main.fragment_add.*
 
+private const val TAG = "AddFragment"
 /**
  * Fragment used to push a job/proposal to remote db
  */
