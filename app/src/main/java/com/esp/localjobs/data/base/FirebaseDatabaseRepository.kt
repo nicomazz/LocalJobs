@@ -1,35 +1,37 @@
 package com.esp.localjobs.data.base
 
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 
 abstract class FirebaseDatabaseRepository<Model> {
 
-    protected var databaseReference: DatabaseReference
+    //    protected var db: Firebase
     protected var firebaseCallback: FirebaseDatabaseRepositoryCallback<Model>? = null
 
     private lateinit var listener: BaseValueEventListener<Model>
-
+    val db = FirebaseFirestore.getInstance()
     abstract fun getRootNode(): String
 
-    init {
-        databaseReference = FirebaseDatabase.getInstance().getReference(getRootNode())
-    }
+    var registration: ListenerRegistration? = null
 
     fun addListener(firebaseCallback: FirebaseDatabaseRepositoryCallback<Model>) {
         this.firebaseCallback = firebaseCallback
         listener = BaseValueEventListener(firebaseCallback)
-        databaseReference.addValueEventListener(listener!!)
+        registration?.remove()
+        // todo uncomment this to query the database
+      //  registration = db.collection(getRootNode()).addSnapshotListener(listener)
     }
 
     fun removeListener() {
-        databaseReference.removeEventListener(listener)
+        registration?.remove()
     }
+
 
     interface FirebaseDatabaseRepositoryCallback<T> {
         fun onSuccess(result: List<T>)
 
         fun onError(e: Exception)
     }
+
 }
