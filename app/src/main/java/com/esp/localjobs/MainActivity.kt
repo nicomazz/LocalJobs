@@ -1,12 +1,15 @@
 package com.esp.localjobs
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
@@ -15,17 +18,10 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
+import com.esp.localjobs.managers.PositionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import android.Manifest
-import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import com.esp.localjobs.managers.PositionManager
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /*
 Resources:
@@ -46,7 +42,7 @@ Resources:
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private val REQUEST_LOCATION_PERMISSION_CODE = 100
-    private var positionServiceJob: Job? = null
+    // private var positionServiceJob: Job? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -54,9 +50,9 @@ class MainActivity : AppCompatActivity() {
         requestLocationPermissions()
 
         // TODO check if GPS is enabled
-        if (!PositionManager.getInstance(applicationContext).startListeningForPosition()) {
-            positionServiceJob = GlobalScope.launch(Dispatchers.Main) { tryUntilOk() }
-        }
+        // if (!PositionManager.getInstance(applicationContext).startListeningForPosition()) {
+        //  positionServiceJob = GlobalScope.launch(Dispatchers.Main) { tryUntilOk() }
+        // }
 
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ -> onDestinationChangeListener(destination) }
@@ -141,7 +137,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        positionServiceJob?.cancel(null)
+    //    positionServiceJob?.cancel(null)
     }
 
     /**

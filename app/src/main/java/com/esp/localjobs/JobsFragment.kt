@@ -47,10 +47,11 @@ class JobsFragment : Fragment() {
             }
         })
 
-        filterViewModel.userRequestedFilteredResults.observe(viewLifecycleOwner, Observer {
+        // todo fix this
+/*        filterViewModel.userRequestedFilteredResults.observe(viewLifecycleOwner, Observer {
             filterViewModel.userRequestedFilteredResults.value = false
             // fetch filtered data and update view
-        })
+        })*/
     }
 
     private fun showWelcomeMessage() {
