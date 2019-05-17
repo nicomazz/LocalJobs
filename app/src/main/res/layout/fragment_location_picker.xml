@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                   xmlns:tools="http://schemas.android.com/tools"
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                   tools:context=".LocationPickerFragment"
+                                                   xmlns:mapbox="http://schemas.android.com/apk/res-auto">
+
+    <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            mapbox:layout_constraintLeft_toLeftOf="parent"
+            mapbox:layout_constraintTop_toTopOf="parent"
+            mapbox:layout_constraintBottom_toTopOf="@id/range_div"
+            android:layout_margin="20dp">
+        <ImageView
+                android:id="@+id/center_user_position_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_location_searching_blue_900_48dp"
+                android:gravity="start"
+                android:padding="10dp"
+                tools:ignore="contentDescription"/>
+        <ImageView
+                android:id="@+id/hovering_marker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_location_on_blue_900_36dp"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                tools:ignore="contentDescription"/>
+    </com.mapbox.mapboxsdk.maps.MapView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/map_view"
+            app:layout_constraintBottom_toTopOf="@id/fragment_buttons"
+            android:id="@+id/range_div"
+            android:layout_margin="20dp">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/range_text_view"
+                android:id="@+id/range_text_view"
+                app:layout_constraintLeft_toLeftOf="parent"/>
+
+        <androidx.appcompat.widget.AppCompatSeekBar
+                android:layout_width="0dp"
+                android:progress="50"
+                android:layout_height="match_parent"
+                android:id="@+id/range_seekbar"
+                app:layout_constraintLeft_toRightOf="@id/range_text_view"
+                app:layout_constraintRight_toLeftOf="@id/range_value"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:id="@+id/range_value"
+                app:layout_constraintRight_toRightOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/fragment_buttons">
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/cancel_button"
+                android:text="@string/cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toLeftOf="@id/apply_button"
+                android:layout_margin="20dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/apply_button"
+                android:text="@string/apply"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/cancel_button"
+                android:layout_margin="20dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

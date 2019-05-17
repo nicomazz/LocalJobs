@@ -3,20 +3,25 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context=".fragments.FilterResultsFragment"
              xmlns:app="http://schemas.android.com/apk/res-auto"
-             xmlns:mapbox="http://schemas.android.com/apk/res-auto">
+             tools:context=".FilterResultsFragment">
+
+    <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constraintTop_toTopOf="parent"
                     android:id="@+id/range_div"
-                    android:layout_margin="10dp">
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp">
 
                 <TextView
                         android:id="@+id/range_text_view"
@@ -40,44 +45,61 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.mapbox.mapboxsdk.maps.MapView
-                    android:id="@+id/map_view"
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    mapbox:layout_constraintLeft_toLeftOf="parent"
-                    mapbox:layout_constraintTop_toBottomOf="@id/range_div"
-                    mapbox:layout_constraintBottom_toTopOf="@id/reset_default_button"
-                    android:layout_margin="20dp">
-                <ImageView
-                        android:id="@+id/center_user_position_button"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_location_searching_blue_900_48dp"
-                        android:gravity="start"
-                        android:padding="10dp"
-                        tools:ignore="contentDescription"/>
-                <ImageView
-                        android:id="@+id/hovering_marker"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_location_on_blue_900_36dp"
-                        android:layout_gravity="center"
-                        android:visibility="invisible"
-                        tools:ignore="contentDescription"/>
-            </com.mapbox.mapboxsdk.maps.MapView>
+            <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/salary_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:hint="@string/minimum_salary_text"
+                    app:layout_constraintTop_toBottomOf="@id/range_div"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/price_per_hour">
 
-            <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/reset_default_button"
+                <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/min_salary_edit_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                    android:id="@+id/price_per_hour"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/range_div"
+                    app:layout_constraintLeft_toRightOf="@id/salary_view"
+                    app:layout_constraintBottom_toTopOf="@id/address_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/filter_reset_default"
-                    android:layout_margin="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"/>
+                    android:text="@string/price_per_hour"
+                    android:layout_marginEnd="20dp"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:startIconDrawable="@drawable/ic_place_black_24dp"
+                    android:hint="@string/address"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    app:layout_constraintTop_toBottomOf="@+id/salary_view"
+                    android:id="@+id/address_view">
+
+                <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/address_edit_text"
+                        android:focusable="false"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
-    <!-- TODO fix scrauso color-->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"
