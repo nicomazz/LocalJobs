@@ -22,6 +22,8 @@
     <string name="type_tag_job">job</string>
     <string name="type_tag_proposal">proposal</string>
     <string name="distance">"%1$d km"</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply">Apply</string>
     <string name="menu_filter">Filter</string>
     <string name="menu_search">Search</string>
     <string name="filter_query_hint">Search for:</string>
