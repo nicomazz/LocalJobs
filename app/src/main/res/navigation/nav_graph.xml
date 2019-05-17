@@ -47,7 +47,10 @@
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"/>
+                app:popExitAnim="@anim/slide_out_right">
+            <argument android:defaultValue="true"
+                      android:name="filteringJobs"/>
+        </action>
         <action
                 android:id="@+id/action_destination_jobs_to_destination_login"
                 app:destination="@id/destination_login"
@@ -112,6 +115,9 @@
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
                 app:popExitAnim="@anim/slide_out_right"/>
+        <argument
+                android:name="filteringJobs"
+                app:argType="boolean"/>
     </fragment>
     <fragment
             android:id="@+id/destination_proposals"
@@ -131,7 +137,10 @@
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"/>
+                app:popExitAnim="@anim/slide_out_right">
+            <argument android:defaultValue="false"
+                      android:name="filteringJobs"/>
+        </action>
         <action
                 android:id="@+id/action_destination_proposals_to_destination_proposal_details"
                 app:destination="@id/destination_proposal_details"/>

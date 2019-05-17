@@ -5,10 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 
 class ProposalDetailsFragment : Fragment() {
     private val args: ProposalDetailsFragmentArgs by navArgs()
+    private val filterViewModel: FilterViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,6 +23,11 @@ class ProposalDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val proposalID = args.proposalID
+        // val proposalID = args.proposalID
+
+        filterViewModel.userRequestedFilteredResults.observe(viewLifecycleOwner, Observer {
+            filterViewModel.userRequestedFilteredResults.value = false
+            // fetch filtered data and update view
+        })
     }
 }
