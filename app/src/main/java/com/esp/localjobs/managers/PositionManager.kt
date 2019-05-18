@@ -63,8 +63,6 @@ class PositionManager private constructor(private val context: Context) {
         if (PermissionsManager.areLocationPermissionsGranted(context)) {
             val netPos = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
             val gpsPos = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-            if (netPos == null)
-                return null
             return if (isBetterLocation(netPos, gpsPos)) netPos else gpsPos
         }
         return null
@@ -74,7 +72,10 @@ class PositionManager private constructor(private val context: Context) {
      * @param location The new Location that you want to evaluate
      * @param currentBestLocation The current Location fix, to which you want to compare the new one
      */
-    private fun isBetterLocation(location: Location, currentBestLocation: Location?): Boolean {
+    private fun isBetterLocation(location: Location?, currentBestLocation: Location?): Boolean {
+        if (location == null)
+            return false
+
         if (currentBestLocation == null) {
             // A new location is always better than no location
             return true
