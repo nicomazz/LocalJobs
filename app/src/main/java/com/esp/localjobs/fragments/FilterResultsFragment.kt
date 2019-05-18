@@ -54,7 +54,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener {
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener(this)
 
-        val addressEditText = view.findViewById<TextInputEditText>(R.id.address_edit_text)
+        val addressEditText = view.findViewById<TextInputEditText>(R.id.location_edit_text)
         addressEditText.setOnClickListener {
             val fm = activity?.supportFragmentManager
             if (fm != null) {

@@ -11,7 +11,7 @@
     <string name="login">Login</string>
     <string name="title_hint">Title</string>
     <string name="description">Description</string>
-    <string name="address">Address</string>
+    <string name="location">Location</string>
     <string name="publish">Publish</string>
     <string name="radio_job">Job</string>
     <string name="radio_proposal">Proposal</string>

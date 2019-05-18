@@ -52,8 +52,8 @@ class AddFragment : Fragment() {
         // on submit button click
         submit_button.setOnClickListener { onSubmit() }
 
-        // on location edit text click
-        address_edit_text.setOnClickListener {
+        // on location field click
+        location_edit_text.setOnClickListener {
             val fm = activity?.supportFragmentManager
             if (fm != null) {
                 val locationPickerFragment = LocationPickerFragment()
@@ -70,7 +70,7 @@ class AddFragment : Fragment() {
         val selectedTypeId = type_radio_group.checkedRadioButtonId
         val type = view?.findViewById<RadioButton>(selectedTypeId)?.tag // the tag is how we identify the type inside data object
         val title = title_edit_text.text.toString()
-        val address = address_edit_text.text.toString()
+        val location = location_edit_text.text.toString()
         val range = range_seekbar.progress
         val salary = salary_edit_text.text.toString()
         val description = description_edit_text.text.toString()
@@ -79,7 +79,7 @@ class AddFragment : Fragment() {
         if (type == null) Log.e(TAG, "null radio button selection")
         title_view.error = if (title.isEmpty()) "Title is required" else null
 
-        Log.d(TAG, "$type, $title, $address, $range, $salary, $description")
+        Log.d(TAG, "$type, $title, $location, $range, $salary, $description")
         // TODO submit content
     }
 
