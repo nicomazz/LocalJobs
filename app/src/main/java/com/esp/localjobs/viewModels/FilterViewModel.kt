@@ -1,4 +1,4 @@
-package com.esp.localjobs
+package com.esp.localjobs.viewModels
 
 import com.esp.localjobs.models.Location
 import androidx.lifecycle.MutableLiveData

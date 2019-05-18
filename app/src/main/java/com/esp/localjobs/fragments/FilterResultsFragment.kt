@@ -2,6 +2,7 @@ package com.esp.localjobs.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -14,12 +15,12 @@ import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.esp.localjobs.FilterViewModel
-import com.esp.localjobs.LocationPickerFragment
+import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.R
 import com.esp.localjobs.models.Location
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.android.synthetic.main.fragment_filter_results.*
 
 /**
  * Fragment used to set filter params (longitude, latitude, range, text)
@@ -30,6 +31,8 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
     private lateinit var rangeSeekBar: SeekBar
     private lateinit var searchView: SearchView
     private lateinit var minSalaryEditText: TextInputEditText
+    private lateinit var locationEditText: TextInputEditText
+    private var userSelectedLocation: Location? = null
     private val filterViewModel: FilterViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -48,6 +51,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
         rangeTextView = view.findViewById(R.id.range_value)
         rangeSeekBar = view.findViewById(R.id.range_seek_bar)
         minSalaryEditText = view.findViewById(R.id.min_salary_edit_text)
+        locationEditText = view.findViewById(R.id.location_edit_text)
 
         // I'm not observing values to avoid loosing changes on screen rotation
         updateView()
@@ -78,19 +82,22 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
      * Called when apply button is pressed in LocationPickerFragment
      */
     override fun onLocationPicked(location: Location) {
-        filterViewModel.location = location
+        userSelectedLocation = location
+        locationEditText.setText(location.city)
     }
 
     private fun updateView() {
         rangeTextView.text = filterViewModel.range.toString()
         rangeSeekBar.progress = filterViewModel.range
         minSalaryEditText.setText(filterViewModel.minSalary.toString())
+        locationEditText.setText(filterViewModel.location?.city ?: "")
     }
 
     private fun updateViewModel() {
         filterViewModel.query = searchView.query.toString()
         filterViewModel.range = rangeTextView.text.toString().toInt()
         filterViewModel.minSalary = minSalaryEditText.text.toString().toInt()
+        filterViewModel.location = userSelectedLocation
     }
 
     /**

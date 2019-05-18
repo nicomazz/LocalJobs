@@ -1,15 +1,15 @@
-package com.esp.localjobs
+package com.esp.localjobs.fragments
 
 import android.annotation.SuppressLint
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import com.esp.localjobs.R
 import com.esp.localjobs.managers.PositionManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -19,10 +19,10 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.esp.localjobs.models.Location
-import kotlinx.android.synthetic.main.fragment_add.*
 import kotlinx.android.synthetic.main.fragment_add.range_seekbar
 import kotlinx.android.synthetic.main.fragment_filter_results.range_value
 import kotlinx.android.synthetic.main.fragment_location_picker.*
+import java.io.IOException
 import java.util.*
 
 private const val TAG = "LocationPickerFragmet"
@@ -115,12 +115,18 @@ class LocationPickerFragment(val locationPickedCallback: OnLocationPickedListene
                 if (mapBoxMap != null) {
                     val latLng = (mapBoxMap as MapboxMap).cameraPosition.target
 
+                    val location = Location(latLng.latitude, latLng.longitude, null)
                     //coordinates to city name
-                    val gcd = Geocoder(context, Locale.getDefault())
-                    val addresses = gcd.getFromLocation(latLng.latitude, latLng.longitude, 1)
-                    val city = if (addresses.size > 0) addresses[0].locality else null
+                    try { // Sometimes gcd.getFromLocation(..) throws IOException, causing crash
+                        val gcd = Geocoder(context, Locale.getDefault())
+                        val addresses = gcd.getFromLocation(latLng.latitude, latLng.longitude, 1)
+                        val city = if (addresses.size > 0) addresses[0].locality else null
+                        location.city = city
 
-                    val location = Location(latLng.latitude, latLng.longitude, city)
+                    } catch (e: IOException) {
+                        Toast.makeText(context!!, "Error retrieving location name.", Toast.LENGTH_SHORT).show()
+                    }
+
                     locationPickedCallback.onLocationPicked(location)
                     dismiss()
                 }
