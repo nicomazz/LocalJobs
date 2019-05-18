@@ -14,8 +14,6 @@ import com.esp.localjobs.LocationPickerFragment
 import com.esp.localjobs.R
 import com.esp.localjobs.models.Location
 import kotlinx.android.synthetic.main.fragment_add.*
-import android.location.Geocoder
-import java.util.*
 
 
 private const val TAG = "AddFragment"
@@ -23,6 +21,9 @@ private const val TAG = "AddFragment"
  * Fragment used to push a job/proposal to remote db
  */
 class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener {
+
+    private var selectedLocation: Location? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -74,7 +75,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         val selectedTypeId = type_radio_group.checkedRadioButtonId
         val type = view?.findViewById<RadioButton>(selectedTypeId)?.tag // the tag is how we identify the type inside data object
         val title = title_edit_text.text.toString()
-        val location = location_edit_text.text.toString()
+        val location = selectedLocation?.latitude.toString()+' '+selectedLocation?.longitude.toString()
         val range = range_seekbar.progress
         val salary = salary_edit_text.text.toString()
         val description = description_edit_text.text.toString()
@@ -87,12 +88,12 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         // TODO submit content
     }
 
+    /**
+     * Called when apply button is pressed in LocationPickerFragment
+     */
     override fun onLocationPicked(location: Location) {
-        val gcd = Geocoder(context, Locale.getDefault())
-        val addresses = gcd.getFromLocation(location.latitude, location.longitude, 1)
-        if (addresses.size > 0) {
-            location_edit_text.setText(addresses[0].locality)
-        }
+        location_edit_text.setText(location.city)
+        selectedLocation = location
     }
 
     /**
