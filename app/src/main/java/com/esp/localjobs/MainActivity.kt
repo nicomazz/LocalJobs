@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
@@ -18,10 +17,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
-import com.esp.localjobs.managers.PositionManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.delay
 
 /*
 Resources:
@@ -49,20 +46,18 @@ class MainActivity : AppCompatActivity() {
 
         requestLocationPermissions()
 
-        // TODO check if GPS is enabled
-        // if (!PositionManager.getInstance(applicationContext).startListeningForPosition()) {
-        //  positionServiceJob = GlobalScope.launch(Dispatchers.Main) { tryUntilOk() }
-        // }
-
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ -> onDestinationChangeListener(destination) }
         // declare top destinations - these won't show the upp button
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.destination_jobs,
-                                                        R.id.destination_proposals,
-                                                        R.id.destination_login))
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.destination_jobs,
+                R.id.destination_proposals,
+                R.id.destination_login
+            )
+        )
 
         setupToolbar(navController, appBarConfiguration)
-        // setupActionBarWithNavController(navController, appBarConfiguration)  //use with default action bar
         setupBottomNavigationMenu(navController)
     }
 
@@ -83,9 +78,9 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onDestinationChangeListener(destination: NavDestination) {
         // bottom bar
-        when (destination.id) {
-            R.id.destination_jobs, R.id.destination_proposals -> bottom_nav_view.visibility = View.VISIBLE
-            else -> bottom_nav_view.visibility = View.GONE
+        bottom_nav_view.visibility = when (destination.id) {
+            R.id.destination_jobs, R.id.destination_proposals -> View.VISIBLE
+            else -> View.GONE
         }
     }
 
@@ -128,27 +123,5 @@ class MainActivity : AppCompatActivity() {
                     finish()
             }
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        PositionManager.getInstance(applicationContext).stopListeningForPosition()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-    //    positionServiceJob?.cancel(null)
-    }
-
-    /**
-     * Tries to start listening position ( non-blocking )
-     */
-    private suspend fun tryUntilOk() {
-        Toast.makeText(this, "Failed to start listening for position", Toast.LENGTH_LONG).show()
-        delay(1000)
-        if (!PositionManager.getInstance(applicationContext).startListeningForPosition()) {
-            tryUntilOk()
-        } else
-            Toast.makeText(this, "Started location service", Toast.LENGTH_LONG).show()
     }
 }

@@ -1,4 +1,4 @@
-package com.esp.localjobs
+package com.esp.localjobs.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
+import com.esp.localjobs.FilterViewModel
+import com.esp.localjobs.R
 
 class ProposalDetailsFragment : Fragment() {
     private val args: ProposalDetailsFragmentArgs by navArgs()
@@ -25,9 +27,9 @@ class ProposalDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // val proposalID = args.proposalID
 
-        filterViewModel.userRequestedFilteredResults.observe(viewLifecycleOwner, Observer {
+       /* filterViewModel.userRequestedFilteredResults.observe(viewLifecycleOwner, Observer {
             filterViewModel.userRequestedFilteredResults.value = false
             // fetch filtered data and update view
-        })
+        })*/
     }
 }

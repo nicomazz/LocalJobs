@@ -16,10 +16,9 @@ class LoginViewModel : ViewModel() {
 
     init {
         // In this example, the user is always unauthenticated when MainActivity is launched
-        authenticationState.value =
-            if (FirebaseAuth.getInstance().currentUser != null)
-                AuthenticationState.AUTHENTICATED
-            else AuthenticationState.UNAUTHENTICATED
+        authenticationState.value = if (FirebaseAuth.getInstance().currentUser != null)
+            AuthenticationState.AUTHENTICATED
+        else AuthenticationState.UNAUTHENTICATED
     }
 
     fun logOut() {

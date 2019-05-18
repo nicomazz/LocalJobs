@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.SeekBar
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.managers.PositionManager
@@ -17,7 +18,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import androidx.lifecycle.Observer
 import com.esp.localjobs.models.Location
 import kotlinx.android.synthetic.main.fragment_add.range_seekbar
 import kotlinx.android.synthetic.main.fragment_filter_results.range_value
@@ -48,8 +48,8 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
             false // false: event not consumed
         }
         mapView.onCreate(savedInstanceState)
+        // navigate to last known position
         setupMapView()
-        startObservingPosition()
 
         val centerPositionButton = view.findViewById<ImageView>(R.id.center_user_position_button)
         centerPositionButton.setOnClickListener(this)
@@ -92,6 +92,8 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
         mapView.getMapAsync { map ->
             mapBoxMap = map
             map.setStyle(Style.MAPBOX_STREETS) { }
+            hovering_marker.visibility = View.VISIBLE
+            navigateToLastKnownPosition()
         }
     }
 
@@ -100,23 +102,40 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
      */
     override fun onClick(v: View?) {
         when (v?.id) {
-            R.id.map_view -> stopObservingPosition()
-            R.id.center_user_position_button -> startObservingPosition()
+            R.id.map_view -> {
+                hovering_marker.setImageResource(R.drawable.ic_location_on_red_900_36dp)
+            }
+            R.id.center_user_position_button -> navigateToLastKnownPosition()
             R.id.apply_button -> updateViewModel() // TODO close dialog fragment
         }
     }
 
-    private fun stopObservingPosition() {
-        hovering_marker.setImageResource(R.drawable.ic_location_on_red_900_36dp)
-        PositionManager.getInstance(context!!).currentBestLocation.removeObserver(locationObserver)
-    }
+    /**
+     * If the last known position of the device is not null, center the map view on it and set the hovering
+     * marker color to blue
+     */
+    private fun navigateToLastKnownPosition() {
+        val location = PositionManager.getInstance(context!!).getLastKnownPosition()
 
-    private fun startObservingPosition() {
-        hovering_marker.setImageResource(R.drawable.ic_location_on_blue_900_36dp)
-        PositionManager.getInstance(context!!).apply {
-            startListeningForPosition()
-            currentBestLocation.observe(viewLifecycleOwner, locationObserver)
+        if (location == null) {
+            Toast.makeText(context!!, "Last position unknown", Toast.LENGTH_LONG).show()
+            return
         }
+
+        hovering_marker.setImageResource(R.drawable.ic_location_on_blue_900_36dp)
+
+        // center view on user location
+        val cameraPosition = CameraPosition.Builder()
+            .target(
+                LatLng(
+                    location.latitude,
+                    location.longitude)
+            )
+            .zoom(16.0)
+            .bearing(180.0)
+            .tilt(30.0)
+            .build()
+        mapBoxMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000)
     }
 
     private fun updateViewModel() {
@@ -126,26 +145,5 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
             filterViewModel.location = Location(latLng.latitude, latLng.longitude)
         } else
             filterViewModel.location = null
-    }
-
-    /**
-     * Center the map on user location - if location is null hide location marker
-     */
-    private val locationObserver = Observer<android.location.Location?> { newLocation ->
-        hovering_marker.visibility = if (newLocation == null) View.INVISIBLE else View.VISIBLE
-        newLocation?.let {
-            // center view on user location
-            val cameraPosition = CameraPosition.Builder()
-                .target(
-                    LatLng(
-                        newLocation.latitude,
-                        newLocation.longitude)
-                )
-                .zoom(16.0)
-                .bearing(180.0)
-                .tilt(30.0)
-                .build()
-            mapBoxMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 3000)
-        }
     }
 }
