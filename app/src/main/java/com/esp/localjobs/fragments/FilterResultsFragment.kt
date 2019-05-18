@@ -17,13 +17,14 @@ import androidx.navigation.fragment.navArgs
 import com.esp.localjobs.FilterViewModel
 import com.esp.localjobs.LocationPickerFragment
 import com.esp.localjobs.R
+import com.esp.localjobs.models.Location
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 
 /**
  * Fragment used to set filter params (longitude, latitude, range, text)
  */
-class FilterResultsFragment : Fragment(), View.OnClickListener {
+class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFragment.OnLocationPickedListener {
     private val args: FilterResultsFragmentArgs by navArgs()
     private lateinit var rangeTextView: TextView
     private lateinit var rangeSeekBar: SeekBar
@@ -58,7 +59,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener {
         addressEditText.setOnClickListener {
             val fm = activity?.supportFragmentManager
             if (fm != null) {
-                val locationPickerFragment = LocationPickerFragment()
+                val locationPickerFragment = LocationPickerFragment(this)
                 locationPickerFragment.show(fm, "location_picker_fragment")
             }
         }
@@ -71,6 +72,13 @@ class FilterResultsFragment : Fragment(), View.OnClickListener {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
+    }
+
+    /**
+     * Called when apply button is pressed in LocationPickerFragment
+     */
+    override fun onLocationPicked(location: Location) {
+        filterViewModel.location = location
     }
 
     private fun updateView() {

@@ -2,6 +2,7 @@ package com.esp.localjobs
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,10 +24,11 @@ import kotlinx.android.synthetic.main.fragment_add.range_seekbar
 import kotlinx.android.synthetic.main.fragment_filter_results.range_value
 import kotlinx.android.synthetic.main.fragment_location_picker.*
 
-class LocationPickerFragment : DialogFragment(), View.OnClickListener {
+private const val TAG = "LocationPickerFragmet"
+
+class LocationPickerFragment(val locationPickedCallback: OnLocationPickedListener) : DialogFragment(), View.OnClickListener {
     private var mapBoxMap: MapboxMap? = null
     private lateinit var mapView: MapView
-    private val filterViewModel: FilterViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,8 +53,9 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
         // navigate to last known position
         setupMapView()
 
-        val centerPositionButton = view.findViewById<ImageView>(R.id.center_user_position_button)
-        centerPositionButton.setOnClickListener(this)
+        center_user_position_button.setOnClickListener(this)
+        apply_button.setOnClickListener(this)
+        cancel_button.setOnClickListener(this)
 
         // initialize seekbar and set listener
         setRangeTextView(range_seekbar.progress)
@@ -72,6 +75,10 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     }
 
+    interface OnLocationPickedListener {
+        fun onLocationPicked(location: Location)
+    }
+
     /**
      * For setting the value next to seek bar
      * @param value The value corresponding to the seekbar position
@@ -79,10 +86,6 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
     private fun setRangeTextView(value: Int) {
         range_value.text = getString(R.string.distance, value)
     }
-
-    /* ****************************************************
-     * MAP RELATED METHODS BELOW
-     ***************************************************** */
 
     /**
      * Get map-view and create an hovering marker at the center of the map.
@@ -106,7 +109,16 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
                 hovering_marker.setImageResource(R.drawable.ic_location_on_red_900_36dp)
             }
             R.id.center_user_position_button -> navigateToLastKnownPosition()
-            R.id.apply_button -> updateViewModel() // TODO close dialog fragment
+            R.id.apply_button -> {
+                // get location coordinates of the center of the map-view
+                if (mapBoxMap != null) {
+                    val latLng = (mapBoxMap as MapboxMap).cameraPosition.target
+                    val location = Location(latLng.latitude, latLng.longitude)
+                    locationPickedCallback.onLocationPicked(location)
+                    dismiss()
+                }
+            }
+            R.id.cancel_button -> dismiss()
         }
     }
 
@@ -136,14 +148,5 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
             .tilt(30.0)
             .build()
         mapBoxMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000)
-    }
-
-    private fun updateViewModel() {
-        // get location coordinates of the center of the map-view
-        if (mapBoxMap != null) {
-            val latLng = (mapBoxMap as MapboxMap).cameraPosition.target
-            filterViewModel.location = Location(latLng.latitude, latLng.longitude)
-        } else
-            filterViewModel.location = null
     }
 }

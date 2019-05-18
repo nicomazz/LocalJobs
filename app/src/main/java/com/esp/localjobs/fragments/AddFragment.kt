@@ -12,13 +12,17 @@ import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.esp.localjobs.LocationPickerFragment
 import com.esp.localjobs.R
+import com.esp.localjobs.models.Location
 import kotlinx.android.synthetic.main.fragment_add.*
+import android.location.Geocoder
+import java.util.*
+
 
 private const val TAG = "AddFragment"
 /**
  * Fragment used to push a job/proposal to remote db
  */
-class AddFragment : Fragment() {
+class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -56,7 +60,7 @@ class AddFragment : Fragment() {
         location_edit_text.setOnClickListener {
             val fm = activity?.supportFragmentManager
             if (fm != null) {
-                val locationPickerFragment = LocationPickerFragment()
+                val locationPickerFragment = LocationPickerFragment(this)
                 locationPickerFragment.show(fm, "location_picker_fragment")
             }
         }
@@ -81,6 +85,14 @@ class AddFragment : Fragment() {
 
         Log.d(TAG, "$type, $title, $location, $range, $salary, $description")
         // TODO submit content
+    }
+
+    override fun onLocationPicked(location: Location) {
+        val gcd = Geocoder(context, Locale.getDefault())
+        val addresses = gcd.getFromLocation(location.latitude, location.longitude, 1)
+        if (addresses.size > 0) {
+            location_edit_text.setText(addresses[0].locality)
+        }
     }
 
     /**
