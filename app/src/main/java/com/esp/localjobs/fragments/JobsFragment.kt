@@ -26,7 +26,6 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
 
-
 /**
  * Fragment used to display a list of jobs
  */
@@ -50,7 +49,7 @@ class JobsFragment : Fragment() {
         val navController = findNavController()
 
         setupJobList(view)
-        //todo rimuovere questo da qui, e metterlo solo nel login
+        // todo rimuovere questo da qui, e metterlo solo nel login
         loginViewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
                 AUTHENTICATED -> showWelcomeMessage()
@@ -65,7 +64,6 @@ class JobsFragment : Fragment() {
             adapter.update(jobs?.map { JobItem(it) } ?: listOf())
         })
         jobsViewModel.loadJobs()
-
     }
 
     private fun setupJobList(view: View) {

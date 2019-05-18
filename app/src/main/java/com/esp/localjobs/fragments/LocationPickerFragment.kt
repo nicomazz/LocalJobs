@@ -116,13 +116,12 @@ class LocationPickerFragment(val locationPickedCallback: OnLocationPickedListene
                     val latLng = (mapBoxMap as MapboxMap).cameraPosition.target
 
                     val location = Location(latLng.latitude, latLng.longitude, null)
-                    //coordinates to city name
+                    // coordinates to city name
                     try { // Sometimes gcd.getFromLocation(..) throws IOException, causing crash
                         val gcd = Geocoder(context, Locale.getDefault())
                         val addresses = gcd.getFromLocation(latLng.latitude, latLng.longitude, 1)
                         val city = if (addresses.size > 0) addresses[0].locality else null
                         location.city = city
-
                     } catch (e: IOException) {
                         Toast.makeText(context!!, "Error retrieving location name.", Toast.LENGTH_SHORT).show()
                     }

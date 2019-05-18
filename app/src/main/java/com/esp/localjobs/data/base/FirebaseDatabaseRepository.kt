@@ -3,7 +3,6 @@ package com.esp.localjobs.data.base
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 
-
 abstract class FirebaseDatabaseRepository<Model> {
 
     //    protected var db: Firebase
@@ -20,13 +19,12 @@ abstract class FirebaseDatabaseRepository<Model> {
         listener = BaseValueEventListener(firebaseCallback)
         registration?.remove()
         // todo uncomment this to query the database
-      //  registration = db.collection(getRootNode()).addSnapshotListener(listener)
+        //  registration = db.collection(getRootNode()).addSnapshotListener(listener)
     }
 
     fun removeListener() {
         registration?.remove()
     }
-
 
     interface FirebaseDatabaseRepositoryCallback<T> {
         fun onSuccess(result: List<T>)

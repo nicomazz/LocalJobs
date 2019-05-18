@@ -26,9 +26,10 @@ class ProposalDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         // val proposalID = args.proposalID
 
-       /* filterViewModel.userRequestedFilteredResults.observe(viewLifecycleOwner, Observer {
+        /* filterViewModel.userRequestedFilteredResults.observe(viewLifecycleOwner, Observer {
             filterViewModel.userRequestedFilteredResults.value = false
             // fetch filtered data and update view
-        })*/
+        })
+        */
     }
 }

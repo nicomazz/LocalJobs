@@ -14,7 +14,6 @@ import com.esp.localjobs.R
 import com.esp.localjobs.models.Location
 import kotlinx.android.synthetic.main.fragment_add.*
 
-
 private const val TAG = "AddFragment"
 /**
  * Fragment used to push a job/proposal to remote db
@@ -74,7 +73,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         val selectedTypeId = type_radio_group.checkedRadioButtonId
         val type = view?.findViewById<RadioButton>(selectedTypeId)?.tag // the tag is how we identify the type inside data object
         val title = title_edit_text.text.toString()
-        val location = selectedLocation?.latitude.toString()+' '+selectedLocation?.longitude.toString()
+        val location = selectedLocation?.latitude.toString() + ' ' + selectedLocation?.longitude.toString()
         val range = range_seekbar.progress
         val salary = salary_edit_text.text.toString()
         val description = description_edit_text.text.toString()

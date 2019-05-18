@@ -9,13 +9,11 @@ import com.esp.localjobs.data.repository.JobsRepository
 
 class JobsViewModel : ViewModel() {
 
-
     private val _jobs = MutableLiveData<List<Job>?>()
-    private var repository : FirebaseDatabaseRepository<Job> = JobsRepository()
+    private var repository: FirebaseDatabaseRepository<Job> = JobsRepository()
 
-    val jobs : LiveData<List<Job>?>
+    val jobs: LiveData<List<Job>?>
     get() = _jobs
-
 
     fun loadJobs() {
         repository.addListener(object : FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job> {
@@ -28,6 +26,4 @@ class JobsViewModel : ViewModel() {
             }
         })
     }
-
-
 }

@@ -7,7 +7,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 import java.lang.reflect.ParameterizedType
 
-
 class BaseValueEventListener<Model>(
     private val callback: FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Model>
 ) : EventListener<QuerySnapshot> {
@@ -18,7 +17,7 @@ class BaseValueEventListener<Model>(
             return
         }
         val typeClass = (javaClass
-            .genericSuperclass as ParameterizedType).getActualTypeArguments()[0] as Class<Model>;
+            .genericSuperclass as ParameterizedType).getActualTypeArguments()[0] as Class<Model>
         val list = ArrayList<Model>().also { ll ->
             results?.documents?.forEach {
                 try {

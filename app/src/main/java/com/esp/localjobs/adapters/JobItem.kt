@@ -13,5 +13,4 @@ class JobItem(private val job: Job) : Item() {
     }
 
     override fun getLayout() = R.layout.item_job
-
 }
