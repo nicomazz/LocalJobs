@@ -57,16 +57,6 @@ class LocationPickerFragment(val locationPickedCallback: OnLocationPickedListene
         center_user_position_button.setOnClickListener(this)
         apply_button.setOnClickListener(this)
         cancel_button.setOnClickListener(this)
-
-        // initialize seekbar and set listener
-        setRangeTextView(range_seekbar.progress)
-        range_seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onStopTrackingTouch(seekBar: SeekBar?) { }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) { }
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                setRangeTextView(progress)
-            }
-        })
     }
 
     override fun onResume() {
@@ -82,14 +72,6 @@ class LocationPickerFragment(val locationPickedCallback: OnLocationPickedListene
      */
     interface OnLocationPickedListener {
         fun onLocationPicked(location: Location)
-    }
-
-    /**
-     * For setting the value next to seek bar
-     * @param value The value corresponding to the seekbar position
-     */
-    private fun setRangeTextView(value: Int) {
-        range_value.text = getString(R.string.distance, value)
     }
 
     /**
