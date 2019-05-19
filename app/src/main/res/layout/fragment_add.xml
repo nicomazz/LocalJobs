@@ -109,7 +109,8 @@
                     android:hint="@string/salary_edit_text"
                     app:layout_constraintTop_toBottomOf="@id/range_div"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@id/price_per_hour">
+                    app:layout_constraintRight_toLeftOf="@id/price_per_hour"
+                    app:startIconDrawable="@drawable/ic_money_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/salary_edit_text"
@@ -138,7 +139,8 @@
                     android:layout_margin="10dp"
                     android:hint="@string/description"
                     app:layout_constraintTop_toBottomOf="@id/salary_view"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:startIconDrawable="@drawable/ic_description_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
