@@ -76,6 +76,10 @@ class LocationPickerFragment(val locationPickedCallback: OnLocationPickedListene
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     }
 
+    /**
+     * This interface should be implemented when using this fragment.
+     * onLocationPicked is called when the apply button is pressed
+     */
     interface OnLocationPickedListener {
         fun onLocationPicked(location: Location)
     }
