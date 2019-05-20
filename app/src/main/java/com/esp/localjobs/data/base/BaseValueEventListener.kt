@@ -1,11 +1,9 @@
 package com.esp.localjobs.data.base
 
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-import android.util.Log
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
-import java.lang.reflect.ParameterizedType
 
 class BaseValueEventListener<Model>(
     private val callback: FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Model>
@@ -16,6 +14,7 @@ class BaseValueEventListener<Model>(
             callback.onError(it)
             return
         }
+        /*
         val typeClass = (javaClass
             .genericSuperclass as ParameterizedType).getActualTypeArguments()[0] as Class<Model>
         val list = ArrayList<Model>().also { ll ->
@@ -25,11 +24,11 @@ class BaseValueEventListener<Model>(
                 } catch (e: TypeCastException) {
                     Log.e("valueEventListener", "problem in casting!")
                 }
-                1
             }
         }
 
         callback.onSuccess(list)
+        */
     }
 
     /* @Suppress("UNCHECKED_CAST")

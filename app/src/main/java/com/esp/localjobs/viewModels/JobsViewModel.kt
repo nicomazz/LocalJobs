@@ -17,7 +17,7 @@ class JobsViewModel : ViewModel() {
 
     fun loadJobs() {
         repository.addListener(object : FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job> {
-           override fun onSuccess(result: List<Job>) {
+            override fun onSuccess(result: List<Job>) {
                 _jobs.postValue(result)
             }
 

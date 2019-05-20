@@ -31,5 +31,4 @@ abstract class FirebaseDatabaseRepository<Model> {
 
         fun onError(e: Exception)
     }
-
 }

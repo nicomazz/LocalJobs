@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.esp.localjobs.R
@@ -19,11 +18,9 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.esp.localjobs.models.Location
-import kotlinx.android.synthetic.main.fragment_add.range_seekbar
-import kotlinx.android.synthetic.main.fragment_filter_results.range_value
 import kotlinx.android.synthetic.main.fragment_location_picker.*
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 
 private const val TAG = "LocationPickerFragmet"
 
