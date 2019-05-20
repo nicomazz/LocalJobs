@@ -32,6 +32,7 @@ class JobsFragment : Fragment() {
     private val jobsViewModel: JobsViewModel by activityViewModels()
 
     val adapter = GroupAdapter<ViewHolder>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,

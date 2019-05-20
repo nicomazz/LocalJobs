@@ -2,6 +2,7 @@ package com.esp.localjobs.data.base
 
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.util.Log
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
@@ -9,7 +10,8 @@ import java.lang.reflect.ParameterizedType
 
 
 class BaseValueEventListener<Model>(
-    private val callback: FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Model>
+    private val callback: FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Model>,
+    private val clazz : Class<Model>
 ) : EventListener<QuerySnapshot> {
     override fun onEvent(results: QuerySnapshot?, e: FirebaseFirestoreException?) {
 
@@ -17,20 +19,25 @@ class BaseValueEventListener<Model>(
             callback.onError(it)
             return
         }
-        val typeClass = (javaClass
-            .genericSuperclass as ParameterizedType).getActualTypeArguments()[0] as Class<Model>;
+
+
+       // val typeClass = (javaClass
+        //    .genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<Model>;
         val list = ArrayList<Model>().also { ll ->
             results?.documents?.forEach {
                 try {
-                    ll.add(it.toObject(typeClass)!!)
+                    ll.add(it.toObject(clazz)!!)
                 } catch (e: TypeCastException) {
                     Log.e("valueEventListener", "problem in casting!")
                 }
-                1
             }
         }
 
         callback.onSuccess(list)
+    }
+    inline fun <reified R: Model> f(obj : DocumentSnapshot): R{
+        return obj.toObject(R::class.java)!!
+
     }
 
     /* @Suppress("UNCHECKED_CAST")
