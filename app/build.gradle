@@ -18,13 +18,16 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
-     //   multiDexKeepProguard file(‘multi-dex-keep.txt)
+        //   multiDexKeepProguard file(‘multi-dex-keep.txt)
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    dataBinding {
+        enabled = true
     }
 }
 repositories {
@@ -66,14 +69,18 @@ dependencies {
 
     //recycle view
     implementation 'com.xwray:groupie:2.3.0'
+    implementation 'com.xwray:groupie-databinding:2.3.0'
     implementation 'com.xwray:groupie-kotlin-android-extensions:2.3.0'
 
-    implementation ('com.mapbox.mapboxsdk:mapbox-android-sdk:7.3.2'){
+    implementation('com.mapbox.mapboxsdk:mapbox-android-sdk:7.3.2') {
         exclude group: 'group_name', module: 'module_name'
     }
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'
+
+    // picasso image loader
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
 }
 

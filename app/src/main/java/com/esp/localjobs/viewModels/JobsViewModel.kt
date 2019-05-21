@@ -11,22 +11,25 @@ class JobsViewModel : ViewModel() {
 
 
     private val _jobs = MutableLiveData<List<Job>?>()
-    private var repository : FirebaseDatabaseRepository<Job> = JobsRepository()
+    private var repository: FirebaseDatabaseRepository<Job> = JobsRepository()
 
-    val jobs : LiveData<List<Job>?>
-    get() = _jobs
+    val jobs: LiveData<List<Job>?>
+        get() = _jobs
 
 
     fun loadJobs() {
         repository.addListener(object : FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job> {
-           override fun onSuccess(result: List<Job>) {
+            override fun onSuccess(result: List<Job>) {
                 _jobs.postValue(result)
             }
 
             override fun onError(e: Exception) {
                 _jobs.postValue(null)
             }
-        })
+        }) { collectionToFilter ->
+            // here we can do filtering
+            collectionToFilter
+        }
     }
 
 

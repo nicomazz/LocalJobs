@@ -5,10 +5,7 @@ import com.google.firebase.firestore.ListenerRegistration
 import java.lang.reflect.ParameterizedType
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
-
-
-
-
+import com.google.firebase.firestore.CollectionReference
 
 
 abstract class FirebaseDatabaseRepository<Model> {
@@ -26,12 +23,19 @@ abstract class FirebaseDatabaseRepository<Model> {
 
     var registration: ListenerRegistration? = null
 
-    fun addListener(firebaseCallback: FirebaseDatabaseRepositoryCallback<Model>) {
+    fun addListener(
+        firebaseCallback: FirebaseDatabaseRepositoryCallback<Model>,
+        filter: ((CollectionReference) -> CollectionReference)?
+    ) {
         this.firebaseCallback = firebaseCallback
-        listener = BaseValueEventListener(firebaseCallback,typeOfT)
+        listener = BaseValueEventListener(firebaseCallback, typeOfT)
         registration?.remove()
         // todo uncomment this to query the database
-        registration = db.collection(getRootNode()).addSnapshotListener(listener)
+        var dbCollection = db.collection(getRootNode())
+        filter?.let {
+            dbCollection = filter(dbCollection)
+        }
+        registration = dbCollection.addSnapshotListener(listener)
     }
 
     fun removeListener() {
