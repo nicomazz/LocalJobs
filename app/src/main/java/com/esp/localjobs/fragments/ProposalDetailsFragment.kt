@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
-import com.esp.localjobs.FilterViewModel
 import com.esp.localjobs.R
+import com.esp.localjobs.viewModels.FilterViewModel
 
 class ProposalDetailsFragment : Fragment() {
     private val args: ProposalDetailsFragmentArgs by navArgs()

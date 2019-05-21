@@ -1,5 +1,5 @@
-<resources>
-    <string name="app_name">LocalJobs</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name" tools:ignore="PrivateResource">LocalJobs</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="menu_profile">Profile</string>
     <string name="menu_add">Add</string>
@@ -31,4 +31,5 @@
     <string name="filter_range_text">Range:</string>
     <string name="mabBoxToken">pk.eyJ1IjoibHVjYW1vcm8iLCJhIjoiY2p2aWZpMjF3MDUydDQ4cnV1aXNoajg3aCJ9.oHLaI83cBQT1TzikU6oA8Q</string>
     <string name="minimum_salary_text">Minimum salary</string>
+    <string name="location">Location</string>
 </resources>

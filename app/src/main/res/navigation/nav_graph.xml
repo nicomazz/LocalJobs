@@ -107,14 +107,18 @@
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"/>
+                app:popExitAnim="@anim/slide_out_right"
+                app:popUpTo="@+id/destination_jobs"
+                app:popUpToInclusive="true"/>
         <action
                 android:id="@+id/action_destination_filter_to_destination_proposals"
                 app:destination="@id/destination_proposals"
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"/>
+                app:popExitAnim="@anim/slide_out_right"
+                app:popUpTo="@+id/destination_proposals"
+                app:popUpToInclusive="true"/>
         <argument
                 android:name="filteringJobs"
                 app:argType="boolean"/>

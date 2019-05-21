@@ -16,6 +16,7 @@ abstract class FirebaseDatabaseRepository<Model> {
     val db = FirebaseFirestore.getInstance()
     abstract fun getRootNode(): String
 
+    @Suppress("UNCHECKED_CAST")
     private val typeOfT = (javaClass
         .genericSuperclass as ParameterizedType)
         .actualTypeArguments[0] as Class<Model>

@@ -1,15 +1,15 @@
-package com.esp.localjobs
+package com.esp.localjobs.fragments
 
 import android.annotation.SuppressLint
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.SeekBar
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
+import com.esp.localjobs.R
+import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.managers.PositionManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -18,15 +18,15 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.esp.localjobs.data.models.Location
-import kotlinx.android.synthetic.main.fragment_add.range_seekbar
-import kotlinx.android.synthetic.main.fragment_filter_results.range_value
 import kotlinx.android.synthetic.main.fragment_location_picker.*
+import java.io.IOException
+import java.util.Locale
 
-class LocationPickerFragment : DialogFragment(), View.OnClickListener {
+private const val TAG = "LocationPickerFragmet"
+
+class LocationPickerFragment(val locationPickedCallback: OnLocationPickedListener) : DialogFragment(), View.OnClickListener {
     private var mapBoxMap: MapboxMap? = null
     private lateinit var mapView: MapView
-    private val filterViewModel: FilterViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,18 +51,9 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
         // navigate to last known position
         setupMapView()
 
-        val centerPositionButton = view.findViewById<ImageView>(R.id.center_user_position_button)
-        centerPositionButton.setOnClickListener(this)
-
-        // initialize seekbar and set listener
-        setRangeTextView(range_seekbar.progress)
-        range_seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onStopTrackingTouch(seekBar: SeekBar?) { }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) { }
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                setRangeTextView(progress)
-            }
-        })
+        center_user_position_button.setOnClickListener(this)
+        apply_button.setOnClickListener(this)
+        cancel_button.setOnClickListener(this)
     }
 
     override fun onResume() {
@@ -73,16 +64,12 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
     }
 
     /**
-     * For setting the value next to seek bar
-     * @param value The value corresponding to the seekbar position
+     * This interface should be implemented when using this fragment.
+     * onLocationPicked is called when the apply button is pressed
      */
-    private fun setRangeTextView(value: Int) {
-        range_value.text = getString(R.string.distance, value)
+    interface OnLocationPickedListener {
+        fun onLocationPicked(location: Location)
     }
-
-    /* ****************************************************
-     * MAP RELATED METHODS BELOW
-     ***************************************************** */
 
     /**
      * Get map-view and create an hovering marker at the center of the map.
@@ -106,7 +93,27 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
                 hovering_marker.setImageResource(R.drawable.ic_location_on_red_900_36dp)
             }
             R.id.center_user_position_button -> navigateToLastKnownPosition()
-            R.id.apply_button -> updateViewModel() // TODO close dialog fragment
+            R.id.apply_button -> {
+                // get location coordinates of the center of the map-view
+                if (mapBoxMap != null) {
+                    val latLng = (mapBoxMap as MapboxMap).cameraPosition.target
+
+                    val location = Location(latLng.latitude, latLng.longitude, null)
+                    // coordinates to city name
+                    try { // Sometimes gcd.getFromLocation(..) throws IOException, causing crash
+                        val gcd = Geocoder(context, Locale.getDefault())
+                        val addresses = gcd.getFromLocation(latLng.latitude, latLng.longitude, 1)
+                        val city = if (addresses.size > 0) addresses[0].locality else null
+                        location.city = city
+                    } catch (e: IOException) {
+                        Toast.makeText(context!!, "Error retrieving location name.", Toast.LENGTH_SHORT).show()
+                    }
+
+                    locationPickedCallback.onLocationPicked(location)
+                    dismiss()
+                }
+            }
+            R.id.cancel_button -> dismiss()
         }
     }
 
@@ -136,14 +143,5 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener {
             .tilt(30.0)
             .build()
         mapBoxMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000)
-    }
-
-    private fun updateViewModel() {
-        // get location coordinates of the center of the map-view
-        if (mapBoxMap != null) {
-            val latLng = (mapBoxMap as MapboxMap).cameraPosition.target
-            filterViewModel.location = Location(latLng.latitude, latLng.longitude)
-        } else
-            filterViewModel.location = null
     }
 }

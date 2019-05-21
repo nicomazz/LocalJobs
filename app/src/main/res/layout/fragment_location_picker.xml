@@ -4,7 +4,7 @@
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent"
                                                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   tools:context=".LocationPickerFragment"
+                                                   tools:context=".fragments.LocationPickerFragment"
                                                    xmlns:mapbox="http://schemas.android.com/apk/res-auto">
 
     <com.mapbox.mapboxsdk.maps.MapView
@@ -13,7 +13,7 @@
             android:layout_height="0dp"
             mapbox:layout_constraintLeft_toLeftOf="parent"
             mapbox:layout_constraintTop_toTopOf="parent"
-            mapbox:layout_constraintBottom_toTopOf="@id/range_div"
+            mapbox:layout_constraintBottom_toTopOf="@id/fragment_buttons"
             android:layout_margin="20dp">
         <ImageView
                 android:id="@+id/center_user_position_button"
@@ -32,36 +32,6 @@
                 android:visibility="invisible"
                 tools:ignore="contentDescription"/>
     </com.mapbox.mapboxsdk.maps.MapView>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/map_view"
-            app:layout_constraintBottom_toTopOf="@id/fragment_buttons"
-            android:id="@+id/range_div"
-            android:layout_margin="20dp">
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="@string/range_text_view"
-                android:id="@+id/range_text_view"
-                app:layout_constraintLeft_toLeftOf="parent"/>
-
-        <androidx.appcompat.widget.AppCompatSeekBar
-                android:layout_width="0dp"
-                android:progress="50"
-                android:layout_height="match_parent"
-                android:id="@+id/range_seekbar"
-                app:layout_constraintLeft_toRightOf="@id/range_text_view"
-                app:layout_constraintRight_toLeftOf="@id/range_value"/>
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:id="@+id/range_value"
-                app:layout_constraintRight_toRightOf="parent"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

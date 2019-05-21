@@ -35,7 +35,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         app:layout_constraintLeft_toRightOf="@id/range_text_view"
-                        app:layout_constraintRight_toLeftOf="@id/range_value"/>
+                        app:layout_constraintRight_toLeftOf="@id/range_value" />
 
                 <TextView
                         android:id="@+id/range_value"
@@ -55,7 +55,8 @@
                     android:hint="@string/minimum_salary_text"
                     app:layout_constraintTop_toBottomOf="@id/range_div"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toLeftOf="@id/price_per_hour">
+                    app:layout_constraintRight_toLeftOf="@id/price_per_hour"
+                    app:startIconDrawable="@drawable/ic_money_24px">
 
                 <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/min_salary_edit_text"
@@ -70,7 +71,7 @@
                     app:layout_constraintRight_toRightOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/range_div"
                     app:layout_constraintLeft_toRightOf="@id/salary_view"
-                    app:layout_constraintBottom_toTopOf="@id/address_view"
+                    app:layout_constraintBottom_toTopOf="@id/location_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/price_per_hour"
@@ -80,20 +81,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:startIconDrawable="@drawable/ic_place_black_24dp"
-                    android:hint="@string/address"
+                    android:hint="@string/location"
                     android:layout_marginTop="20dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     app:layout_constraintTop_toBottomOf="@+id/salary_view"
-                    android:id="@+id/address_view">
+                    android:id="@+id/location_view">
 
                 <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/address_edit_text"
+                        android:id="@+id/location_edit_text"
                         android:focusable="false"/>
 
             </com.google.android.material.textfield.TextInputLayout>
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -105,6 +107,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:src="@drawable/ic_search_white_24dp"
-            android:layout_margin="16dp"/>
+            android:layout_margin="16dp" />
 
 </FrameLayout>
