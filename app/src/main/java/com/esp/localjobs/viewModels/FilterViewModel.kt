@@ -11,7 +11,7 @@ import com.esp.localjobs.data.models.Location
  * Will probably be replaced with something lighter
  */
 class FilterViewModel : ViewModel() {
-    val MAX_RANGE_KM = 50
+    val MAX_RANGE_KM = 100
     var range: Int = MAX_RANGE_KM
     var query: String = ""
     var location: Location? = null
