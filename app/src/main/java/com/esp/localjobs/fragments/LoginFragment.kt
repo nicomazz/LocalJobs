@@ -12,7 +12,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.LoginViewModel
-import com.esp.localjobs.LoginViewModel.AuthenticationState.*
+import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
+import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
+import com.esp.localjobs.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.R
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
@@ -47,7 +49,8 @@ class LoginFragment : Fragment() {
                         R.string.invalid_credentials,
                         Snackbar.LENGTH_SHORT
                     ).show()
-                UNAUTHENTICATED -> { } // do nothing
+                UNAUTHENTICATED -> {
+                } // do nothing
                 else -> TODO()
             }
         })

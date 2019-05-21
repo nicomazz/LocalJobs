@@ -1,4 +1,4 @@
-package com.esp.localjobs.models
+package com.esp.localjobs.data.models
 
 data class Location(
     var latitude: Double? = 0.0,

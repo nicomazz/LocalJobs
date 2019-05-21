@@ -1,4 +1,4 @@
-package com.esp.localjobs.models
+package com.esp.localjobs.data.models
 
 import com.google.firebase.firestore.GeoPoint
 
@@ -11,5 +11,4 @@ data class Job(
     var location: GeoPoint? = null,
     var salary: String? = "",
     var desc: String? = ""
-){
-}
+)

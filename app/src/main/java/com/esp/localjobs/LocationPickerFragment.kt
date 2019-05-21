@@ -18,7 +18,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.esp.localjobs.models.Location
+import com.esp.localjobs.data.models.Location
 import kotlinx.android.synthetic.main.fragment_add.range_seekbar
 import kotlinx.android.synthetic.main.fragment_filter_results.range_value
 import kotlinx.android.synthetic.main.fragment_location_picker.*

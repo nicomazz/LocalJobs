@@ -1,4 +1,4 @@
-package com.esp.localjobs.models
+package com.esp.localjobs.data.models
 
 data class Proposal(
     var uid: String? = "",

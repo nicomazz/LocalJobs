@@ -9,35 +9,50 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.SeekBar
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import com.esp.localjobs.LocationPickerFragment
 import com.esp.localjobs.R
 import kotlinx.android.synthetic.main.fragment_add.*
 
 private const val TAG = "AddFragment"
+
 /**
  * Fragment used to push a job/proposal to remote db
  */
 class AddFragment : Fragment() {
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_add, container, false)
-    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
+        inflater.inflate(R.layout.fragment_add, container, false).also {
+            setHasOptionsMenu(true)
+        }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_navigation, menu)
-        for (i in 0.until(menu.size()))
-            menu.getItem(i).isVisible = false
+        menu.forEach { it.isVisible = false }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // initialize seekbar and set listener
+        setupDistanceSeekbar()
+
+        // on submit button click
+        submit_button.setOnClickListener { onSubmit() }
+
+        setupAddressChooser()
+    }
+
+    private fun setupAddressChooser() {
+        address_edit_text.setOnClickListener {
+            fragmentManager?.let { fm ->
+                val locationPickerFragment = LocationPickerFragment()
+                locationPickerFragment.show(fm, "location_picker_fragment")
+            }
+        }
+    }
+
+    private fun setupDistanceSeekbar() {
         setRangeTextView(range_seekbar.progress)
         range_seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
@@ -48,18 +63,6 @@ class AddFragment : Fragment() {
                 setRangeTextView(progress)
             }
         })
-
-        // on submit button click
-        submit_button.setOnClickListener { onSubmit() }
-
-        // on location edit text click
-        address_edit_text.setOnClickListener {
-            val fm = activity?.supportFragmentManager
-            if (fm != null) {
-                val locationPickerFragment = LocationPickerFragment()
-                locationPickerFragment.show(fm, "location_picker_fragment")
-            }
-        }
     }
 
     /**
@@ -68,7 +71,8 @@ class AddFragment : Fragment() {
     private fun onSubmit() {
         // retrieve content of the form
         val selectedTypeId = type_radio_group.checkedRadioButtonId
-        val type = view?.findViewById<RadioButton>(selectedTypeId)?.tag // the tag is how we identify the type inside data object
+        val type = view?.findViewById<RadioButton>(selectedTypeId)
+            ?.tag // the tag is how we identify the type inside data object
         val title = title_edit_text.text.toString()
         val address = address_edit_text.text.toString()
         val range = range_seekbar.progress

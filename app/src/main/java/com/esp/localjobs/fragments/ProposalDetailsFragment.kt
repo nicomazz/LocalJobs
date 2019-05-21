@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
 import com.esp.localjobs.FilterViewModel
 import com.esp.localjobs.R
@@ -21,15 +20,5 @@ class ProposalDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_proposal_details, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // val proposalID = args.proposalID
-
-       /* filterViewModel.userRequestedFilteredResults.observe(viewLifecycleOwner, Observer {
-            filterViewModel.userRequestedFilteredResults.value = false
-            // fetch filtered data and update view
-        })*/
     }
 }

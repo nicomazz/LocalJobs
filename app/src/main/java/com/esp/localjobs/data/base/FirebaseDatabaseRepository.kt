@@ -7,7 +7,6 @@ import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import com.google.firebase.firestore.CollectionReference
 
-
 abstract class FirebaseDatabaseRepository<Model> {
 
     //    protected var db: Firebase
@@ -42,11 +41,9 @@ abstract class FirebaseDatabaseRepository<Model> {
         registration?.remove()
     }
 
-
     interface FirebaseDatabaseRepositoryCallback<T> {
         fun onSuccess(result: List<T>)
 
         fun onError(e: Exception)
     }
-
 }

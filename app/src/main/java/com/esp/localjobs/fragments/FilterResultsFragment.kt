@@ -19,6 +19,7 @@ import com.esp.localjobs.LocationPickerFragment
 import com.esp.localjobs.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.android.synthetic.main.fragment_filter_results.*
 
 /**
  * Fragment used to set filter params (longitude, latitude, range, text)
@@ -44,9 +45,9 @@ class FilterResultsFragment : Fragment(), View.OnClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        rangeTextView = view.findViewById(R.id.range_value)
-        rangeSeekBar = view.findViewById(R.id.range_seek_bar)
-        minSalaryEditText = view.findViewById(R.id.min_salary_edit_text)
+        rangeTextView = range_value
+        rangeSeekBar = range_seek_bar
+        minSalaryEditText = min_salary_edit_text
 
         // I'm not observing values to avoid loosing changes on screen rotation
         updateView()
@@ -68,21 +69,22 @@ class FilterResultsFragment : Fragment(), View.OnClickListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 rangeTextView.text = progress.toString()
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
     }
 
-    private fun updateView() {
-        rangeTextView.text = filterViewModel.range.toString()
-        rangeSeekBar.progress = filterViewModel.range
-        minSalaryEditText.setText(filterViewModel.minSalary.toString())
+    private fun updateView() = with(filterViewModel) {
+        rangeTextView.text = range.toString()
+        rangeSeekBar.progress = range
+        minSalaryEditText.setText(minSalary.toString())
     }
 
-    private fun updateViewModel() {
-        filterViewModel.query = searchView.query.toString()
-        filterViewModel.range = rangeTextView.text.toString().toInt()
-        filterViewModel.minSalary = minSalaryEditText.text.toString().toInt()
+    private fun updateViewModel() = with(filterViewModel) {
+        query = searchView.query.toString()
+        range = rangeTextView.text.toString().toInt()
+        minSalary = minSalaryEditText.text.toString().toInt()
     }
 
     /**
@@ -119,15 +121,18 @@ class FilterResultsFragment : Fragment(), View.OnClickListener {
      * Setup search view icon.
      * The search view is expanded by default and focused on fragment creation.
      */
-    private fun setupSearchView() {
-        searchView.setIconifiedByDefault(false) // expand search view
-        searchView.requestFocus()
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+    private fun setupSearchView() = with(searchView) {
+        setIconifiedByDefault(false) // expand search view
+        requestFocus()
+        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 onSearchClick()
                 return true
             }
-            override fun onQueryTextChange(newText: String?): Boolean { return true }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
+            }
         })
     }
 }
