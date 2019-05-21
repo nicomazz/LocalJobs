@@ -1,4 +1,4 @@
-package com.esp.localjobs
+package com.esp.localjobs.fragments
 
 import android.app.Activity
 import android.content.Intent
@@ -11,11 +11,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.esp.localjobs.LoginViewModel
 import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
-import com.esp.localjobs.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
+import com.esp.localjobs.LoginViewModel.AuthenticationState.UNAUTHENTICATED
+import com.esp.localjobs.R
 import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -48,7 +49,8 @@ class LoginFragment : Fragment() {
                         R.string.invalid_credentials,
                         Snackbar.LENGTH_SHORT
                     ).show()
-                UNAUTHENTICATED -> { } // do nothing
+                UNAUTHENTICATED -> {
+                } // do nothing
                 else -> TODO()
             }
         })
@@ -72,7 +74,7 @@ class LoginFragment : Fragment() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
-            val response = IdpResponse.fromResultIntent(data)
+            // val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in

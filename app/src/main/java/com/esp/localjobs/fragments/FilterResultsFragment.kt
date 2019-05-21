@@ -1,0 +1,138 @@
+package com.esp.localjobs.fragments
+
+import android.annotation.SuppressLint
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.SearchView
+import android.widget.SeekBar
+import android.widget.TextView
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import com.esp.localjobs.FilterViewModel
+import com.esp.localjobs.LocationPickerFragment
+import com.esp.localjobs.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.TextInputEditText
+import kotlinx.android.synthetic.main.fragment_filter_results.*
+
+/**
+ * Fragment used to set filter params (longitude, latitude, range, text)
+ */
+class FilterResultsFragment : Fragment(), View.OnClickListener {
+    private val args: FilterResultsFragmentArgs by navArgs()
+    private lateinit var rangeTextView: TextView
+    private lateinit var rangeSeekBar: SeekBar
+    private lateinit var searchView: SearchView
+    private lateinit var minSalaryEditText: TextInputEditText
+    private val filterViewModel: FilterViewModel by activityViewModels()
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.fragment_filter_results, container, false)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        rangeTextView = range_value
+        rangeSeekBar = range_seek_bar
+        minSalaryEditText = min_salary_edit_text
+
+        // I'm not observing values to avoid loosing changes on screen rotation
+        updateView()
+
+        val fab = view.findViewById<FloatingActionButton>(R.id.fab)
+        fab.setOnClickListener(this)
+
+        val addressEditText = view.findViewById<TextInputEditText>(R.id.address_edit_text)
+        addressEditText.setOnClickListener {
+            val fm = activity?.supportFragmentManager
+            if (fm != null) {
+                val locationPickerFragment = LocationPickerFragment()
+                locationPickerFragment.show(fm, "location_picker_fragment")
+            }
+        }
+
+        rangeSeekBar.max = filterViewModel.MAX_RANGE_KM
+        rangeSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                rangeTextView.text = progress.toString()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
+
+    private fun updateView() = with(filterViewModel) {
+        rangeTextView.text = range.toString()
+        rangeSeekBar.progress = range
+        minSalaryEditText.setText(minSalary.toString())
+    }
+
+    private fun updateViewModel() = with(filterViewModel) {
+        query = searchView.query.toString()
+        range = rangeTextView.text.toString().toInt()
+        minSalary = minSalaryEditText.text.toString().toInt()
+    }
+
+    /**
+     * Update filter viewmodel and navigate back to the calling fragment.
+     * Set filterViewModel.userRequestedFilteredResults to true to notify the fragments that the user requested
+     * a filtered search.
+     */
+    private fun onSearchClick() {
+        updateViewModel()
+        filterViewModel.userRequestedFilteredResults.value = true
+        if (args.filteringJobs)
+            findNavController().navigate(R.id.action_destination_filter_to_destination_jobs)
+        else
+            findNavController().navigate(R.id.action_destination_filter_to_destination_proposals)
+    }
+
+    /**
+     * Handle view items click
+     */
+    override fun onClick(v: View?) {
+        when (v?.id) {
+            R.id.fab -> onSearchClick()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
+        inflater.inflate(R.menu.menu_search, menu)
+        searchView = menu.findItem(R.id.action_search_item).actionView as SearchView
+        setupSearchView()
+    }
+
+    /**
+     * Setup search view icon.
+     * The search view is expanded by default and focused on fragment creation.
+     */
+    private fun setupSearchView() = with(searchView) {
+        setIconifiedByDefault(false) // expand search view
+        requestFocus()
+        setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                onSearchClick()
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
+            }
+        })
+    }
+}

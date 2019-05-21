@@ -1,11 +1,14 @@
 package com.esp.localjobs
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
@@ -35,20 +38,26 @@ Resources:
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
-
+    private val REQUEST_LOCATION_PERMISSION_CODE = 100
+    // private var positionServiceJob: Job? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        requestLocationPermissions()
+
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ -> onDestinationChangeListener(destination) }
         // declare top destinations - these won't show the upp button
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.destination_jobs,
-                                                        R.id.destination_proposals,
-                                                        R.id.destination_login))
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.destination_jobs,
+                R.id.destination_proposals,
+                R.id.destination_login
+            )
+        )
 
         setupToolbar(navController, appBarConfiguration)
-        // setupActionBarWithNavController(navController, appBarConfiguration)  //use with default action bar
         setupBottomNavigationMenu(navController)
     }
 
@@ -69,9 +78,9 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onDestinationChangeListener(destination: NavDestination) {
         // bottom bar
-        when (destination.id) {
-            R.id.destination_jobs, R.id.destination_proposals -> bottom_nav_view.visibility = View.VISIBLE
-            else -> bottom_nav_view.visibility = View.GONE
+        bottom_nav_view.visibility = when (destination.id) {
+            R.id.destination_jobs, R.id.destination_proposals -> View.VISIBLE
+            else -> View.GONE
         }
     }
 
@@ -95,5 +104,24 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_navigation, menu)
         return true
+    }
+
+    /**
+     * Show dialog to request location permissions
+     */
+    private fun requestLocationPermissions() {
+
+        ActivityCompat.requestPermissions(this@MainActivity,
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
+            REQUEST_LOCATION_PERMISSION_CODE)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQUEST_LOCATION_PERMISSION_CODE -> {
+                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
+                    finish()
+            }
+        }
     }
 }

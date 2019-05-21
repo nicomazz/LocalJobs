@@ -7,7 +7,7 @@
 
     <fragment
             android:id="@+id/destination_login"
-            android:name="com.esp.localjobs.LoginFragment"
+            android:name="com.esp.localjobs.fragments.LoginFragment"
             android:label="Login"
             tools:layout="@layout/fragment_login">
         <action
@@ -23,7 +23,7 @@
 
     <fragment
             android:id="@+id/destination_jobs"
-            android:name="com.esp.localjobs.JobsFragment"
+            android:name="com.esp.localjobs.fragments.JobsFragment"
             android:label="LocalJobs"
             tools:layout="@layout/fragment_jobs">
 
@@ -47,7 +47,10 @@
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"/>
+                app:popExitAnim="@anim/slide_out_right">
+            <argument android:defaultValue="true"
+                      android:name="filteringJobs"/>
+        </action>
         <action
                 android:id="@+id/action_destination_jobs_to_destination_login"
                 app:destination="@id/destination_login"
@@ -60,12 +63,12 @@
     </fragment>
     <fragment
             android:id="@+id/destination_add"
-            android:name="com.esp.localjobs.AddFragment"
+            android:name="com.esp.localjobs.fragments.AddFragment"
             android:label="Add "
             tools:layout="@layout/fragment_add"/>
     <fragment
             android:id="@+id/destination_job_details"
-            android:name="com.esp.localjobs.JobDetailsFragment"
+            android:name="com.esp.localjobs.fragments.JobDetailsFragment"
             android:label="Job details"
             tools:layout="@layout/fragment_job_details">
         <argument
@@ -74,7 +77,7 @@
     </fragment>
     <fragment
             android:id="@+id/destination_user_profile"
-            android:name="com.esp.localjobs.UserProfileFragment"
+            android:name="com.esp.localjobs.fragments.UserProfileFragment"
             android:label="Profile"
             tools:layout="@layout/fragment_user_profile">
         <argument
@@ -95,7 +98,7 @@
     </fragment>
     <fragment
             android:id="@+id/destination_filter"
-            android:name="com.esp.localjobs.FilterResultsFragment"
+            android:name="com.esp.localjobs.fragments.FilterResultsFragment"
             android:label="Filter"
             tools:layout="@layout/fragment_filter_results">
         <action
@@ -112,10 +115,13 @@
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
                 app:popExitAnim="@anim/slide_out_right"/>
+        <argument
+                android:name="filteringJobs"
+                app:argType="boolean"/>
     </fragment>
     <fragment
             android:id="@+id/destination_proposals"
-            android:name="com.esp.localjobs.ProposalsFragment"
+            android:name="com.esp.localjobs.fragments.ProposalsFragment"
             android:label="LocalJobs"
             tools:layout="@layout/fragment_proposals">
         <action
@@ -131,14 +137,17 @@
                 app:enterAnim="@anim/slide_in_right"
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"/>
+                app:popExitAnim="@anim/slide_out_right">
+            <argument android:defaultValue="false"
+                      android:name="filteringJobs"/>
+        </action>
         <action
                 android:id="@+id/action_destination_proposals_to_destination_proposal_details"
                 app:destination="@id/destination_proposal_details"/>
     </fragment>
     <fragment
             android:id="@+id/destination_proposal_details"
-            android:name="com.esp.localjobs.ProposalDetailsFragment"
+            android:name="com.esp.localjobs.fragments.ProposalDetailsFragment"
             android:label="Proposal details"
             tools:layout="@layout/fragment_proposal_details"
             app:enterAnim="@anim/slide_in_right"
