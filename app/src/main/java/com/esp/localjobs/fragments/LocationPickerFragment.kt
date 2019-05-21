@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.esp.localjobs.R
+import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.managers.PositionManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
@@ -17,7 +18,6 @@ import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.esp.localjobs.models.Location
 import kotlinx.android.synthetic.main.fragment_location_picker.*
 import java.io.IOException
 import java.util.Locale

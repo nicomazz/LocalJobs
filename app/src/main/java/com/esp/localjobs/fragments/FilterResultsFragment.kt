@@ -16,10 +16,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.R
-import com.esp.localjobs.models.Location
+import com.esp.localjobs.data.models.Location
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
-import kotlinx.android.synthetic.main.fragment_filter_results.*
 
 /**
  * Fragment used to set filter params (longitude, latitude, range, text)

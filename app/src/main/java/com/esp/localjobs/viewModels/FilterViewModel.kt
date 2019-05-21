@@ -1,8 +1,8 @@
 package com.esp.localjobs.viewModels
 
-import com.esp.localjobs.models.Location
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.esp.localjobs.data.models.Location
 
 /**
  * Shared view model between filter, jobs and proposals fragment.

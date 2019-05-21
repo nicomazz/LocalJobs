@@ -25,6 +25,10 @@ class ProposalsFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_proposals, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_search, menu)
         val searchView = menu.findItem(R.id.action_search_item).actionView as SearchView

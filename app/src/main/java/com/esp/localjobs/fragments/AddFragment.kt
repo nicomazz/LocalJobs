@@ -11,7 +11,7 @@ import android.widget.RadioButton
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.esp.localjobs.R
-import com.esp.localjobs.models.Location
+import com.esp.localjobs.data.models.Location
 import kotlinx.android.synthetic.main.fragment_add.*
 
 private const val TAG = "AddFragment"

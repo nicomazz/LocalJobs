@@ -11,7 +11,7 @@
     <string name="login">Login</string>
     <string name="title_hint">Title</string>
     <string name="description">Description</string>
-    <string name="location">Location</string>
+    <string name="address">Address</string>
     <string name="publish">Publish</string>
     <string name="radio_job">Job</string>
     <string name="radio_proposal">Proposal</string>
@@ -24,8 +24,12 @@
     <string name="distance">"%1$d km"</string>
     <string name="cancel">Cancel</string>
     <string name="apply">Apply</string>
+    <string name="menu_filter">Filter</string>
     <string name="menu_search">Search</string>
+    <string name="filter_query_hint">Search for:</string>
+    <string name="filter_reset_default">Reset default</string>
     <string name="filter_range_text">Range:</string>
     <string name="mabBoxToken">pk.eyJ1IjoibHVjYW1vcm8iLCJhIjoiY2p2aWZpMjF3MDUydDQ4cnV1aXNoajg3aCJ9.oHLaI83cBQT1TzikU6oA8Q</string>
     <string name="minimum_salary_text">Minimum salary</string>
+    <string name="location">Location</string>
 </resources>
