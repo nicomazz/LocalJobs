@@ -126,7 +126,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
      */
     override fun onLocationPicked(location: Location) {
         val locationText =
-            if(location.city != null) location.city
+            if (location.city != null) location.city
             else getString(R.string.coordinates, location.latitude.toString(), location.longitude.toString())
         location_edit_text.setText(locationText)
         selectedLocation = location

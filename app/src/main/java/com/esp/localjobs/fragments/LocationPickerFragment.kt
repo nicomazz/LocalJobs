@@ -25,7 +25,8 @@ import java.util.Locale
 private const val TAG = "LocationPickerFragmet"
 
 class LocationPickerFragment(
-    private val locationPickedCallback: OnLocationPickedListener) : DialogFragment(), View.OnClickListener {
+    private val locationPickedCallback: OnLocationPickedListener
+) : DialogFragment(), View.OnClickListener {
 
     private lateinit var mapBoxMap: MapboxMap
     private lateinit var mapView: MapView

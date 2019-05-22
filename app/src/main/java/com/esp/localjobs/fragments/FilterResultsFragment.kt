@@ -83,7 +83,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
     override fun onLocationPicked(location: Location) {
         userSelectedLocation = location
         val locationText =
-            if(location.city != null) location.city
+            if (location.city != null) location.city
             else getString(R.string.coordinates, location.latitude.toString(), location.longitude.toString())
         locationEditText.setText(locationText)
     }
