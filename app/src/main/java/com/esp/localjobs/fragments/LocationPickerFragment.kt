@@ -24,8 +24,10 @@ import java.util.Locale
 
 private const val TAG = "LocationPickerFragmet"
 
-class LocationPickerFragment(val locationPickedCallback: OnLocationPickedListener) : DialogFragment(), View.OnClickListener {
-    private var mapBoxMap: MapboxMap? = null
+class LocationPickerFragment(
+    private val locationPickedCallback: OnLocationPickedListener) : DialogFragment(), View.OnClickListener {
+
+    private lateinit var mapBoxMap: MapboxMap
     private lateinit var mapView: MapView
 
     override fun onCreateView(
@@ -94,27 +96,39 @@ class LocationPickerFragment(val locationPickedCallback: OnLocationPickedListene
             }
             R.id.center_user_position_button -> navigateToLastKnownPosition()
             R.id.apply_button -> {
-                // get location coordinates of the center of the map-view
-                if (mapBoxMap != null) {
-                    val latLng = (mapBoxMap as MapboxMap).cameraPosition.target
-
-                    val location = Location(latLng.latitude, latLng.longitude, null)
-                    // coordinates to city name
-                    try { // Sometimes gcd.getFromLocation(..) throws IOException, causing crash
-                        val gcd = Geocoder(context, Locale.getDefault())
-                        val addresses = gcd.getFromLocation(latLng.latitude, latLng.longitude, 1)
-                        val city = if (addresses.size > 0) addresses[0].locality else null
-                        location.city = city
-                    } catch (e: IOException) {
-                        Toast.makeText(context!!, "Error retrieving location name.", Toast.LENGTH_SHORT).show()
-                    }
-
-                    locationPickedCallback.onLocationPicked(location)
+                getSelectedLocation().let {
+                    locationPickedCallback.onLocationPicked(it)
                     dismiss()
                 }
             }
             R.id.cancel_button -> dismiss()
         }
+    }
+
+    /**
+     * Get location coordinates of the center of the map-view
+     * @return null if could not retrieve
+     */
+    private fun getSelectedLocation(): Location {
+        // get location coordinates of the center of the map-view
+        val latLng = mapBoxMap.cameraPosition.target
+        val city = coordinatesToCity(latLng.latitude, latLng.longitude)
+        return Location(latLng.latitude, latLng.longitude, city)
+    }
+
+    /**
+     * Convert coordinates into a city name
+     * @return null if could not retrieve any (i.e. in the middle of the ocean)
+     */
+    private fun coordinatesToCity(latitude: Double, longitude: Double): String? {
+        try { // Sometimes gcd.getFromLocation(..) throws IOException, causing crash
+            val gcd = Geocoder(context, Locale.getDefault())
+            val addresses = gcd.getFromLocation(latitude, longitude, 1)
+            return if (addresses.size > 0) addresses[0].locality else null
+        } catch (e: IOException) {
+            Toast.makeText(context!!, "Error retrieving location name.", Toast.LENGTH_SHORT).show()
+        }
+        return null
     }
 
     /**
@@ -142,6 +156,6 @@ class LocationPickerFragment(val locationPickedCallback: OnLocationPickedListene
             .bearing(180.0)
             .tilt(30.0)
             .build()
-        mapBoxMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000)
+        mapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000)
     }
 }

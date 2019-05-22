@@ -108,7 +108,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         val type = view?.findViewById<RadioButton>(selectedTypeId)
             ?.tag // the tag is how we identify the type inside data object
         val title = title_edit_text.text.toString()
-        val location = selectedLocation?.latitude.toString() + ' ' + selectedLocation?.longitude.toString()
+        val location = selectedLocation?.city
         val range = range_seekbar.progress
         val salary = salary_edit_text.text.toString()
         val description = description_edit_text.text.toString()
@@ -125,7 +125,10 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
      * Called when apply button is pressed in LocationPickerFragment
      */
     override fun onLocationPicked(location: Location) {
-        location_edit_text.setText(location.city)
+        val locationText =
+            if(location.city != null) location.city
+            else getString(R.string.coordinates, location.latitude.toString(), location.longitude.toString())
+        location_edit_text.setText(locationText)
         selectedLocation = location
     }
 
