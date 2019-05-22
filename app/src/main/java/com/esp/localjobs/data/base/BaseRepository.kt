@@ -1,8 +1,8 @@
 package com.esp.localjobs.data.base
 
-import java.lang.Exception
+import com.google.firebase.firestore.CollectionReference
 
-interface Methods<T> {
+interface BaseRepository<T> {
     fun add(
         item: T,
         onSuccess: (() -> Unit)? = null,
@@ -28,5 +28,12 @@ interface Methods<T> {
     fun delete(
         id: String,
         onSuccess: (() -> Unit)? = null,
-        onFailure: ((e: Exception) -> Unit)? = null)
+        onFailure: ((e: Exception) -> Unit)? = null
+    )
+
+    fun addListener(
+        firebaseCallback: FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<T>,
+        filter: ((CollectionReference) -> CollectionReference)?
+    )
+
 }

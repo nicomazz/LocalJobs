@@ -11,10 +11,8 @@ import android.widget.RadioButton
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.esp.localjobs.R
-import com.esp.localjobs.data.base.Methods
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.data.models.Proposal
 import com.esp.localjobs.data.repository.JobsRepository
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_add.*
