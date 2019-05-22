@@ -11,7 +11,12 @@ import android.widget.RadioButton
 import android.widget.SeekBar
 import androidx.fragment.app.Fragment
 import com.esp.localjobs.R
+import com.esp.localjobs.data.base.Methods
+import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.data.models.Proposal
+import com.esp.localjobs.data.repository.JobsRepository
+import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_add.*
 
 private const val TAG = "AddFragment"
@@ -69,21 +74,35 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
      * Called when submit button is pressed
      */
     private fun onSubmit() {
+        if (!validateForm())
+            return
+
         // retrieve content of the form
         val selectedTypeId = type_radio_group.checkedRadioButtonId
         val type = view?.findViewById<RadioButton>(selectedTypeId)?.tag // the tag is how we identify the type inside data object
         val title = title_edit_text.text.toString()
-        val location = selectedLocation?.latitude.toString() + ' ' + selectedLocation?.longitude.toString()
-        val range = range_seekbar.progress
+        //val location = selectedLocation?.latitude.toString() + ' ' + selectedLocation?.longitude.toString()
+        val location = GeoPoint(selectedLocation!!.latitude, selectedLocation!!.longitude)
+        val city = location_edit_text.text.toString()
+        val range = range_seekbar.progress.toString()
         val salary = salary_edit_text.text.toString()
         val description = description_edit_text.text.toString()
 
-        // check for required fields
-        if (type == null) Log.e(TAG, "null radio button selection")
-        title_view.error = if (title.isEmpty()) "Title is required" else null
-
         Log.d(TAG, "$type, $title, $location, $range, $salary, $description")
-        // TODO submit content
+
+        when (type) {
+            "job" -> {
+                JobsRepository().add(
+                    Job(title, description, location, city, salary, true, "uid"),
+                    onSuccess = { Log.d(TAG, "job added") },
+                    onFailure = { Log.d(TAG, "failure adding job") }
+                )
+            }
+            "proposal" -> {
+                // Proposal(title, description, location, city, salary, range, true, "uid")
+            }
+            else -> TODO()
+        }
     }
 
     /**
@@ -100,5 +119,18 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
      */
     private fun setRangeTextView(value: Int) {
         range_value.text = getString(R.string.distance, value)
+    }
+
+    private fun validateForm(): Boolean {
+        var anyError = false
+        if (selectedLocation == null) {
+            location_view.error ="Please pick a location"
+            anyError = true
+        }
+        if (title_edit_text.text.toString().isEmpty()) {
+            title_view.error = "Please insert a title"
+            anyError = true
+        }
+        return !anyError
     }
 }
