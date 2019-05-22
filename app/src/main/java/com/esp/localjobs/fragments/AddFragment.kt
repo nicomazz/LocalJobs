@@ -80,7 +80,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         val selectedTypeId = type_radio_group.checkedRadioButtonId
         val type = view?.findViewById<RadioButton>(selectedTypeId)?.tag // the tag is how we identify the type inside data object
         val title = title_edit_text.text.toString()
-        //val location = selectedLocation?.latitude.toString() + ' ' + selectedLocation?.longitude.toString()
+        // val location = selectedLocation?.latitude.toString() + ' ' + selectedLocation?.longitude.toString()
         val location = GeoPoint(selectedLocation!!.latitude, selectedLocation!!.longitude)
         val city = location_edit_text.text.toString()
         val range = range_seekbar.progress.toString()
@@ -94,7 +94,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
                 JobsRepository().add(
                     Job(title, description, location, city, salary, true, "uid"),
                     onSuccess = { Log.d(TAG, "job added") },
-                    onFailure = { e: Exception ->  Log.d(TAG, "failure adding job, error: $e") }
+                    onFailure = { e: Exception -> Log.d(TAG, "failure adding job, error: $e") }
                 )
             }
             "proposal" -> {
@@ -123,7 +123,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
     private fun validateForm(): Boolean {
         var anyError = false
         if (selectedLocation == null) {
-            location_view.error ="Please pick a location"
+            location_view.error = "Please pick a location"
             anyError = true
         }
         if (title_edit_text.text.toString().isEmpty()) {

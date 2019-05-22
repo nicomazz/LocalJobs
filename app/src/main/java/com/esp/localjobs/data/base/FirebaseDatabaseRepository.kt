@@ -94,7 +94,6 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
             }
     }
 
-
     interface FirebaseDatabaseRepositoryCallback<T> {
         fun onSuccess(result: List<T>)
 

@@ -35,5 +35,4 @@ interface BaseRepository<T> {
         firebaseCallback: FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<T>,
         filter: ((CollectionReference) -> CollectionReference)?
     )
-
 }
