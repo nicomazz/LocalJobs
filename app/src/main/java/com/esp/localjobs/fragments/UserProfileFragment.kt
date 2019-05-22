@@ -49,7 +49,7 @@ class UserProfileFragment : Fragment() {
 
         logout.setOnClickListener {
             viewModel.logOut()
-            findNavController().navigate(R.id.action_destination_logout)
+            findNavController().popBackStack()
         }
     }
 
