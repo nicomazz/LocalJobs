@@ -28,7 +28,6 @@ class JobDetailsFragment : Fragment() {
         job = args.job
     }.root
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.explode)
@@ -39,6 +38,4 @@ class JobDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         Picasso.get().load("https://picsum.photos/200").into(view.imageView)
     }
-
-
 }

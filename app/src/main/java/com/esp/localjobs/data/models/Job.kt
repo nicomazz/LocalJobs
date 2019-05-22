@@ -3,7 +3,6 @@ package com.esp.localjobs.data.models
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.firebase.firestore.GeoPoint
-import kotlinx.android.parcel.Parcelize
 
 data class Job(
     var title: String? = "",

@@ -15,11 +15,12 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.LoginViewModel
-import com.esp.localjobs.LoginViewModel.AuthenticationState.*
+import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
+import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
+import com.esp.localjobs.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.fragment_add.*
 
 private const val TAG = "AddFragment"
@@ -97,7 +98,6 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
             }
         })
     }
-
 
     /**
      * Called when submit button is pressed
