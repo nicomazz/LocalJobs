@@ -71,6 +71,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 rangeTextView.text = progress.toString()
             }
+
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
@@ -106,10 +107,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
     private fun onSearchClick() {
         updateViewModel()
         filterViewModel.userRequestedFilteredResults.value = true
-        if (args.filteringJobs)
-            findNavController().navigate(R.id.action_destination_filter_to_destination_jobs)
-        else
-            findNavController().navigate(R.id.action_destination_filter_to_destination_proposals)
+        findNavController().popBackStack()
     }
 
     /**
@@ -140,7 +138,10 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
                 onSearchClick()
                 return true
             }
-            override fun onQueryTextChange(newText: String?): Boolean { return true }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
+            }
         })
     }
 }
