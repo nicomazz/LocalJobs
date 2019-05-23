@@ -29,4 +29,6 @@ class LoginViewModel : ViewModel() {
     fun refuseAuthentication() {
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
+
+    fun getUserId(): String? = FirebaseAuth.getInstance().currentUser?.uid
 }

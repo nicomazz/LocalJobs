@@ -26,6 +26,7 @@ import com.esp.localjobs.data.repository.JobsRepository
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_add.*
 import java.lang.Exception
+import java.util.*
 
 private const val TAG = "AddFragment"
 
@@ -127,7 +128,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         when (type) {
             "job" -> {
                 JobsRepository().add(
-                    Job(title, description, location, city, salary, true, "uid"),
+                    Job(title, description, location, city, salary, true, loginViewModel.getUserId()!!),
                     onSuccess = { Log.d(TAG, "job added") },
                     onFailure = { e: Exception -> Log.d(TAG, "failure adding job, error: $e") }
                 )
