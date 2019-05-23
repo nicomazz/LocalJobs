@@ -57,6 +57,8 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         setupDistanceSeekbarUI()
         submit_button.setOnClickListener { onSubmit() }
         setupLocationEditTextUI()
+        setupRadioButton()
+
     }
 
     private fun ensureLogin() {
@@ -102,6 +104,17 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
                 setRangeTextView(progress)
             }
         })
+    }
+
+    private fun setupRadioButton() {
+        type_radio_group.setOnCheckedChangeListener { _, checkedId ->
+            val type = view?.findViewById<RadioButton>(checkedId)?.tag
+            when (type) {
+                "job" -> range_div.visibility = View.GONE
+                "proposal" -> range_div.visibility = View.VISIBLE
+                else -> TODO()
+            }
+        }
     }
 
     /**
