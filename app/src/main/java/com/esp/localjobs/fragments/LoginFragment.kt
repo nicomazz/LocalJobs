@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -19,12 +18,12 @@ import com.esp.localjobs.R
 import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_login.*
 
 class LoginFragment : Fragment() {
 
     private val viewModel: LoginViewModel by activityViewModels()
 
-    private lateinit var loginButton: Button
     private val RC_SIGN_IN: Int = 43
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,7 +33,6 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loginButton = view.findViewById(R.id.button)
         loginButton.setOnClickListener {
             authenticate()
         }
@@ -42,7 +40,7 @@ class LoginFragment : Fragment() {
         val navController = findNavController()
         viewModel.authenticationState.observe(viewLifecycleOwner, Observer { authenticationState ->
             when (authenticationState) {
-                AUTHENTICATED -> navController.navigate(R.id.action_destination_login_to_destination_jobs)
+                AUTHENTICATED -> navController.popBackStack()
                 INVALID_AUTHENTICATION ->
                     Snackbar.make(
                         view,

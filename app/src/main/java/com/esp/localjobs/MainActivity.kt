@@ -1,14 +1,20 @@
 package com.esp.localjobs
 
 import android.Manifest
+import android.animation.Animator
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewAnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.animation.doOnEnd
+import androidx.core.animation.doOnStart
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.Navigation
@@ -64,6 +70,9 @@ class MainActivity : AppCompatActivity() {
     private fun setupBottomNavigationMenu(navController: NavController) {
         findViewById<BottomNavigationView>(R.id.bottom_nav_view)
             .setupWithNavController(navController)
+        fabAdd.setOnClickListener {
+            navController.navigate(R.id.destination_add)
+        }
     }
 
     private fun setupToolbar(navController: NavController, appBarConfiguration: AppBarConfiguration) {
@@ -82,6 +91,35 @@ class MainActivity : AppCompatActivity() {
             R.id.destination_jobs, R.id.destination_proposals -> View.VISIBLE
             else -> View.GONE
         }
+        fabAdd.visibility = when (destination.id) {
+            R.id.destination_jobs, R.id.destination_proposals -> View.VISIBLE
+            else -> View.GONE
+        }
+        if (destination.id == R.id.destination_add) {
+            val viewRoot = findViewById<View>(android.R.id.content)
+            val cx = (viewRoot.left + viewRoot.right) / 2
+            val cy = viewRoot.bottom
+            animateRevealColorFromCoordinates(cx, cy)
+        }
+    }
+
+    private fun animateRevealColorFromCoordinates(x: Int, y: Int): Animator {
+        val viewRoot = mainActivityCoordinator
+        val foreground = containerForAnimation
+        val finalRadius = Math.hypot(viewRoot.width.toDouble(), viewRoot.height.toDouble()).toFloat()
+
+        val anim = ViewAnimationUtils.createCircularReveal(viewRoot, x, y, 0f, finalRadius)
+        viewRoot.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        anim.doOnEnd {
+            viewRoot.setBackgroundColor(Color.TRANSPARENT)
+            foreground.visibility = View.VISIBLE
+        }
+        anim.doOnStart {
+            foreground.visibility = View.INVISIBLE
+        }
+        anim.start()
+
+        return anim
     }
 
     /**
@@ -111,9 +149,11 @@ class MainActivity : AppCompatActivity() {
      */
     private fun requestLocationPermissions() {
 
-        ActivityCompat.requestPermissions(this@MainActivity,
+        ActivityCompat.requestPermissions(
+            this@MainActivity,
             arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-            REQUEST_LOCATION_PERMISSION_CODE)
+            REQUEST_LOCATION_PERMISSION_CODE
+        )
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
