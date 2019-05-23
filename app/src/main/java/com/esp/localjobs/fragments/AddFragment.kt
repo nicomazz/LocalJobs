@@ -26,7 +26,6 @@ import com.esp.localjobs.data.repository.JobsRepository
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_add.*
 import java.lang.Exception
-import java.util.*
 
 private const val TAG = "AddFragment"
 
@@ -58,7 +57,6 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         submit_button.setOnClickListener { onSubmit() }
         setupLocationEditTextUI()
         setupRadioButton()
-
     }
 
     private fun ensureLogin() {
@@ -142,8 +140,22 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
             "job" -> {
                 JobsRepository().add(
                     Job(title, description, location, city, salary, true, loginViewModel.getUserId()!!),
-                    onSuccess = { Log.d(TAG, "job added") },
-                    onFailure = { e: Exception -> Log.d(TAG, "failure adding job, error: $e") }
+                    onSuccess = {
+                        Snackbar.make(
+                            activity!!.findViewById<View>(android.R.id.content),
+                            getString(R.string.add_job_success),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                        findNavController().popBackStack()
+                    },
+                    onFailure = { e: Exception ->
+                        Log.d(TAG, "failure adding job, error: $e")
+                        Snackbar.make(
+                            activity!!.findViewById<View>(android.R.id.content),
+                            getString(R.string.add_job_failure),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
                 )
             }
             "proposal" -> {

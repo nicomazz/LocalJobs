@@ -33,4 +33,6 @@
     <string name="minimum_salary_text">Minimum salary</string>
     <string name="location">Location</string>
     <string name="auth_required">You must be authenticated to use this function</string>
+    <string name="add_job_success">Successfully added job!</string>
+    <string name="add_job_failure">Error adding job :(</string>
 </resources>
