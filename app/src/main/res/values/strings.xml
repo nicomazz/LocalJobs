@@ -32,5 +32,8 @@
     <string name="mabBoxToken">pk.eyJ1IjoibHVjYW1vcm8iLCJhIjoiY2p2aWZpMjF3MDUydDQ4cnV1aXNoajg3aCJ9.oHLaI83cBQT1TzikU6oA8Q</string>
     <string name="minimum_salary_text">Minimum salary</string>
     <string name="location">Location</string>
+    <string name="add_job_success">Successfully added job!</string>
+    <string name="add_job_failure">Error adding job :(</string>
     <string name="auth_required">You must be authenticated to use this function</string>
+    <string name="coordinates">%1$s, %2$s</string>
 </resources>

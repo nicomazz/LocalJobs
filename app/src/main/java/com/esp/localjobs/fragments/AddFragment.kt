@@ -19,7 +19,9 @@ import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
 import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
 import com.esp.localjobs.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.R
+import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.data.repository.JobsRepository
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_add.*
@@ -53,6 +55,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         setupDistanceSeekbarUI()
         submit_button.setOnClickListener { onSubmit() }
         setupLocationEditTextUI()
+        setupRadioButton()
     }
 
     private fun ensureLogin() {
@@ -69,7 +72,6 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
             }
         })
     }
-
 
     private fun showUnauthenticatedMessage() {
         Snackbar.make(
@@ -101,6 +103,16 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         })
     }
 
+    private fun setupRadioButton() {
+        type_radio_group.setOnCheckedChangeListener { _, checkedId ->
+            val type = view?.findViewById<RadioButton>(checkedId)?.tag
+            when (type) {
+                "job" -> range_div.visibility = View.GONE
+                "proposal" -> range_div.visibility = View.VISIBLE
+                else -> TODO()
+            }
+        }
+    }
 
     /**
      * Called when submit button is pressed
@@ -125,11 +137,25 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
 
         when (type) {
             "job" -> {
-                /*JobsRepository().add(
-                    Job(title, description, location, city, salary, true, "uid"),
-                    onSuccess = { Log.d(TAG, "job added") },
-                    onFailure = { e: Exception -> Log.d(TAG, "failure adding job, error: $e") }
-                )*/
+                JobsRepository().add(
+                    Job(title, description, location, city, salary, true, loginViewModel.getUserId()!!),
+                    onSuccess = {
+                        Snackbar.make(
+                            activity!!.findViewById<View>(android.R.id.content),
+                            getString(R.string.add_job_success),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                        findNavController().popBackStack()
+                    },
+                    onFailure = { e: Exception ->
+                        Log.d(TAG, "failure adding job, error: $e")
+                        Snackbar.make(
+                            activity!!.findViewById<View>(android.R.id.content),
+                            getString(R.string.add_job_failure),
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                    }
+                )
             }
             "proposal" -> {
                 // Proposal(title, description, location, city, salary, range, true, "uid")
@@ -142,7 +168,10 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
      * Called when apply button is pressed in LocationPickerFragment
      */
     override fun onLocationPicked(location: Location) {
-        location_edit_text.setText(location.city)
+        val locationText =
+            if (location.city != null) location.city
+            else getString(R.string.coordinates, location.latitude.toString(), location.longitude.toString())
+        location_edit_text.setText(locationText)
         selectedLocation = location
     }
 
