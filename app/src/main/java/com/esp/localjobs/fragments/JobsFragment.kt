@@ -14,7 +14,11 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
+import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.managers.PositionManager
+import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
+import com.google.firebase.firestore.GeoPoint
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
@@ -24,6 +28,7 @@ import kotlinx.android.synthetic.main.fragment_jobs.view.*
  */
 class JobsFragment : Fragment() {
     private val jobsViewModel: JobsViewModel by activityViewModels()
+    private val filterViewModel: FilterViewModel by activityViewModels()
 
     val adapter = GroupAdapter<ViewHolder>()
 
@@ -44,7 +49,16 @@ class JobsFragment : Fragment() {
             Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
             adapter.update(jobs?.map { JobItem(it) } ?: listOf())
         })
-        jobsViewModel.loadJobs()
+
+        initBaseLocation()
+        // Listen for jobs near user selected location or his last known position.
+        // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
+        filterViewModel.location?.let {
+            jobsViewModel.loadJobs(
+                GeoPoint(it.latitude, it.longitude),
+                filterViewModel.range.toDouble()
+            )
+        } ?: jobsViewModel.loadJobs()
     }
 
     private fun setupJobList(view: View) {
@@ -56,6 +70,18 @@ class JobsFragment : Fragment() {
         val searchView = menu.findItem(R.id.action_search_item).actionView as SearchView
         searchView.setOnSearchClickListener {
             findNavController().navigate(R.id.action_destination_jobs_to_destination_filter)
+        }
+    }
+
+    /**
+     * If filter location is null, init it with last known position
+     */
+    private fun initBaseLocation() {
+        if (filterViewModel.location == null) {
+            val l = PositionManager.getInstance(context!!).getLastKnownPosition()
+            l?.let {
+                filterViewModel.location = Location(l.latitude, l.longitude)
+            }
         }
     }
 }
