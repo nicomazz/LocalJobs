@@ -14,14 +14,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.esp.localjobs.LoginViewModel
-import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
-import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
-import com.esp.localjobs.LoginViewModel.AuthenticationState.UNAUTHENTICATED
+import com.esp.localjobs.viewModels.LoginViewModel
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.AUTHENTICATED
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.data.repository.JobsRepository
+import com.esp.localjobs.managers.GeoHashUtils
+import com.esp.localjobs.viewModels.AddViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_add.*
@@ -32,7 +33,7 @@ private const val TAG = "AddFragment"
  * Fragment used to push a job/proposal to remote db
  */
 class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener {
-
+    private val addViewModel: AddViewModel by activityViewModels()
     private val loginViewModel: LoginViewModel by activityViewModels()
 
     private var selectedLocation: Location? = null
@@ -135,27 +136,45 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
 
         Log.d(TAG, "$type, $title, $location, $range, $salary, $description")
 
+        // TODO replace snackbars with a loading bar
+        addViewModel.status.observe(viewLifecycleOwner, Observer { status ->
+            when (status) {
+                AddViewModel.AddStatus.WAITING -> {
+                    // show loading
+                }
+                AddViewModel.AddStatus.SUCCESS -> {
+                    Snackbar.make(
+                        activity!!.findViewById<View>(android.R.id.content),
+                        getString(R.string.add_job_success),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                    findNavController().popBackStack()
+                }
+                AddViewModel.AddStatus.FAILURE -> {
+
+                    Snackbar.make(
+                        activity!!.findViewById<View>(android.R.id.content),
+                        getString(R.string.add_job_failure),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        })
+
+
         when (type) {
             "job" -> {
-                JobsRepository().add(
-                    Job(title, description, location, city, salary, true, loginViewModel.getUserId()!!),
-                    onSuccess = {
-                        Snackbar.make(
-                            activity!!.findViewById<View>(android.R.id.content),
-                            getString(R.string.add_job_success),
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                        findNavController().popBackStack()
-                    },
-                    onFailure = { e: Exception ->
-                        Log.d(TAG, "failure adding job, error: $e")
-                        Snackbar.make(
-                            activity!!.findViewById<View>(android.R.id.content),
-                            getString(R.string.add_job_failure),
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                    }
+                val job = Job(
+                    title,
+                    description,
+                    GeoHashUtils.encode(location.latitude, location.longitude),
+                    listOf(location.latitude, location.longitude),
+                    city,
+                    salary,
+                    false,
+                    loginViewModel.getUserId()
                 )
+                addViewModel.addJobToRepository(job)
             }
             "proposal" -> {
                 // Proposal(title, description, location, city, salary, range, true, "uid")
