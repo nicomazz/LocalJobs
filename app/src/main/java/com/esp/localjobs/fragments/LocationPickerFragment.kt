@@ -25,7 +25,8 @@ import java.util.Locale
 private const val TAG = "LocationPickerFragmet"
 
 class LocationPickerFragment(
-    private val locationPickedCallback: OnLocationPickedListener
+    private val locationPickedCallback: OnLocationPickedListener,
+    private val startLocation: Location?
 ) : DialogFragment(), View.OnClickListener {
 
     private lateinit var mapBoxMap: MapboxMap
@@ -83,7 +84,10 @@ class LocationPickerFragment(
             mapBoxMap = map
             map.setStyle(Style.MAPBOX_STREETS) { }
             hovering_marker.visibility = View.VISIBLE
-            navigateToLastKnownPosition()
+            if (startLocation == null)
+                navigateToLastKnownPosition()
+            else
+                navigateToPosition(startLocation)
         }
     }
 
@@ -138,14 +142,18 @@ class LocationPickerFragment(
      */
     private fun navigateToLastKnownPosition() {
         val location = PositionManager.getInstance(context!!).getLastKnownPosition()
-
         if (location == null) {
             Toast.makeText(context!!, "Last position unknown", Toast.LENGTH_LONG).show()
             return
         }
-
         hovering_marker.setImageResource(R.drawable.ic_location_on_blue_900_36dp)
+        navigateToPosition(Location(location.latitude, location.longitude))
+    }
 
+    /**
+     * Center the map view on given location.
+     */
+    private fun navigateToPosition(location: Location) {
         // center view on user location
         val cameraPosition = CameraPosition.Builder()
             .target(
