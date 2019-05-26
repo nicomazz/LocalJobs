@@ -12,5 +12,4 @@ open class LocalJobsApplication : Application() {
             .repositoryModule(RepositoryModule())
             .build()
     }
-
 }
