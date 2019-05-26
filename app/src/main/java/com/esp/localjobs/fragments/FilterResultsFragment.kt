@@ -61,7 +61,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
         addressEditText.setOnClickListener {
             val fm = activity?.supportFragmentManager
             if (fm != null) {
-                val locationPickerFragment = LocationPickerFragment(this)
+                val locationPickerFragment = LocationPickerFragment(this, filterViewModel.location)
                 locationPickerFragment.show(fm, "location_picker_fragment")
             }
         }
@@ -82,21 +82,31 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
      */
     override fun onLocationPicked(location: Location) {
         userSelectedLocation = location
-        locationEditText.setText(location.city)
+        val locationText =
+            if (location.city != null) location.city
+            else getString(R.string.coordinates, location.latitude.toString(), location.longitude.toString())
+        locationEditText.setText(locationText)
     }
 
     private fun updateView() {
         rangeTextView.text = filterViewModel.range.toString()
         rangeSeekBar.progress = filterViewModel.range
         minSalaryEditText.setText(filterViewModel.minSalary.toString())
-        locationEditText.setText(filterViewModel.location?.city ?: "")
+        filterViewModel.location?.let {
+            val locationText =
+                if (it.city != null) it.city
+                else getString(R.string.coordinates, it.latitude.toString(), it.longitude.toString())
+            locationEditText.setText(locationText)
+        }
     }
 
     private fun updateViewModel() {
         filterViewModel.query = searchView.query.toString()
         filterViewModel.range = rangeTextView.text.toString().toInt()
         filterViewModel.minSalary = minSalaryEditText.text.toString().toInt()
-        filterViewModel.location = userSelectedLocation
+        userSelectedLocation?.let {
+            filterViewModel.location = it
+        }
     }
 
     /**

@@ -14,7 +14,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
+import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
+import com.google.firebase.firestore.GeoPoint
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
@@ -24,6 +26,7 @@ import kotlinx.android.synthetic.main.fragment_jobs.view.*
  */
 class JobsFragment : Fragment() {
     private val jobsViewModel: JobsViewModel by activityViewModels()
+    private val filterViewModel: FilterViewModel by activityViewModels()
 
     val adapter = GroupAdapter<ViewHolder>()
 
@@ -44,7 +47,15 @@ class JobsFragment : Fragment() {
             Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
             adapter.update(jobs?.map { JobItem(it) } ?: listOf())
         })
-        jobsViewModel.loadJobs()
+
+        // Listen for jobs near user selected location or his last known position.
+        // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
+        filterViewModel.getLocation(context!!)?.let {
+            jobsViewModel.loadJobs(
+                GeoPoint(it.latitude, it.longitude),
+                filterViewModel.range.toDouble()
+            )
+        } ?: jobsViewModel.loadJobs()
     }
 
     private fun setupJobList(view: View) {

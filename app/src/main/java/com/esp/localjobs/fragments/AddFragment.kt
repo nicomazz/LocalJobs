@@ -14,13 +14,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.esp.localjobs.LoginViewModel
-import com.esp.localjobs.LoginViewModel.AuthenticationState.AUTHENTICATED
-import com.esp.localjobs.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
-import com.esp.localjobs.LoginViewModel.AuthenticationState.UNAUTHENTICATED
+import com.esp.localjobs.viewModels.LoginViewModel
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.AUTHENTICATED
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.R
+import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.viewModels.AddViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_add.*
 
 private const val TAG = "AddFragment"
@@ -29,7 +32,7 @@ private const val TAG = "AddFragment"
  * Fragment used to push a job/proposal to remote db
  */
 class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener {
-
+    private val addViewModel: AddViewModel by activityViewModels()
     private val loginViewModel: LoginViewModel by activityViewModels()
 
     private var selectedLocation: Location? = null
@@ -52,6 +55,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         setupDistanceSeekbarUI()
         submit_button.setOnClickListener { onSubmit() }
         setupLocationEditTextUI()
+        setupRadioButton()
     }
 
     private fun ensureLogin() {
@@ -80,7 +84,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
     private fun setupLocationEditTextUI() {
         location_edit_text.setOnClickListener {
             fragmentManager?.let { fm ->
-                val locationPickerFragment = LocationPickerFragment(this)
+                val locationPickerFragment = LocationPickerFragment(this, null)
                 locationPickerFragment.show(fm, "location_picker_fragment")
             }
         }
@@ -99,33 +103,92 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         })
     }
 
+    private fun setupRadioButton() {
+        type_radio_group.setOnCheckedChangeListener { _, checkedId ->
+            val type = view?.findViewById<RadioButton>(checkedId)?.tag
+            when (type) {
+                "job" -> range_div.visibility = View.GONE
+                "proposal" -> range_div.visibility = View.VISIBLE
+                else -> TODO()
+            }
+        }
+    }
+
     /**
      * Called when submit button is pressed
      */
     private fun onSubmit() {
+        if (!validateForm())
+            return
+
         // retrieve content of the form
         val selectedTypeId = type_radio_group.checkedRadioButtonId
         val type = view?.findViewById<RadioButton>(selectedTypeId)
             ?.tag // the tag is how we identify the type inside data object
         val title = title_edit_text.text.toString()
-        val location = selectedLocation?.latitude.toString() + ' ' + selectedLocation?.longitude.toString()
-        val range = range_seekbar.progress
+        // val location = selectedLocation?.latitude.toString() + ' ' + selectedLocation?.longitude.toString()
+        val location = GeoPoint(selectedLocation!!.latitude, selectedLocation!!.longitude)
+        val city = location_edit_text.text.toString()
+        val range = range_seekbar.progress.toString()
         val salary = salary_edit_text.text.toString()
         val description = description_edit_text.text.toString()
 
-        // check for required fields
-        if (type == null) Log.e(TAG, "null radio button selection")
-        title_view.error = if (title.isEmpty()) "Title is required" else null
-
         Log.d(TAG, "$type, $title, $location, $range, $salary, $description")
-        // TODO submit content
+
+        // TODO replace snackbars with a loading bar
+        addViewModel.status.observe(viewLifecycleOwner, Observer { status ->
+            when (status) {
+                AddViewModel.AddStatus.WAITING -> {
+                    // show loading
+                }
+                AddViewModel.AddStatus.SUCCESS -> {
+                    Snackbar.make(
+                        activity!!.findViewById<View>(android.R.id.content),
+                        getString(R.string.add_job_success),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                    findNavController().popBackStack()
+                }
+                AddViewModel.AddStatus.FAILURE -> {
+
+                    Snackbar.make(
+                        activity!!.findViewById<View>(android.R.id.content),
+                        getString(R.string.add_job_failure),
+                        Snackbar.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        })
+
+        when (type) {
+            "job" -> {
+                val job = Job(
+                    title = title,
+                    description = description,
+                    g = null,
+                    l = listOf(location.latitude, location.longitude),
+                    city = city,
+                    salary = salary,
+                    active = true,
+                    uid = loginViewModel.getUserId()
+                )
+                addViewModel.addJobToRepository(job)
+            }
+            "proposal" -> {
+                // Proposal(title, description, location, city, salary, range, true, "uid")
+            }
+            else -> TODO()
+        }
     }
 
     /**
      * Called when apply button is pressed in LocationPickerFragment
      */
     override fun onLocationPicked(location: Location) {
-        location_edit_text.setText(location.city)
+        val locationText =
+            if (location.city != null) location.city
+            else getString(R.string.coordinates, location.latitude.toString(), location.longitude.toString())
+        location_edit_text.setText(locationText)
         selectedLocation = location
     }
 
@@ -135,5 +198,18 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
      */
     private fun setRangeTextView(value: Int) {
         range_value.text = getString(R.string.distance, value)
+    }
+
+    private fun validateForm(): Boolean {
+        var anyError = false
+        if (selectedLocation == null) {
+            location_view.error = "Please pick a location"
+            anyError = true
+        }
+        if (title_edit_text.text.toString().isEmpty()) {
+            title_view.error = "Please insert a title"
+            anyError = true
+        }
+        return !anyError
     }
 }

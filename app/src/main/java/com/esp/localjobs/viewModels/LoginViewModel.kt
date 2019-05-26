@@ -1,4 +1,4 @@
-package com.esp.localjobs
+package com.esp.localjobs.viewModels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -29,4 +29,6 @@ class LoginViewModel : ViewModel() {
     fun refuseAuthentication() {
         authenticationState.value = AuthenticationState.UNAUTHENTICATED
     }
+
+    fun getUserId(): String? = FirebaseAuth.getInstance().currentUser?.uid
 }

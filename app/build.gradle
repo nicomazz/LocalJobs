@@ -8,6 +8,10 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 
 apply plugin: 'kotlin-android-extensions'
 
+androidExtensions {
+    experimental = true
+}
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -36,6 +40,7 @@ android {
 repositories {
     jcenter()
     mavenCentral()
+    maven { url 'https://jitpack.io' } // geo queries
 }
 
 
@@ -85,6 +90,8 @@ dependencies {
     // picasso image loader
     implementation 'com.squareup.picasso:picasso:2.71828'
 
+    // location queries
+    implementation 'com.github.imperiumlabs:GeoFirestore-Android:v1.2.1'
 }
 
 // ktlint
