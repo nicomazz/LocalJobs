@@ -8,6 +8,8 @@ import com.google.firebase.firestore.GeoPoint
 import org.imperiumlabs.geofirestore.GeoFirestore
 import org.imperiumlabs.geofirestore.GeoQuery
 import org.imperiumlabs.geofirestore.GeoQueryDataEventListener
+import java.lang.Exception
+import java.lang.RuntimeException
 
 class JobsRepository : FirebaseDatabaseRepository<Job>() {
     override fun getRootNode() = "jobs"
@@ -42,7 +44,6 @@ class JobsRepository : FirebaseDatabaseRepository<Job>() {
                     Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
                 }
             }
-
             override fun onDocumentExited(p0: DocumentSnapshot?) {
                 try {
                     p0?.toObject(Job::class.java)?.let {
@@ -59,12 +60,39 @@ class JobsRepository : FirebaseDatabaseRepository<Job>() {
                     callback.onError(it)
                 }
             }
-
             // TODO we could recalculate distance from user and update it
-            override fun onDocumentMoved(p0: DocumentSnapshot?, p1: GeoPoint?) {}
-
-            override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) {}
-            override fun onGeoQueryReady() {}
+            override fun onDocumentMoved(p0: DocumentSnapshot?, p1: GeoPoint?) { }
+            override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) { }
+            override fun onGeoQueryReady() { }
         })
+    }
+
+    /**
+     * As we are using GeoFirestore, we need to encode latitude and longitude using geohashing.
+     * This solution uses a two-step addition which is not optimal ( an interruption / error in the middle of the
+     * addition might leave inconsistent data in out remote db )
+     */
+    override fun add(
+        item: Job,
+        onSuccess: (() -> Unit)?,
+        onFailure: ((e: Exception) -> Unit)?
+    ) {
+        val id = collection.document().id
+        collection.document(id)
+            .set(item)
+            .addOnSuccessListener {
+                // once the job has been added, set hashed location
+                geoFirestore.setLocation(id, GeoPoint(item.l[0]!!, item.l[1]!!)) { geoException ->
+                    if (geoException == null)
+                        onSuccess?.invoke()
+                    else { // if there has been an error with hashed location, try to delete inconsistent data
+                        collection.document(id).delete()
+                        onFailure?.invoke(geoException)
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                onFailure?.invoke(exception)
+            }
     }
 }

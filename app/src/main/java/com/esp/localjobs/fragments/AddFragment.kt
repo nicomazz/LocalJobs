@@ -21,8 +21,6 @@ import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENT
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.managers.GeoHashUtils
-import com.esp.localjobs.viewModels.AddViewModel
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_add.*
@@ -164,14 +162,14 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         when (type) {
             "job" -> {
                 val job = Job(
-                    title,
-                    description,
-                    GeoHashUtils.encode(location.latitude, location.longitude),
-                    listOf(location.latitude, location.longitude),
-                    city,
-                    salary,
-                    false,
-                    loginViewModel.getUserId()
+                    title = title,
+                    description = description,
+                    g = null,
+                    l = listOf(location.latitude, location.longitude),
+                    city = city,
+                    salary = salary,
+                    active = true,
+                    uid = loginViewModel.getUserId()
                 )
                 addViewModel.addJobToRepository(job)
             }

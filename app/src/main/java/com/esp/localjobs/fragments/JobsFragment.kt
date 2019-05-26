@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
+import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.managers.PositionManager
 import com.esp.localjobs.viewModels.FilterViewModel
