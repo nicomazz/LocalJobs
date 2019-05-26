@@ -10,9 +10,6 @@ import org.imperiumlabs.geofirestore.GeoQuery
 import org.imperiumlabs.geofirestore.GeoQueryDataEventListener
 import java.lang.Exception
 import java.lang.RuntimeException
-import java.util.concurrent.Semaphore
-import java.util.concurrent.locks.Lock
-
 
 class JobsRepository : FirebaseDatabaseRepository<Job>() {
     override fun getRootNode() = "jobs"
