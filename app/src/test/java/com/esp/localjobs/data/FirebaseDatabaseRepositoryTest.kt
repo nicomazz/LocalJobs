@@ -3,10 +3,10 @@ package com.esp.localjobs.data
 import android.content.Context
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.core.app.ApplicationProvider
+import com.esp.localjobs.DI.DaggerViewModelInjector
 import com.esp.localjobs.LocalJobsApplication
 import com.esp.localjobs.data.MockRepository.Companion.NUMBER_OF_JOBS
 import com.esp.localjobs.fragments.JobsFragment
-import com.esp.localjobs.viewModels.DaggerViewModelInjector
 import com.squareup.picasso.Picasso
 import org.junit.Assert.assertEquals
 import org.junit.Before

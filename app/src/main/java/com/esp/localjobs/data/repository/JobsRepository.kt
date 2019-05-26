@@ -8,14 +8,11 @@ import com.google.firebase.firestore.GeoPoint
 import org.imperiumlabs.geofirestore.GeoFirestore
 import org.imperiumlabs.geofirestore.GeoQuery
 import org.imperiumlabs.geofirestore.GeoQueryDataEventListener
-import java.lang.Exception
-import java.lang.RuntimeException
-
 
 class JobsRepository : FirebaseDatabaseRepository<Job>() {
     override fun getRootNode() = "jobs"
     val jobs = ArrayList<Job>()
-    val  geoFirestore = GeoFirestore(collection)
+    val geoFirestore = GeoFirestore(collection)
     var geoQuery: GeoQuery? = null
 
     /**
@@ -33,7 +30,7 @@ class JobsRepository : FirebaseDatabaseRepository<Job>() {
         jobs.clear()
         geoQuery = geoFirestore.queryAtLocation(location, range)
 
-        (geoQuery as GeoQuery).addGeoQueryDataEventListener( object : GeoQueryDataEventListener {
+        (geoQuery as GeoQuery).addGeoQueryDataEventListener(object : GeoQueryDataEventListener {
             override fun onDocumentEntered(p0: DocumentSnapshot?, p1: GeoPoint?) {
                 try {
                     p0?.toObject(Job::class.java)?.let {
@@ -42,9 +39,10 @@ class JobsRepository : FirebaseDatabaseRepository<Job>() {
                         callback.onSuccess(jobs)
                     }
                 } catch (e: RuntimeException) {
-                    Log.d("JobsRepository", "Could not deserialize ${p0?.data.toString()}")
+                    Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
                 }
             }
+
             override fun onDocumentExited(p0: DocumentSnapshot?) {
                 try {
                     p0?.toObject(Job::class.java)?.let {
@@ -52,7 +50,7 @@ class JobsRepository : FirebaseDatabaseRepository<Job>() {
                         callback.onSuccess(jobs)
                     }
                 } catch (e: RuntimeException) {
-                    Log.d("JobsRepository", "Could not deserialize ${p0?.data.toString()}")
+                    Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
                 }
             }
 
@@ -61,12 +59,12 @@ class JobsRepository : FirebaseDatabaseRepository<Job>() {
                     callback.onError(it)
                 }
             }
+
             // TODO we could recalculate distance from user and update it
-            override fun onDocumentMoved(p0: DocumentSnapshot?, p1: GeoPoint?) { }
-            override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) { }
-            override fun onGeoQueryReady() { }
+            override fun onDocumentMoved(p0: DocumentSnapshot?, p1: GeoPoint?) {}
 
+            override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) {}
+            override fun onGeoQueryReady() {}
         })
-
     }
 }

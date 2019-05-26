@@ -97,7 +97,6 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
                 if (it.city != null) it.city
                 else getString(R.string.coordinates, it.latitude.toString(), it.longitude.toString())
             locationEditText.setText(locationText)
-
         }
     }
 
