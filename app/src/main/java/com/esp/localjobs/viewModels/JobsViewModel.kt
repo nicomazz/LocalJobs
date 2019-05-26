@@ -3,19 +3,25 @@ package com.esp.localjobs.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.esp.localjobs.LocalJobsApplication
 import com.esp.localjobs.data.base.BaseLocationRepository
 import com.esp.localjobs.data.base.FirebaseDatabaseRepository
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.data.repository.JobsRepository
+import javax.inject.Inject
 
 class JobsViewModel : ViewModel() {
 
     private val _jobs = MutableLiveData<List<Job>?>()
-    private var repository: BaseLocationRepository<Job> = JobsRepository()
+    @Inject
+    lateinit var repository: BaseLocationRepository<Job> //= JobsRepository()
 
     val jobs: LiveData<List<Job>?>
         get() = _jobs
+
+    init {
+        LocalJobsApplication.components.inject(this)
+    }
 
     fun loadJobs() {
         repository.addListener(object : FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job> {

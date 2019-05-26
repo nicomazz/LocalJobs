@@ -8,9 +8,7 @@ apply plugin: "androidx.navigation.safeargs.kotlin"
 
 apply plugin: 'kotlin-android-extensions'
 
-androidExtensions {
-    experimental = true
-}
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 28
@@ -36,6 +34,11 @@ android {
     lintOptions {
         warning 'InvalidPackage'
     }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
 }
 repositories {
     jcenter()
@@ -43,6 +46,9 @@ repositories {
     maven { url 'https://jitpack.io' } // geo queries
 }
 
+androidExtensions {
+    experimental = true
+}
 
 configurations {
     ktlint
@@ -89,6 +95,17 @@ dependencies {
 
     // picasso image loader
     implementation 'com.squareup.picasso:picasso:2.71828'
+
+
+    //dagger
+    implementation 'com.google.dagger:dagger:2.17'
+    kapt 'com.google.dagger:dagger-compiler:2.17'
+
+    //robolectric tests
+    testImplementation 'org.robolectric:robolectric:4.2'
+    debugImplementation 'androidx.fragment:fragment-testing:1.1.0-alpha09'
+    testImplementation 'org.mockito:mockito-core:1.10.19'
+
 
     // location queries
     implementation 'com.github.imperiumlabs:GeoFirestore-Android:v1.2.1'
