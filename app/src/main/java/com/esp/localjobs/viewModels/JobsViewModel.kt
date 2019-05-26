@@ -40,17 +40,18 @@ class JobsViewModel : ViewModel() {
     }
 
     fun loadJobs(location: GeoPoint, range: Double) {
-        repository.addLocationListener(
-            location,
-            range,
-            object : FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job> {
-                override fun onSuccess(result: List<Job>) {
-                    _jobs.postValue(result)
-                }
+        // todo generalize addlocationlistener to base interface
+        /* repository.addLocationListener(
+             location,
+             range,
+             object : FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job> {
+                 override fun onSuccess(result: List<Job>) {
+                     _jobs.postValue(result)
+                 }
 
-                override fun onError(e: Exception) {
-                    _jobs.postValue(null)
-                }
-            })
+                 override fun onError(e: Exception) {
+                     _jobs.postValue(null)
+                 }
+             })*/
     }
 }

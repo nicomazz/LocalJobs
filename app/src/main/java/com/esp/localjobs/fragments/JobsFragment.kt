@@ -16,7 +16,6 @@ import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
-import com.google.firebase.firestore.GeoPoint
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
@@ -52,8 +51,8 @@ class JobsFragment : Fragment() {
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
         filterViewModel.getLocation(context!!)?.let {
             jobsViewModel.loadJobs(
-                GeoPoint(it.latitude, it.longitude),
-                filterViewModel.range.toDouble()
+                //  GeoPoint(it.latitude, it.longitude),
+                //    filterViewModel.range.toDouble()
             )
         } ?: jobsViewModel.loadJobs()
     }

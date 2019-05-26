@@ -16,7 +16,7 @@ class MockRepository : BaseRepository<Job> {
 
     private val fakeJobs = 0.until(NUMBER_OF_JOBS).map { Job() }
     override fun add(item: Job, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun update(
@@ -26,15 +26,15 @@ class MockRepository : BaseRepository<Job> {
         onSuccess: (() -> Unit)?,
         onFailure: ((e: Exception) -> Unit)?
     ) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun update(id: String, newItem: Job, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun delete(id: String, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented") // To change body of created functions use File | Settings | File Templates.
     }
 
     override fun addListener(
@@ -44,7 +44,6 @@ class MockRepository : BaseRepository<Job> {
         firebaseCallback.onSuccess(fakeJobs)
     }
 }
-
 
 class MockRepositoryModule : RepositoryModule() {
 
