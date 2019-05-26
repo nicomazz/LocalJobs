@@ -50,10 +50,9 @@ class JobsFragment : Fragment() {
             adapter.update(jobs?.map { JobItem(it) } ?: listOf())
         })
 
-        initBaseLocation()
         // Listen for jobs near user selected location or his last known position.
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
-        filterViewModel.location?.let {
+        filterViewModel.getLocation(context!!)?.let {
             jobsViewModel.loadJobs(
                 GeoPoint(it.latitude, it.longitude),
                 filterViewModel.range.toDouble()
@@ -70,18 +69,6 @@ class JobsFragment : Fragment() {
         val searchView = menu.findItem(R.id.action_search_item).actionView as SearchView
         searchView.setOnSearchClickListener {
             findNavController().navigate(R.id.action_destination_jobs_to_destination_filter)
-        }
-    }
-
-    /**
-     * If filter location is null, init it with last known position
-     */
-    private fun initBaseLocation() {
-        if (filterViewModel.location == null) {
-            val l = PositionManager.getInstance(context!!).getLastKnownPosition()
-            l?.let {
-                filterViewModel.location = Location(l.latitude, l.longitude)
-            }
         }
     }
 }
