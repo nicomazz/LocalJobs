@@ -10,6 +10,9 @@ import org.imperiumlabs.geofirestore.GeoQuery
 import org.imperiumlabs.geofirestore.GeoQueryDataEventListener
 import java.lang.Exception
 import java.lang.RuntimeException
+import java.util.concurrent.Semaphore
+import java.util.concurrent.locks.Lock
+
 
 class JobsRepository : FirebaseDatabaseRepository<Job>() {
     override fun getRootNode() = "jobs"
@@ -65,5 +68,34 @@ class JobsRepository : FirebaseDatabaseRepository<Job>() {
             override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) { }
             override fun onGeoQueryReady() { }
         })
+    }
+
+    /**
+     * As we are using GeoFirestore, we need to encode latitude and longitude using geohashing.
+     * This solution uses a two-step addition which is not optimal ( an interruption / error in the middle of the
+     * addition might leave inconsistent data in out remote db )
+     */
+    override fun add(
+        item: Job,
+        onSuccess: (() -> Unit)?,
+        onFailure: ((e: Exception) -> Unit)?
+    ) {
+        val id = collection.document().id
+        collection.document(id)
+            .set(item)
+            .addOnSuccessListener {
+                // once the job has been added, set hashed location
+                geoFirestore.setLocation(id, GeoPoint(item.l[0]!!, item.l[1]!!)) { geoException ->
+                    if (geoException == null)
+                        onSuccess?.invoke()
+                    else { // if there has been an error with hashed location, try to delete inconsistent data
+                        collection.document(id).delete()
+                        onFailure?.invoke(geoException)
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                onFailure?.invoke(exception)
+            }
     }
 }
