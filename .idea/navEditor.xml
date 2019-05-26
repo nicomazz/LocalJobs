@@ -8,6 +8,11 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
+                  <entry key="action_destination_add">
+                    <value>
+                      <LayoutPositions />
+                    </value>
+                  </entry>
                   <entry key="destination_add">
                     <value>
                       <LayoutPositions>

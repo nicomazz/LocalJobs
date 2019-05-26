@@ -67,8 +67,8 @@ class JobsFragment : Fragment() {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_search, menu)
-        val searchView = menu.findItem(R.id.action_search_item).actionView as SearchView
-        searchView.setOnSearchClickListener {
+        val searchView = menu.findItem(R.id.action_search_item)?.actionView as? SearchView
+        searchView?.setOnSearchClickListener {
             findNavController().navigate(R.id.action_destination_jobs_to_destination_filter)
         }
     }
