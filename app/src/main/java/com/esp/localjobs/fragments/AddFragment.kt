@@ -161,7 +161,6 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
             }
         })
 
-
         when (type) {
             "job" -> {
                 val job = Job(
