@@ -1,6 +1,7 @@
 package com.esp.localjobs.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -8,11 +9,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.esp.localjobs.viewModels.LoginViewModel
 import com.esp.localjobs.R
+import com.esp.localjobs.adapters.JobItem
+import com.esp.localjobs.viewModels.JobsViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.fragment_jobs.view.*
 import kotlinx.android.synthetic.main.fragment_user_profile.*
 
 /**
@@ -26,6 +33,10 @@ class UserProfileFragment : Fragment() {
     private val args: UserProfileFragmentArgs by navArgs()
 
     private val viewModel: LoginViewModel by activityViewModels()
+    private val myJobsViewModel: JobsViewModel by activityViewModels()
+
+    private val adapter = GroupAdapter<ViewHolder>()
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,6 +62,14 @@ class UserProfileFragment : Fragment() {
             viewModel.logOut()
             findNavController().popBackStack()
         }
+
+        // setup job list
+        view.jobList.adapter = adapter
+
+        myJobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
+            adapter.update(jobs?.map { JobItem(it) } ?: listOf())
+        })
+        myJobsViewModel.loadJobs()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

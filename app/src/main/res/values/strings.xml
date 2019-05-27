@@ -36,4 +36,5 @@
     <string name="add_job_failure">Error adding job :(</string>
     <string name="auth_required">You must be authenticated to use this function</string>
     <string name="coordinates">%1$s, %2$s</string>
+    <string name="your_jobs_header">Your jobs</string>
 </resources>
