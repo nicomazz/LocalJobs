@@ -14,7 +14,6 @@ class JobsViewModel : ViewModel() {
     private val _jobs = MutableLiveData<List<Job>?>()
     private var repository: BaseLocationRepository<Job> = JobsRepository()
 
-
     val jobs: LiveData<List<Job>?>
         get() = _jobs
 

@@ -2,7 +2,6 @@ package com.esp.localjobs.data.base
 
 import android.util.Log
 import com.esp.localjobs.data.models.Coordinates
-import com.esp.localjobs.data.models.Location
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import org.imperiumlabs.geofirestore.GeoFirestore
@@ -11,7 +10,7 @@ import org.imperiumlabs.geofirestore.GeoQueryDataEventListener
 import java.lang.RuntimeException
 import kotlin.Exception
 
-abstract class FirebaseDatabaseLocationRepository<Model: Coordinates> :
+abstract class FirebaseDatabaseLocationRepository<Model : Coordinates> :
     FirebaseDatabaseRepository<Model>(),
     BaseLocationRepository<Model> {
 
@@ -87,7 +86,7 @@ abstract class FirebaseDatabaseLocationRepository<Model: Coordinates> :
                 // once the job has been added, set GeoFirestore location
                 setItemLocation(
                     id,
-                    //coordinates = Location(coords.l[0]!!, coords.l[1]!!),
+                    // coordinates = Location(coords.l[0]!!, coords.l[1]!!),
                     coordinates = item as Coordinates,
                     onSuccess = onSuccess,
                     onFailure = { exception ->

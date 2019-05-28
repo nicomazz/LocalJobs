@@ -1,7 +1,6 @@
 package com.esp.localjobs.data.base
 
 import com.esp.localjobs.data.models.Coordinates
-import com.esp.localjobs.data.models.Location
 
 interface BaseLocationRepository<T> : BaseRepository<T> {
 

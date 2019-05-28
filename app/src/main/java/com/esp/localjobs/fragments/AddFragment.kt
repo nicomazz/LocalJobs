@@ -23,7 +23,6 @@ import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.viewModels.AddViewModel
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_add.*
 
 private const val TAG = "AddFragment"
