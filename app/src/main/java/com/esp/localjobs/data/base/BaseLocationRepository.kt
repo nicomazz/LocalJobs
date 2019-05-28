@@ -1,5 +1,6 @@
 package com.esp.localjobs.data.base
 
+import com.esp.localjobs.data.models.Coordinates
 import com.esp.localjobs.data.models.Location
 
 interface BaseLocationRepository<T> : BaseRepository<T> {
@@ -11,7 +12,7 @@ interface BaseLocationRepository<T> : BaseRepository<T> {
      * @param callback called on data update event or error
      */
     fun addLocationListener(
-        location: Location,
+        coordinates: Coordinates,
         range: Double,
         callback: BaseRepository.RepositoryCallback<T>
     )
@@ -21,7 +22,7 @@ interface BaseLocationRepository<T> : BaseRepository<T> {
      */
     fun setItemLocation(
         id: String,
-        location: Location,
+        coordinates: Coordinates,
         onSuccess: (() -> Unit)? = null,
         onFailure: ((e: Exception) -> Unit)? = null
     )

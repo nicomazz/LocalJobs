@@ -158,8 +158,8 @@ class LocationPickerFragment(
         val cameraPosition = CameraPosition.Builder()
             .target(
                 LatLng(
-                    location.latitude,
-                    location.longitude)
+                    location.l[0],
+                    location.l[1])
             )
             .zoom(16.0)
             .bearing(180.0)

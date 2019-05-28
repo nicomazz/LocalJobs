@@ -12,7 +12,6 @@ import com.esp.localjobs.data.repository.JobsRepository
 class JobsViewModel : ViewModel() {
 
     private val _jobs = MutableLiveData<List<Job>?>()
-    // private var repository: BaseRepository<Job> = JobsRepository()
     private var repository: BaseLocationRepository<Job> = JobsRepository()
 
 

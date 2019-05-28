@@ -11,19 +11,16 @@ import org.imperiumlabs.geofirestore.GeoQueryDataEventListener
 import java.lang.RuntimeException
 import kotlin.Exception
 
-abstract class FirebaseDatabaseLocationRepository<Model> :
+abstract class FirebaseDatabaseLocationRepository<Model: Coordinates> :
     FirebaseDatabaseRepository<Model>(),
     BaseLocationRepository<Model> {
 
-    init {
-        // TODO check if Model can be casted to Coordinates
-    }
     val geoFirestore = GeoFirestore(collection)
     var geoQuery: GeoQuery? = null
     val itemsList = ArrayList<Model>()
 
     override fun addLocationListener(
-        location: Location,
+        coordinates: Coordinates,
         range: Double,
         callback: BaseRepository.RepositoryCallback<Model>
     ) {
@@ -31,7 +28,7 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
         geoQuery?.removeAllListeners()
         itemsList.clear()
 
-        val geoQueryCenter = GeoPoint(location.latitude, location.longitude)
+        val geoQueryCenter = coordinatesToGeoPoint(coordinates)
         geoQuery = geoFirestore.queryAtLocation(geoQueryCenter, range)
 
         (geoQuery as GeoQuery).addGeoQueryDataEventListener(object : GeoQueryDataEventListener {
@@ -82,11 +79,6 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
         onSuccess: (() -> Unit)?,
         onFailure: ((e: Exception) -> Unit)?
     ) {
-        val coords = item as Coordinates
-        if (coords.l[0] == null || coords.l[1] == null) {
-            onFailure?.invoke(Exception("Null coordinates"))
-            return
-        }
         val id = collection.document().id
 
         collection.document(id)
@@ -95,7 +87,8 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
                 // once the job has been added, set GeoFirestore location
                 setItemLocation(
                     id,
-                    location = Location(coords.l[0]!!, coords.l[1]!!),
+                    //coordinates = Location(coords.l[0]!!, coords.l[1]!!),
+                    coordinates = item as Coordinates,
                     onSuccess = onSuccess,
                     onFailure = { exception ->
                         delete(id) // try to delete inconsistent data
@@ -125,16 +118,21 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
 
     override fun setItemLocation(
         id: String,
-        location: Location,
+        coordinates: Coordinates,
         onSuccess: (() -> Unit)?,
         onFailure: ((e: Exception) -> Unit)?
     ) {
-        val geoPoint = GeoPoint(location.latitude, location.longitude)
+        val geoPoint = coordinatesToGeoPoint(coordinates)
         geoFirestore.setLocation(id, geoPoint) { geoException ->
             if (geoException == null)
                 onSuccess?.invoke()
             else
                 onFailure?.invoke(geoException)
         }
+    }
+
+    private fun coordinatesToGeoPoint(coordinates: Coordinates): GeoPoint {
+        val (lat, lng) = coordinates.latLng()
+        return GeoPoint(lat, lng)
     }
 }

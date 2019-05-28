@@ -53,7 +53,7 @@ class JobsFragment : Fragment() {
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
         filterViewModel.getLocation(context!!)?.let {
             jobsViewModel.loadJobs(
-                Location(it.latitude, it.longitude),
+                it,
                 filterViewModel.range.toDouble()
             )
         } ?: jobsViewModel.loadJobs()
