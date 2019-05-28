@@ -165,7 +165,6 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
                 val job = Job(
                     title = title,
                     description = description,
-                    g = null,
                     l = listOf(location.latitude, location.longitude),
                     city = city,
                     salary = salary,
