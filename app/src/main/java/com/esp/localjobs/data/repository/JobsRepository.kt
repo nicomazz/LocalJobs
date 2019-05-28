@@ -13,61 +13,10 @@ import java.lang.RuntimeException
 
 class JobsRepository : FirebaseDatabaseRepository<Job>() {
     override fun getRootNode() = "jobs"
-    val jobs = ArrayList<Job>()
-    val geoFirestore = GeoFirestore(collection)
-    var geoQuery: GeoQuery? = null
+
 
     /**
-     * Listen for jobs inside the circle defined by location and range.
-     * @param location: center of the range of interest
-     * @param range: maximum distance between @param location and a job
-     * @param callback called on data update event or error
-     */
-    fun addLocationListener(
-        location: GeoPoint,
-        range: Double,
-        callback: FirebaseDatabaseRepositoryCallback<Job>
-    ) {
-        geoQuery?.removeAllListeners()
-        jobs.clear()
-        geoQuery = geoFirestore.queryAtLocation(location, range)
-
-        (geoQuery as GeoQuery).addGeoQueryDataEventListener(object : GeoQueryDataEventListener {
-            override fun onDocumentEntered(p0: DocumentSnapshot?, p1: GeoPoint?) {
-                try {
-                    p0?.toObject(Job::class.java)?.let {
-                        if (!jobs.contains(it))
-                            jobs.add(it)
-                        callback.onSuccess(jobs)
-                    }
-                } catch (e: RuntimeException) {
-                    Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
-                }
-            }
-            override fun onDocumentExited(p0: DocumentSnapshot?) {
-                try {
-                    p0?.toObject(Job::class.java)?.let {
-                        jobs.remove(it)
-                        callback.onSuccess(jobs)
-                    }
-                } catch (e: RuntimeException) {
-                    Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
-                }
-            }
-
-            override fun onGeoQueryError(p0: Exception?) {
-                p0?.let {
-                    callback.onError(it)
-                }
-            }
-            // TODO we could recalculate distance from user and update it
-            override fun onDocumentMoved(p0: DocumentSnapshot?, p1: GeoPoint?) { }
-            override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) { }
-            override fun onGeoQueryReady() { }
-        })
-    }
-
-    /**
+     * // TODO generalize this: we don't know if an item (Model) uses location -> find a way
      * As we are using GeoFirestore, we need to encode latitude and longitude using geohashing.
      * This solution uses a two-step addition which is not optimal ( an interruption / error in the middle of the
      * addition might leave inconsistent data in out remote db )

@@ -14,6 +14,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
+import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.google.firebase.firestore.GeoPoint
@@ -52,7 +53,7 @@ class JobsFragment : Fragment() {
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
         filterViewModel.getLocation(context!!)?.let {
             jobsViewModel.loadJobs(
-                GeoPoint(it.latitude, it.longitude),
+                Location(it.latitude, it.longitude),
                 filterViewModel.range.toDouble()
             )
         } ?: jobsViewModel.loadJobs()

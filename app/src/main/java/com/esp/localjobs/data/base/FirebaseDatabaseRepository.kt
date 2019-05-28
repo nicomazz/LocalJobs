@@ -1,8 +1,16 @@
 package com.esp.localjobs.data.base
 
+import android.util.Log
+import com.esp.localjobs.data.models.Location
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ListenerRegistration
+import org.imperiumlabs.geofirestore.GeoFirestore
+import org.imperiumlabs.geofirestore.GeoQuery
+import org.imperiumlabs.geofirestore.GeoQueryDataEventListener
+import java.lang.RuntimeException
 import java.lang.reflect.ParameterizedType
 
 abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
@@ -13,38 +21,96 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
     private lateinit var listener: BaseValueEventListener<Model>
     val db = FirebaseFirestore.getInstance()
     var collection = db.collection(getRootNode())
-
     var registration: ListenerRegistration? = null
+    val geoFirestore = GeoFirestore(collection)
+    var geoQuery: GeoQuery? = null
+    val itemsList = ArrayList<Model>()
 
     abstract fun getRootNode(): String
+
     @Suppress("UNCHECKED_CAST")
     private val typeOfT = (javaClass
         .genericSuperclass as ParameterizedType)
         .actualTypeArguments[0] as Class<Model>
 
+
     override fun addListener(
-        firebaseCallback: FirebaseDatabaseRepositoryCallback<Model>,
-        filter: ((CollectionReference) -> CollectionReference)?
+        callback:  BaseRepository.RepositoryCallback<Model>,
+        filter: ((Any) -> Any)?
     ) {
-        this.firebaseCallback = firebaseCallback
-        listener = BaseValueEventListener(firebaseCallback, typeOfT)
+        (callback as? FirebaseDatabaseRepositoryCallback<Model>)?.let {
+            firebaseCallback = it
+            listener = BaseValueEventListener(it, typeOfT)
+        } ?: throw Exception("Couldn't cast repository callback to firebase callback")
+
         registration?.remove()
         var dbCollection = collection
         filter?.let {
-            dbCollection = filter(dbCollection)
+            dbCollection = filter(dbCollection) as CollectionReference
         }
         registration = dbCollection.addSnapshotListener(listener)
+    }
+
+    /**
+     * Listen for jobs inside the circle defined by location and range.
+     * @param location: center of the range of interest
+     * @param range: maximum distance between @param location and a job
+     * @param callback called on data update event or error
+     */
+    override fun addLocationListener(
+        location: Location,
+        range: Double,
+        callback: BaseRepository.RepositoryCallback<Model>
+    ) {
+        // atm it can't hold >1 listeners
+        geoQuery?.removeAllListeners()
+        itemsList.clear()
+
+        val geoQueryCenter = GeoPoint(location.latitude, location.longitude)
+        geoQuery = geoFirestore.queryAtLocation(geoQueryCenter, range)
+
+        (geoQuery as GeoQuery).addGeoQueryDataEventListener(object : GeoQueryDataEventListener {
+            override fun onDocumentEntered(p0: DocumentSnapshot?, p1: GeoPoint?) {
+                try {
+
+                    p0?.toObject(typeOfT)?.let {
+                        if (!itemsList.contains(it))
+                            itemsList.add(it)
+                        callback.onSuccess(itemsList)
+                    }
+                } catch (e: RuntimeException) {
+                    Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
+                    throw e
+                }
+            }
+            override fun onDocumentExited(p0: DocumentSnapshot?) {
+                try {
+                    p0?.toObject(typeOfT)?.let {
+                        itemsList.remove(it)
+                        callback.onSuccess(itemsList)
+                    }
+                } catch (e: RuntimeException) {
+                    Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
+                    throw e
+                }
+            }
+
+            override fun onGeoQueryError(p0: java.lang.Exception?) {
+                p0?.let {
+                    callback.onError(it)
+                }
+            }
+            // TODO we could recalculate distance from user and update it
+            override fun onDocumentMoved(p0: DocumentSnapshot?, p1: GeoPoint?) { }
+            override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) { }
+            override fun onGeoQueryReady() { }
+        })
     }
 
     fun removeListener() {
         registration?.remove()
     }
 
-    /**
-     * Add a document in the collection auto-generating an ID for it.
-     * @param onSuccess called on add succeeded
-     * @param onFailure called on add failure
-     */
     override fun add(item: Model, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
         collection.document()
             .set(item!!)
@@ -54,16 +120,7 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
             }
     }
 
-    /**
-     * Update document fields of a document in the collection with the given ID.
-     * This function is recommended as consume less data traffic.
-     * @param id document id
-     * @param oldItem
-     * @param newItem
-     * @param onSuccess called on update succeeded
-     * @param onFailure called on update failure
-     */
-    override fun update(
+    override fun patch(
         id: String,
         oldItem: Model,
         newItem: Model,
@@ -90,13 +147,6 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
             }
     }
 
-    /**
-     * Overwrite a document in the collection with an ID.
-     * @param id document id
-     * @param newItem will replace the old item
-     * @param onSuccess called on update succeeded
-     * @param onFailure called on update failure
-     */
     override fun update(id: String, newItem: Model, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
         collection.document(id)
             .set(newItem!!)
@@ -106,12 +156,6 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
             }
     }
 
-    /**
-     * Delete a document inside the collection given an ID
-     * @param id document id
-     * @param onSuccess called on delete succeeded
-     * @param onFailure called on update failure
-     */
     override fun delete(id: String, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
         collection.document(id)
             .delete()
@@ -121,9 +165,5 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
             }
     }
 
-    interface FirebaseDatabaseRepositoryCallback<T> {
-        fun onSuccess(result: List<T>)
-
-        fun onError(e: Exception)
-    }
+    interface FirebaseDatabaseRepositoryCallback<T> : BaseRepository.RepositoryCallback<T>
 }
