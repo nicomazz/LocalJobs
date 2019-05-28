@@ -2,7 +2,7 @@ package com.esp.localjobs.data.base
 
 import com.esp.localjobs.data.models.Coordinates
 
-interface BaseLocationRepository<T> : BaseRepository<T> {
+interface BaseLocationRepository<T : Coordinates> : BaseRepository<T> {
 
     /**
      * Listen for items inside the circle defined by location and range.
