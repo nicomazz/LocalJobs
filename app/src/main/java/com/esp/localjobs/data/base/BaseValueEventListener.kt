@@ -1,12 +1,9 @@
 package com.esp.localjobs.data.base
 
-import android.icu.lang.UCharacter.GraphemeClusterBreak.T
 import android.util.Log
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.EventListener
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
-import java.lang.Exception
 
 class BaseValueEventListener<Model>(
     private val callback: FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Model>,
@@ -31,10 +28,5 @@ class BaseValueEventListener<Model>(
 
         callback.onSuccess(list)
     }
-
-    inline fun <reified R : Model> f(obj: DocumentSnapshot): R {
-        return obj.toObject(R::class.java)!!
-    }
 }
 
-inline fun <reified T : Any> foo() = T::class.java

@@ -1,11 +1,9 @@
 package com.esp.localjobs.data.base
 
 import com.esp.localjobs.data.models.Identifiable
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import java.lang.reflect.ParameterizedType
-import kotlin.collections.HashMap
 
 abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository<Model> {
 
@@ -25,8 +23,8 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
         .actualTypeArguments[0] as Class<Model>
 
     override fun addListener(
-        callback: BaseRepository.RepositoryCallback<Model>,
-        filter: ((Any) -> Any)?
+        callback: BaseRepository.RepositoryCallback<Model>, filters: JobFilters
+
     ) {
         (callback as? FirebaseDatabaseRepositoryCallback<Model>)?.let {
             firebaseCallback = it
@@ -34,10 +32,13 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
         } ?: throw Exception("Couldn't cast repository callback to firebase callback")
 
         registration?.remove()
-        var dbCollection = collection
-        filter?.let {
-            dbCollection = filter(dbCollection) as CollectionReference
-        }
+        val dbCollection = collection
+        //todo implement filtering using JobFilters
+        /*  filter?.let {
+              dbCollection = filter(dbCollection) as CollectionReference
+          }*/
+        //dbCollection.ad
+
         registration = dbCollection.addSnapshotListener(listener)
     }
 
@@ -87,7 +88,7 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
 
     override fun update(id: String, newItem: Model, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
         collection.document(id)
-            .set(newItem!!)
+            .set(newItem)
             .also { task ->
                 onSuccess?.let { task.addOnSuccessListener { it() } }
                 onFailure?.let { task.addOnFailureListener { exception -> it(exception) } }
@@ -102,6 +103,7 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
                 onFailure?.let { task.addOnFailureListener { exception -> it(exception) } }
             }
     }
+
 
     interface FirebaseDatabaseRepositoryCallback<T> : BaseRepository.RepositoryCallback<T>
 }

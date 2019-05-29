@@ -8,8 +8,6 @@ import com.google.firebase.firestore.GeoPoint
 import org.imperiumlabs.geofirestore.GeoFirestore
 import org.imperiumlabs.geofirestore.GeoQuery
 import org.imperiumlabs.geofirestore.GeoQueryDataEventListener
-import java.lang.RuntimeException
-import kotlin.Exception
 
 abstract class FirebaseDatabaseLocationRepository<Model> :
     FirebaseDatabaseRepository<Model>(),
@@ -18,6 +16,7 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
 
     val geoFirestore = GeoFirestore(collection)
     var geoQuery: GeoQuery? = null
+    // todo substitute this with a better data structure
     val itemsList = ArrayList<Model>()
 
     override fun addLocationListener(
@@ -32,11 +31,11 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
         val geoQueryCenter = coordinatesToGeoPoint(coordinates)
         geoQuery = geoFirestore.queryAtLocation(geoQueryCenter, range)
 
-        (geoQuery as GeoQuery).addGeoQueryDataEventListener(object : GeoQueryDataEventListener {
+        geoQuery?.addGeoQueryDataEventListener(object : GeoQueryDataEventListener {
             override fun onDocumentEntered(p0: DocumentSnapshot?, p1: GeoPoint?) {
                 try {
 
-                    p0?.toObject(typeOfT)?.let {
+                    p0?.toObject()?.let {
                         if (!itemsList.contains(it))
                             itemsList.add(it)
                         callback.onSuccess(itemsList)
@@ -46,9 +45,10 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
                     throw e
                 }
             }
+
             override fun onDocumentExited(p0: DocumentSnapshot?) {
                 try {
-                    p0?.toObject(typeOfT)?.let {
+                    p0?.toObject()?.let {
                         itemsList.remove(it)
                         callback.onSuccess(itemsList)
                     }
@@ -63,12 +63,15 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
                     callback.onError(it)
                 }
             }
+
             // TODO we could recalculate distance from user and update it
-            override fun onDocumentMoved(p0: DocumentSnapshot?, p1: GeoPoint?) { }
-            override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) { }
-            override fun onGeoQueryReady() { }
+            override fun onDocumentMoved(p0: DocumentSnapshot?, p1: GeoPoint?) {}
+
+            override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) {}
+            override fun onGeoQueryReady() {}
         })
     }
+
 
     /**
      * As we are using GeoFirestore, we need to encode latitude and longitude using geohashing.
@@ -138,4 +141,8 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
         val (lat, lng) = coordinates.latLng()
         return GeoPoint(lat, lng)
     }
+
+    private fun DocumentSnapshot.toObject() = toObject(typeOfT)
 }
+
+
