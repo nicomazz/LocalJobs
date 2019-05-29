@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.repository.JobsRepository
+import java.util.*
 
 class AddViewModel : ViewModel() {
     enum class AddStatus {
@@ -18,6 +19,7 @@ class AddViewModel : ViewModel() {
             get() = _status
 
     fun addJobToRepository(job: Job) {
+        job.id = UUID.randomUUID().toString()
         _status.value = AddStatus.WAITING
         JobsRepository().add(
             job,

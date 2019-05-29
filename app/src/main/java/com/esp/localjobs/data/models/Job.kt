@@ -5,6 +5,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Job(
+    override var id: String = "",
     var title: String? = "",
     var description: String? = "",
     override var l: List<Double> = listOf(0.0, 0.0), // l[0] -> latitude, l[1] -> longitude
@@ -12,4 +13,4 @@ data class Job(
     var salary: String? = "",
     var active: Boolean? = false,
     var uid: String? = ""
-) : Location(listOf(l[0], l[1])), Parcelable
+) : Parcelable, Identifiable, Location(listOf(l[0], l[1]))

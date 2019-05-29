@@ -1,11 +1,13 @@
 package com.esp.localjobs.data.base
 
+import com.esp.localjobs.data.models.Identifiable
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import java.lang.reflect.ParameterizedType
+import kotlin.collections.HashMap
 
-abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
+abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository<Model> {
 
     //    protected var db: Firebase
     private var firebaseCallback: FirebaseDatabaseRepositoryCallback<Model>? = null
@@ -44,8 +46,12 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
     }
 
     override fun add(item: Model, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
-        collection.document()
-            .set(item!!)
+        if (item.id.isEmpty()) {
+            // delegate to Firebase the assignment of an ID
+            item.id = collection.document().id
+        }
+        collection.document(item.id)
+            .set(item)
             .also { task ->
                 onSuccess?.let { task.addOnSuccessListener { it() } }
                 onFailure?.let { task.addOnFailureListener { error -> it(error) } }

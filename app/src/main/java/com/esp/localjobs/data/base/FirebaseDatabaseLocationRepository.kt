@@ -2,6 +2,7 @@ package com.esp.localjobs.data.base
 
 import android.util.Log
 import com.esp.localjobs.data.models.Coordinates
+import com.esp.localjobs.data.models.Identifiable
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import org.imperiumlabs.geofirestore.GeoFirestore
@@ -10,9 +11,10 @@ import org.imperiumlabs.geofirestore.GeoQueryDataEventListener
 import java.lang.RuntimeException
 import kotlin.Exception
 
-abstract class FirebaseDatabaseLocationRepository<Model : Coordinates> :
+abstract class FirebaseDatabaseLocationRepository<Model> :
     FirebaseDatabaseRepository<Model>(),
-    BaseLocationRepository<Model> {
+    BaseLocationRepository<Model>
+        where Model : Identifiable, Model : Coordinates {
 
     val geoFirestore = GeoFirestore(collection)
     var geoQuery: GeoQuery? = null
@@ -78,19 +80,21 @@ abstract class FirebaseDatabaseLocationRepository<Model : Coordinates> :
         onSuccess: (() -> Unit)?,
         onFailure: ((e: Exception) -> Unit)?
     ) {
-        val id = collection.document().id
-
-        collection.document(id)
+        if (item.id.isEmpty()) {
+            // delegate to Firebase the assignment of an ID
+            item.id = collection.document().id
+        }
+        collection.document(item.id)
             .set(item)
             .addOnSuccessListener {
                 // once the job has been added, set GeoFirestore location
                 setItemLocation(
-                    id,
+                    item.id,
                     // coordinates = Location(coords.l[0]!!, coords.l[1]!!),
                     coordinates = item as Coordinates,
                     onSuccess = onSuccess,
                     onFailure = { exception ->
-                        delete(id) // try to delete inconsistent data
+                        delete(item.id) // try to delete inconsistent data
                         onFailure?.invoke(exception)
                     }
                 )

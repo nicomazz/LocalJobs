@@ -1,6 +1,8 @@
 package com.esp.localjobs.data.base
 
-interface BaseRepository<T> {
+import com.esp.localjobs.data.models.Identifiable
+
+interface BaseRepository<T: Identifiable> {
 
     /**
      * Add a document in the collection auto-generating an ID for it.
