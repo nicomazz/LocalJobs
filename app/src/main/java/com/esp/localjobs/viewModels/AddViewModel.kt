@@ -6,7 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.repository.JobsRepository
-import java.util.*
+import java.util.UUID
 
 class AddViewModel : ViewModel() {
     enum class AddStatus {
