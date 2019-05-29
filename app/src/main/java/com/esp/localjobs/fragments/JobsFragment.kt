@@ -24,7 +24,6 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
 import kotlinx.android.synthetic.main.fragment_location_picker.*
 
-
 /**
  * Fragment used to display a list of jobs
  */
@@ -107,7 +106,7 @@ class JobsFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         mapManager.onDestroy()
-        map_view.onDestroy()
+        map_view?.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

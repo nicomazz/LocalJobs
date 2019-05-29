@@ -5,8 +5,6 @@ import android.graphics.Canvas
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.BitmapDrawable
 
-
-
 fun drawableToBitmap(drawable: Drawable): Bitmap {
     if (drawable is BitmapDrawable) {
         if (drawable.bitmap != null) {

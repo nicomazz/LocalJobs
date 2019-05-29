@@ -22,11 +22,8 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset
 
-
-class MapManager(private val context: Context,
-                 private val mapView: MapView
-)
-    : OnMapReadyCallback, MapboxMap.OnMapClickListener {
+class MapManager(private val context: Context, private val mapView: MapView) :
+    OnMapReadyCallback, MapboxMap.OnMapClickListener {
 
     private lateinit var jobs: List<Job>
     private lateinit var mapboxMap: MapboxMap
@@ -46,10 +43,10 @@ class MapManager(private val context: Context,
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
             // generate coordinates feature list
             val markerCoordinates = ArrayList<Feature>()
-            jobs.forEach {job ->
+            jobs.forEach { job ->
                 val latitude = job.l[0]
                 val longitude = job.l[1]
-                if(latitude != null && longitude != null)
+                if (latitude != null && longitude != null)
                     markerCoordinates.add(
                         Feature.fromGeometry(
                             Point.fromLngLat(longitude, latitude)
@@ -59,23 +56,23 @@ class MapManager(private val context: Context,
 
             val jsonSource = FeatureCollection.fromFeatures(markerCoordinates)
 
-            style.getSource("marker-source")?.let {source ->
-                if(source is GeoJsonSource)
+            style.getSource("marker-source")?.let { source ->
+                if (source is GeoJsonSource)
                     source.setGeoJson(jsonSource)
             } ?: style.addSource(GeoJsonSource("marker-source", jsonSource))
 
             // Add the marker image to map
-            //val markerImage = BitmapFactory.decodeResource(
+            // val markerImage = BitmapFactory.decodeResource(
             // context.resources, R.drawable.ic_location_on_blue_900_36dp) <-- this returns null idk why
             val markerDrawable = context.getDrawable(R.drawable.ic_location_on_blue_900_36dp)
-            if(markerDrawable != null) {
+            if (markerDrawable != null) {
                 val markerImage = drawableToBitmap(markerDrawable)
                 style.addImage("my-marker-image", markerImage)
             }
 
             // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
             // middle of the icon being fixed to the coordinate point.
-            if(style.getLayer("marker-layer") == null)
+            if (style.getLayer("marker-layer") == null)
                 style.addLayer(
                     SymbolLayer("marker-layer", "marker-source")
                         .withProperties(
@@ -85,7 +82,7 @@ class MapManager(private val context: Context,
                 )
 
             // Add the selected marker source and layer
-            if(style.getSource("selected-marker") == null)
+            if (style.getSource("selected-marker") == null)
                 style.addSource(GeoJsonSource("selected-marker"))
 
             // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
