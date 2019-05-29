@@ -14,12 +14,16 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
+import com.esp.localjobs.managers.MapManager
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.google.firebase.firestore.GeoPoint
+import com.mapbox.mapboxsdk.Mapbox
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
+import kotlinx.android.synthetic.main.fragment_location_picker.*
+
 
 /**
  * Fragment used to display a list of jobs
@@ -28,7 +32,8 @@ class JobsFragment : Fragment() {
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
 
-    val adapter = GroupAdapter<ViewHolder>()
+    private val adapter = GroupAdapter<ViewHolder>()
+    private lateinit var mapManager: MapManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -36,16 +41,20 @@ class JobsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
+        Mapbox.getInstance(activity!!.applicationContext, getString(R.string.mabBoxToken))
         return inflater.inflate(R.layout.fragment_jobs, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        mapManager = MapManager(view.context, view.map_view)
+
         setupJobList(view)
         jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
             Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
             adapter.update(jobs?.map { JobItem(it) } ?: listOf())
+            mapManager.update(jobs ?: listOf())
         })
 
         // Listen for jobs near user selected location or his last known position.
@@ -68,5 +77,41 @@ class JobsFragment : Fragment() {
         searchView.setOnSearchClickListener {
             findNavController().navigate(R.id.action_destination_jobs_to_destination_filter)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        map_view.onResume()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        map_view.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        map_view.onStop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        map_view.onPause()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        map_view.onLowMemory()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapManager.onDestroy()
+        map_view.onDestroy()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        map_view.onSaveInstanceState(outState)
     }
 }
