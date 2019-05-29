@@ -21,6 +21,7 @@ import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENT
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.utils.LoadingViewDialog
 import com.esp.localjobs.viewModels.AddViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_add.*
@@ -35,6 +36,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
     private val loginViewModel: LoginViewModel by activityViewModels()
 
     private var selectedLocation: Location? = null
+    private lateinit var viewDialog: LoadingViewDialog
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         inflater.inflate(R.layout.fragment_add, container, false).also {
@@ -55,6 +57,8 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         submit_button.setOnClickListener { onSubmit() }
         setupLocationEditTextUI()
         setupRadioButton()
+
+        viewDialog = LoadingViewDialog(activity!!)
     }
 
     private fun ensureLogin() {
@@ -139,9 +143,10 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         addViewModel.status.observe(viewLifecycleOwner, Observer { status ->
             when (status) {
                 AddViewModel.AddStatus.WAITING -> {
-                    // show loading
+                    viewDialog.showDialog()
                 }
                 AddViewModel.AddStatus.SUCCESS -> {
+                    viewDialog.hideDialog()
                     Snackbar.make(
                         activity!!.findViewById<View>(android.R.id.content),
                         getString(R.string.add_job_success),
@@ -150,7 +155,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
                     findNavController().popBackStack()
                 }
                 AddViewModel.AddStatus.FAILURE -> {
-
+                    viewDialog.hideDialog()
                     Snackbar.make(
                         activity!!.findViewById<View>(android.R.id.content),
                         getString(R.string.add_job_failure),
