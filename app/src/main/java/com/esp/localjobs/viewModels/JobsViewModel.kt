@@ -3,16 +3,16 @@ package com.esp.localjobs.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.esp.localjobs.data.base.BaseLocationRepository
 import com.esp.localjobs.data.base.FirebaseDatabaseRepository
 import com.esp.localjobs.data.models.Job
+import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.data.repository.JobsRepository
-import com.google.firebase.firestore.GeoPoint
 
 class JobsViewModel : ViewModel() {
 
     private val _jobs = MutableLiveData<List<Job>?>()
-    // private var repository: BaseRepository<Job> = JobsRepository()
-    private var repository = JobsRepository()
+    private var repository: BaseLocationRepository<Job> = JobsRepository()
 
     val jobs: LiveData<List<Job>?>
         get() = _jobs
@@ -32,7 +32,7 @@ class JobsViewModel : ViewModel() {
         }
     }
 
-    fun loadJobs(location: GeoPoint, range: Double) {
+    fun loadJobs(location: Location, range: Double) {
         repository.addLocationListener(
             location,
             range,
@@ -44,6 +44,7 @@ class JobsViewModel : ViewModel() {
                 override fun onError(e: Exception) {
                     _jobs.postValue(null)
                 }
-        })
+            }
+        )
     }
 }

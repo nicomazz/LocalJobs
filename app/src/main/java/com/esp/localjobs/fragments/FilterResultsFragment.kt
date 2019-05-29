@@ -13,7 +13,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
@@ -24,7 +23,7 @@ import com.google.android.material.textfield.TextInputEditText
  * Fragment used to set filter params (longitude, latitude, range, text)
  */
 class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFragment.OnLocationPickedListener {
-    private val args: FilterResultsFragmentArgs by navArgs()
+    // private val args: FilterResultsFragmentArgs by navArgs()
     private lateinit var rangeTextView: TextView
     private lateinit var rangeSeekBar: SeekBar
     private lateinit var searchView: SearchView
@@ -84,7 +83,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
         userSelectedLocation = location
         val locationText =
             if (location.city != null) location.city
-            else getString(R.string.coordinates, location.latitude.toString(), location.longitude.toString())
+            else getString(R.string.coordinates, location.l[0].toString(), location.l[1].toString())
         locationEditText.setText(locationText)
     }
 
@@ -95,7 +94,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
         filterViewModel.location?.let {
             val locationText =
                 if (it.city != null) it.city
-                else getString(R.string.coordinates, it.latitude.toString(), it.longitude.toString())
+                else getString(R.string.coordinates, it.l[0].toString(), it.l[1].toString())
             locationEditText.setText(locationText)
         }
     }
