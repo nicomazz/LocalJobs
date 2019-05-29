@@ -11,7 +11,6 @@ import androidx.fragment.app.DialogFragment
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.managers.PositionManager
-import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -21,8 +20,6 @@ import com.mapbox.mapboxsdk.maps.Style
 import kotlinx.android.synthetic.main.fragment_location_picker.*
 import java.io.IOException
 import java.util.Locale
-
-private const val TAG = "LocationPickerFragmet"
 
 class LocationPickerFragment(
     private val locationPickedCallback: OnLocationPickedListener,
@@ -37,7 +34,6 @@ class LocationPickerFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Mapbox.getInstance(activity!!.applicationContext, getString(R.string.mabBoxToken))
         return inflater.inflate(R.layout.fragment_location_picker, container, false)
     }
 
@@ -60,13 +56,6 @@ class LocationPickerFragment(
         cancel_button.setOnClickListener(this)
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        // set dialog fragment size (width and height values in fragment_ingredients_details.xml do not work)
-        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-    }
-
     /**
      * This interface should be implemented when using this fragment.
      * onLocationPicked is called when the apply button is pressed
@@ -82,6 +71,11 @@ class LocationPickerFragment(
     private fun setupMapView() {
         mapView.getMapAsync { map ->
             mapBoxMap = map
+
+            // disable tilt and rotate gestures
+            mapBoxMap.uiSettings.isRotateGesturesEnabled = false
+            mapBoxMap.uiSettings.isTiltGesturesEnabled = false
+
             map.setStyle(Style.MAPBOX_STREETS) { }
             hovering_marker.visibility = View.VISIBLE
             if (startLocation == null)
@@ -162,9 +156,46 @@ class LocationPickerFragment(
                     location.longitude)
             )
             .zoom(16.0)
-            .bearing(180.0)
             .tilt(30.0)
             .build()
         mapBoxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        map_view.onResume()
+
+        // set dialog fragment size (width and height values in fragment_ingredients_details.xml do not work)
+        dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mapView.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView.onStop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.onPause()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView.onLowMemory()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapView.onDestroy()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mapView.onSaveInstanceState(outState)
     }
 }

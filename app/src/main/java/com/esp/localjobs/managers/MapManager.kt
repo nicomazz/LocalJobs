@@ -21,12 +21,15 @@ import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset
+import android.animation.ValueAnimator
+
 
 class MapManager(private val context: Context, private val mapView: MapView) :
     OnMapReadyCallback, MapboxMap.OnMapClickListener {
 
     private lateinit var jobs: List<Job>
     private lateinit var mapboxMap: MapboxMap
+    private var markerSelected = false
 
     fun update(jobs: List<Job>) {
         this.jobs = jobs
@@ -40,26 +43,21 @@ class MapManager(private val context: Context, private val mapView: MapView) :
         mapboxMap.uiSettings.isRotateGesturesEnabled = false
         mapboxMap.uiSettings.isTiltGesturesEnabled = false
 
-        mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
-            // generate coordinates feature list
-            val markerCoordinates = ArrayList<Feature>()
-            jobs.forEach { job ->
-                val latitude = job.l[0]
-                val longitude = job.l[1]
-                if (latitude != null && longitude != null)
-                    markerCoordinates.add(
-                        Feature.fromGeometry(
-                            Point.fromLngLat(longitude, latitude)
-                        )
-                    )
-            }
-
+        mapboxMap.style?.let { style ->
+            val markerCoordinates = generateCoordinatesFeatureList()
             val jsonSource = FeatureCollection.fromFeatures(markerCoordinates)
-
             style.getSource("marker-source")?.let { source ->
                 if (source is GeoJsonSource)
                     source.setGeoJson(jsonSource)
-            } ?: style.addSource(GeoJsonSource("marker-source", jsonSource))
+            }
+        } ?: mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+
+            // add coordinates source
+            if (style.getSource("marker-source") != null) {
+                val markerCoordinates = generateCoordinatesFeatureList()
+                val jsonSource = FeatureCollection.fromFeatures(markerCoordinates)
+                style.addSource(GeoJsonSource("marker-source", jsonSource))
+            }
 
             // Add the marker image to map
             // val markerImage = BitmapFactory.decodeResource(
@@ -72,7 +70,7 @@ class MapManager(private val context: Context, private val mapView: MapView) :
 
             // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
             // middle of the icon being fixed to the coordinate point.
-            if (style.getLayer("marker-layer") == null)
+            if (style.getLayer("marker-layer") != null) {
                 style.addLayer(
                     SymbolLayer("marker-layer", "marker-source")
                         .withProperties(
@@ -80,14 +78,15 @@ class MapManager(private val context: Context, private val mapView: MapView) :
                             iconOffset(arrayOf(0f, -9f))
                         )
                 )
+            }
 
             // Add the selected marker source and layer
-            if (style.getSource("selected-marker") == null)
+            if (style.getSource("selected-marker") != null)
                 style.addSource(GeoJsonSource("selected-marker"))
 
             // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
             // middle of the icon being fixed to the coordinate point.
-            if(style.getLayer("selected-marker-layer") == null)
+            if (style.getLayer("selected-marker-layer") != null ) {
                 style.addLayer(
                     SymbolLayer("selected-marker-layer", "selected-marker")
                         .withProperties(
@@ -95,6 +94,7 @@ class MapManager(private val context: Context, private val mapView: MapView) :
                             iconOffset(arrayOf(0f, -9f))
                         )
                 )
+            }
 
             mapboxMap.addOnMapClickListener(this@MapManager)
 
@@ -102,8 +102,83 @@ class MapManager(private val context: Context, private val mapView: MapView) :
         }
     }
 
+    private fun generateCoordinatesFeatureList() : ArrayList<Feature>{
+        val markerCoordinates = ArrayList<Feature>()
+        jobs.forEach { job ->
+            val latitude = job.l[0]
+            val longitude = job.l[1]
+            if (latitude != null && longitude != null)
+                markerCoordinates.add(
+                    Feature.fromGeometry(
+                        Point.fromLngLat(longitude, latitude)
+                    )
+                )
+        }
+        return markerCoordinates
+    }
+
     override fun onMapClick(point: LatLng): Boolean {
+        mapboxMap.style?.let { style ->
+            val selectedMarkerSymbolLayer = style.getLayer("selected-marker-layer") as SymbolLayer
+
+            val pixel = mapboxMap.projection.toScreenLocation(point)
+            val features = mapboxMap.queryRenderedFeatures(pixel, "marker-layer")
+            val selectedFeature = mapboxMap.queryRenderedFeatures(
+                pixel, "selected-marker-layer"
+            )
+
+            if (selectedFeature.size > 0 && markerSelected) {
+                return false
+            }
+
+            if (features.isEmpty()) {
+                if (markerSelected) {
+                    deselectMarker(selectedMarkerSymbolLayer)
+                }
+                return false
+            }
+
+            val source = style.getSourceAs<GeoJsonSource>("selected-marker")
+            source?.setGeoJson(
+                FeatureCollection.fromFeatures(
+                    arrayOf(Feature.fromGeometry(features[0].geometry()))
+                )
+            )
+
+            if (markerSelected) {
+                deselectMarker(selectedMarkerSymbolLayer)
+            }
+            if (features.size > 0) {
+                selectMarker(selectedMarkerSymbolLayer)
+            }
+        }
         return true
+    }
+
+    private fun selectMarker(iconLayer: SymbolLayer) {
+        val markerAnimator = ValueAnimator()
+        markerAnimator.setObjectValues(1f, 2f)
+        markerAnimator.duration = 300
+        markerAnimator.addUpdateListener { animator ->
+            iconLayer.setProperties(
+                PropertyFactory.iconSize(animator.animatedValue as Float)
+            )
+        }
+        markerAnimator.start()
+        markerSelected = true
+    }
+
+    private fun deselectMarker(iconLayer: SymbolLayer) {
+        val markerAnimator = ValueAnimator()
+        markerAnimator.setObjectValues(2f, 1f)
+        markerAnimator.duration = 300
+        markerAnimator.addUpdateListener { animator ->
+            iconLayer.setProperties(
+                PropertyFactory.iconSize(animator.animatedValue as Float)
+            )
+        }
+        markerAnimator.start()
+        markerSelected = false
     }
 
     /**
@@ -138,4 +213,5 @@ class MapManager(private val context: Context, private val mapView: MapView) :
     fun onDestroy() {
         mapboxMap.removeOnMapClickListener(this)
     }
+
 }

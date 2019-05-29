@@ -19,6 +19,7 @@ import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.google.firebase.firestore.GeoPoint
 import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.maps.MapView
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
@@ -33,6 +34,7 @@ class JobsFragment : Fragment() {
 
     private val adapter = GroupAdapter<ViewHolder>()
     private lateinit var mapManager: MapManager
+    private lateinit var mapView: MapView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,14 +42,14 @@ class JobsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setHasOptionsMenu(true)
-        Mapbox.getInstance(activity!!.applicationContext, getString(R.string.mabBoxToken))
         return inflater.inflate(R.layout.fragment_jobs, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mapManager = MapManager(view.context, view.map_view)
+        mapView = view.findViewById(R.id.map_view)
+        mapManager = MapManager(view.context, mapView)
 
         setupJobList(view)
         jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
@@ -80,37 +82,37 @@ class JobsFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        map_view.onResume()
+        mapView.onResume()
     }
 
     override fun onStart() {
         super.onStart()
-        map_view.onStart()
+        mapView.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        map_view.onStop()
+        mapView.onStop()
     }
 
     override fun onPause() {
         super.onPause()
-        map_view.onPause()
+        mapView.onPause()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        map_view.onLowMemory()
+        mapView.onLowMemory()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mapManager.onDestroy()
-        map_view?.onDestroy()
+        mapView.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        map_view.onSaveInstanceState(outState)
+        mapView.onSaveInstanceState(outState)
     }
 }
