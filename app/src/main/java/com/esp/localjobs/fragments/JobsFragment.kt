@@ -63,6 +63,8 @@ class JobsFragment : Fragment() {
                 GeoPoint(it.latitude, it.longitude),
                 filterViewModel.range.toDouble()
             )
+
+            mapManager.mapCenterLocation = it // center map on selected location
         } ?: jobsViewModel.loadJobs()
     }
 

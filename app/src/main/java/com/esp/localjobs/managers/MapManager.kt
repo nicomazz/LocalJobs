@@ -26,15 +26,23 @@ import android.animation.ValueAnimator
 class MapManager(private val context: Context, private val mapView: MapView) :
     OnMapReadyCallback, MapboxMap.OnMapClickListener {
 
+    var mapCenterLocation: Location? = null
     private lateinit var jobs: List<Job>
     private lateinit var mapboxMap: MapboxMap
     private var markerSelected = false
 
+    /**
+     * Reload map showing the markers of the jobs's locations
+     * @param jobs Jobs which locations should be pinned on the map
+     */
     fun update(jobs: List<Job>) {
         this.jobs = jobs
         mapView.getMapAsync(this)
     }
 
+    /**
+     * Called after getMapAsync to reload the map
+     */
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
 
@@ -43,7 +51,8 @@ class MapManager(private val context: Context, private val mapView: MapView) :
         mapboxMap.uiSettings.isTiltGesturesEnabled = false
 
         mapboxMap.style?.let { style ->
-            val markerCoordinates = generateCoordinatesFeatureList()
+            // if style is already set update only the markers
+            val markerCoordinates = generateCoordinatesFeatureList(jobs)
             val jsonSource = FeatureCollection.fromFeatures(markerCoordinates)
             style.getSource("marker-source")?.let { source ->
                 if (source is GeoJsonSource)
@@ -53,7 +62,7 @@ class MapManager(private val context: Context, private val mapView: MapView) :
 
             // add coordinates source
             if (style.getSource("marker-source") == null) {
-                val markerCoordinates = generateCoordinatesFeatureList()
+                val markerCoordinates = generateCoordinatesFeatureList(jobs)
                 val jsonSource = FeatureCollection.fromFeatures(markerCoordinates)
                 style.addSource(GeoJsonSource("marker-source", jsonSource))
             }
@@ -97,11 +106,14 @@ class MapManager(private val context: Context, private val mapView: MapView) :
 
             mapboxMap.addOnMapClickListener(this@MapManager)
 
-            navigateToLastKnownPosition()
+            centerMap()
         }
     }
 
-    private fun generateCoordinatesFeatureList(): ArrayList<Feature> {
+    /**
+     * Generate coordinates feature collection given a list of jobs
+     */
+    private fun generateCoordinatesFeatureList(jobs: List<Job>): ArrayList<Feature> {
         val markerCoordinates = ArrayList<Feature>()
         jobs.forEach { job ->
             val latitude = job.l[0]
@@ -116,6 +128,9 @@ class MapManager(private val context: Context, private val mapView: MapView) :
         return markerCoordinates
     }
 
+    /**
+     * When a marker is clicked highlight it
+     */
     override fun onMapClick(point: LatLng): Boolean {
         mapboxMap.style?.let { style ->
             val selectedMarkerSymbolLayer = style.getLayer("selected-marker-layer") as SymbolLayer
@@ -154,6 +169,9 @@ class MapManager(private val context: Context, private val mapView: MapView) :
         return true
     }
 
+    /**
+     * Highlight a marker
+     */
     private fun selectMarker(iconLayer: SymbolLayer) {
         val markerAnimator = ValueAnimator()
         markerAnimator.setObjectValues(1f, 2f)
@@ -181,16 +199,19 @@ class MapManager(private val context: Context, private val mapView: MapView) :
     }
 
     /**
-     * If the last known position of the device is not null, center the map view on it and set the hovering
-     * marker color to blue
+     * If the last known position of the device is not null, center the map view on it
      */
-    private fun navigateToLastKnownPosition() {
-        val location = PositionManager.getInstance(context).getLastKnownPosition()
-        if (location == null) {
-            Toast.makeText(context, "Last position unknown", Toast.LENGTH_LONG).show()
-            return
+    private fun centerMap() {
+        var targetLocation = mapCenterLocation
+        if (targetLocation == null) {
+            val location = PositionManager.getInstance(context).getLastKnownPosition()
+            if (location == null) {
+                Toast.makeText(context, "Last position unknown", Toast.LENGTH_LONG).show()
+                return
+            }
+            targetLocation = Location(location.latitude, location.longitude)
         }
-        navigateToPosition(Location(location.latitude, location.longitude))
+        navigateToPosition(targetLocation)
     }
 
     /**
