@@ -18,12 +18,10 @@ import com.esp.localjobs.managers.MapManager
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.google.firebase.firestore.GeoPoint
-import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.maps.MapView
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
-import kotlinx.android.synthetic.main.fragment_location_picker.*
 
 /**
  * Fragment used to display a list of jobs

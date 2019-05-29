@@ -23,7 +23,6 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset
 import android.animation.ValueAnimator
 
-
 class MapManager(private val context: Context, private val mapView: MapView) :
     OnMapReadyCallback, MapboxMap.OnMapClickListener {
 
@@ -53,7 +52,7 @@ class MapManager(private val context: Context, private val mapView: MapView) :
         } ?: mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
 
             // add coordinates source
-            if (style.getSource("marker-source") != null) {
+            if (style.getSource("marker-source") == null) {
                 val markerCoordinates = generateCoordinatesFeatureList()
                 val jsonSource = FeatureCollection.fromFeatures(markerCoordinates)
                 style.addSource(GeoJsonSource("marker-source", jsonSource))
@@ -70,7 +69,7 @@ class MapManager(private val context: Context, private val mapView: MapView) :
 
             // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
             // middle of the icon being fixed to the coordinate point.
-            if (style.getLayer("marker-layer") != null) {
+            if (style.getLayer("marker-layer") == null) {
                 style.addLayer(
                     SymbolLayer("marker-layer", "marker-source")
                         .withProperties(
@@ -81,12 +80,12 @@ class MapManager(private val context: Context, private val mapView: MapView) :
             }
 
             // Add the selected marker source and layer
-            if (style.getSource("selected-marker") != null)
+            if (style.getSource("selected-marker") == null)
                 style.addSource(GeoJsonSource("selected-marker"))
 
             // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
             // middle of the icon being fixed to the coordinate point.
-            if (style.getLayer("selected-marker-layer") != null ) {
+            if (style.getLayer("selected-marker-layer") == null) {
                 style.addLayer(
                     SymbolLayer("selected-marker-layer", "selected-marker")
                         .withProperties(
@@ -102,7 +101,7 @@ class MapManager(private val context: Context, private val mapView: MapView) :
         }
     }
 
-    private fun generateCoordinatesFeatureList() : ArrayList<Feature>{
+    private fun generateCoordinatesFeatureList(): ArrayList<Feature> {
         val markerCoordinates = ArrayList<Feature>()
         jobs.forEach { job ->
             val latitude = job.l[0]
@@ -213,5 +212,4 @@ class MapManager(private val context: Context, private val mapView: MapView) :
     fun onDestroy() {
         mapboxMap.removeOnMapClickListener(this)
     }
-
 }
