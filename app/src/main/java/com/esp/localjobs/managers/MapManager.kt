@@ -38,6 +38,11 @@ class MapManager(private val context: Context,
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.mapboxMap = mapboxMap
+
+        // disable tilt and rotate gestures
+        mapboxMap.uiSettings.isRotateGesturesEnabled = false
+        mapboxMap.uiSettings.isTiltGesturesEnabled = false
+
         mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
             // generate coordinates feature list
             val markerCoordinates = ArrayList<Feature>()
@@ -128,9 +133,7 @@ class MapManager(private val context: Context,
                     location.latitude,
                     location.longitude)
             )
-            .zoom(16.0)
-            .bearing(180.0)
-            .tilt(30.0)
+            .zoom(12.0)
             .build()
         mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000)
     }
