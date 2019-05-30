@@ -60,7 +60,7 @@ interface BaseRepository<T : Identifiable> {
 
     fun addListener(
         callback: RepositoryCallback<T>,
-        filters: JobFilters
+        filters: JobFilters?
     )
 
     interface RepositoryCallback<T> {

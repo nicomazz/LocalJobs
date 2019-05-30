@@ -23,8 +23,8 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
         .actualTypeArguments[0] as Class<Model>
 
     override fun addListener(
-        callback: BaseRepository.RepositoryCallback<Model>, filters: JobFilters
-
+        callback: BaseRepository.RepositoryCallback<Model>,
+        filters: JobFilters?
     ) {
         (callback as? FirebaseDatabaseRepositoryCallback<Model>)?.let {
             firebaseCallback = it
