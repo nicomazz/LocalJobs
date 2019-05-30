@@ -6,7 +6,7 @@
              xmlns:app="http://schemas.android.com/apk/res-auto"
              tools:context=".fragments.JobsFragment">
 
-    <fragment class="com.esp.localjobs.fragments.MapFragment"
+    <fragment class="com.esp.localjobs.fragments.JobsMapFragment"
         android:id="@+id/map_fragment"
         android:layout_width="match_parent"
         android:layout_height="200dp"
