@@ -12,7 +12,8 @@ class AddViewModel : ViewModel() {
     enum class AddStatus {
         WAITING,
         SUCCESS,
-        FAILURE
+        FAILURE,
+        NONE
     }
     private val _status = MutableLiveData<AddStatus?>()
     val status: LiveData<AddStatus?>
@@ -25,11 +26,13 @@ class AddViewModel : ViewModel() {
             callback = object : BaseRepository.EventCallback {
                 override fun onSuccess() {
                     _status.value = AddStatus.SUCCESS
+                    _status.value = AddStatus.NONE
                 }
 
                 override fun onFailure(e: Exception) {
                     Log.e("AddViewModel", e.toString())
                     _status.value = AddStatus.FAILURE
+                    _status.value = AddStatus.NONE
                 }
             }
         )
