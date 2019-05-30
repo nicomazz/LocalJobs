@@ -91,7 +91,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/location_edit_text"
+                        android:id="@+id/filter_location_edit_text"
                         android:focusable="false"/>
 
             </com.google.android.material.textfield.TextInputLayout>
