@@ -33,11 +33,11 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
 
         registration?.remove()
         val dbCollection = collection
-        //todo implement filtering using JobFilters
+        // todo implement filtering using JobFilters
         /*  filter?.let {
               dbCollection = filter(dbCollection) as CollectionReference
           }*/
-        //dbCollection.ad
+        // dbCollection.ad
 
         registration = dbCollection.addSnapshotListener(listener)
     }
@@ -102,7 +102,6 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
             .addOnSuccessListener { callback?.onSuccess() }
             .addOnFailureListener { e -> callback?.onFailure(e) }
     }
-
 
     interface FirebaseDatabaseRepositoryCallback<T> : BaseRepository.RepositoryCallback<T>
 }

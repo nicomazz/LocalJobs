@@ -67,7 +67,6 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
         })
     }
 
-
     /**
      * As we are using GeoFirestore, we need to encode latitude and longitude using geohashing.
      * This solution uses a two-step addition which is not optimal ( an interruption / error in the middle of the
@@ -139,5 +138,3 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
 
     private fun DocumentSnapshot.toObject() = toObject(typeOfT)
 }
-
-

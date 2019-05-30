@@ -1,6 +1,5 @@
 package com.esp.localjobs.fragments
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,14 +9,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.SeekBar
-import android.widget.TextView
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.textfield.TextInputEditText
 import kotlinx.android.synthetic.main.fragment_add.*
 import kotlinx.android.synthetic.main.fragment_add.range_value
 import kotlinx.android.synthetic.main.fragment_filter_results.*
@@ -31,7 +27,6 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
 
     private var userSelectedLocation: Location? = null
     private lateinit var searchView: SearchView
-
 
     override fun onCreateView(
         inflater: LayoutInflater,

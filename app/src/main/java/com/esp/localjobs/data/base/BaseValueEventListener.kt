@@ -29,4 +29,3 @@ class BaseValueEventListener<Model>(
         callback.onSuccess(list)
     }
 }
-
