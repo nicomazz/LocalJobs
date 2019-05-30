@@ -8,9 +8,13 @@ data class Job(
     override var id: String = "",
     var title: String? = "",
     var description: String? = "",
-    override var l: List<Double> = listOf(0.0, 0.0), // l[0] -> latitude, l[1] -> longitude
-    override var city: String? = "",
+    var l: List<Double> = listOf(0.0, 0.0), // l[0] -> latitude, l[1] -> longitude
+    var city: String? = "",
     var salary: String? = "",
     var active: Boolean? = false,
     var uid: String? = ""
-) : Parcelable, Identifiable, Location(listOf(l[0], l[1]))
+) : Parcelable, Identifiable, Localizable {
+    override fun latLng(): Pair<Double, Double> {
+        return Pair(l[0], l[1])
+    }
+}
