@@ -10,7 +10,7 @@ import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.managers.PositionManager
+import com.esp.localjobs.utils.PositionManager
 import com.mapbox.mapboxsdk.Mapbox
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
@@ -141,7 +141,7 @@ class LocationPickerFragment(
      * marker color to blue
      */
     private fun navigateToLastKnownPosition() {
-        val location = PositionManager.getInstance(context!!).getLastKnownPosition()
+        val location = PositionManager.getLastKnownPosition(context!!)
         if (location == null) {
             Toast.makeText(context!!, "Last position unknown", Toast.LENGTH_LONG).show()
             return
