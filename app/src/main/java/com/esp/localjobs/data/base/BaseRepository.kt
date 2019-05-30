@@ -2,7 +2,10 @@ package com.esp.localjobs.data.base
 
 import com.esp.localjobs.data.models.Identifiable
 
-interface BaseRepository<T : Identifiable> {
+/**
+ * This interface define a basic sets of method available for any object that provides an ID.
+ */
+interface BaseRepository<T> where T : Identifiable {
 
     /**
      * Add a document in the collection auto-generating an ID for it.
@@ -11,8 +14,7 @@ interface BaseRepository<T : Identifiable> {
      */
     fun add(
         item: T,
-        onSuccess: (() -> Unit)? = null,
-        onFailure: ((e: Exception) -> Unit)? = null
+        callback: EventCallback? = null
     )
 
     /**
@@ -28,8 +30,7 @@ interface BaseRepository<T : Identifiable> {
         id: String,
         oldItem: T,
         newItem: T,
-        onSuccess: (() -> Unit)? = null,
-        onFailure: ((e: Exception) -> Unit)? = null
+        callback: EventCallback? = null
     )
 
     /**
@@ -42,8 +43,7 @@ interface BaseRepository<T : Identifiable> {
     fun update(
         id: String,
         newItem: T,
-        onSuccess: (() -> Unit)? = null,
-        onFailure: ((e: Exception) -> Unit)? = null
+        callback: EventCallback? = null
     )
 
     /**
@@ -54,8 +54,7 @@ interface BaseRepository<T : Identifiable> {
      */
     fun delete(
         id: String,
-        onSuccess: (() -> Unit)? = null,
-        onFailure: ((e: Exception) -> Unit)? = null
+        callback: EventCallback? = null
     )
 
     fun addListener(
@@ -66,6 +65,11 @@ interface BaseRepository<T : Identifiable> {
     interface RepositoryCallback<T> {
         fun onSuccess(result: List<T>)
         fun onError(e: Exception)
+    }
+
+    interface EventCallback {
+        fun onSuccess()
+        fun onFailure(e: Exception)
     }
 }
 

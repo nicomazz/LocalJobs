@@ -3,7 +3,7 @@ package com.esp.localjobs.data.models
 open class Location(
     open var l: List<Double> = listOf(0.0, 0.0), // l[0] -> latitude, l[1] -> longitude
     open var city: String? = ""
-) : Coordinates {
+) : Localizable {
     // more readable constructor
     constructor(latitude: Double, longitude: Double, city: String? = "") : this(listOf(latitude, longitude), city)
 
@@ -12,6 +12,6 @@ open class Location(
     }
 }
 
-interface Coordinates {
+interface Localizable {
     fun latLng(): Pair<Double, Double>
 }

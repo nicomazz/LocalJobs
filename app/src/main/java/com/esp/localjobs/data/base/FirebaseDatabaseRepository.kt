@@ -46,30 +46,28 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
         registration?.remove()
     }
 
-    override fun add(item: Model, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
-        if (item.id.isEmpty()) {
-            // delegate to Firebase the assignment of an ID
-            item.id = collection.document().id
-        }
+    override fun add(
+        item: Model,
+        callback: BaseRepository.EventCallback?
+    ) {
+        item.id = collection.document().id
         collection.document(item.id)
             .set(item)
-            .also { task ->
-                onSuccess?.let { task.addOnSuccessListener { it() } }
-                onFailure?.let { task.addOnFailureListener { error -> it(error) } }
-            }
+            .addOnSuccessListener { callback?.onSuccess() }
+            .addOnFailureListener { e -> callback?.onFailure(e) }
     }
 
     override fun patch(
         id: String,
         oldItem: Model,
         newItem: Model,
-        onSuccess: (() -> Unit)?,
-        onFailure: ((e: Exception) -> Unit)?
+        callback: BaseRepository.EventCallback?
     ) {
 
         if (oldItem == newItem)
             return
 
+        // create an hash map that define which fields must be updated
         val updates = HashMap<String, Any?>()
         // update only different fields
         typeOfT.declaredFields.forEach {
@@ -80,28 +78,29 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
 
         collection.document(id)
             .update(updates)
-            .also { task ->
-                onSuccess?.let { task.addOnSuccessListener { it() } }
-                onFailure?.let { task.addOnFailureListener { exception -> it(exception) } }
-            }
+            .addOnSuccessListener { callback?.onSuccess() }
+            .addOnFailureListener { e -> callback?.onFailure(e) }
     }
 
-    override fun update(id: String, newItem: Model, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
+    override fun update(
+        id: String,
+        newItem: Model,
+        callback: BaseRepository.EventCallback?
+    ) {
         collection.document(id)
             .set(newItem)
-            .also { task ->
-                onSuccess?.let { task.addOnSuccessListener { it() } }
-                onFailure?.let { task.addOnFailureListener { exception -> it(exception) } }
-            }
+            .addOnSuccessListener { callback?.onSuccess() }
+            .addOnFailureListener { e -> callback?.onFailure(e) }
     }
 
-    override fun delete(id: String, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
+    override fun delete(
+        id: String,
+        callback: BaseRepository.EventCallback?
+    ) {
         collection.document(id)
             .delete()
-            .also { task ->
-                onSuccess?.let { task.addOnSuccessListener { it() } }
-                onFailure?.let { task.addOnFailureListener { exception -> it(exception) } }
-            }
+            .addOnSuccessListener { callback?.onSuccess() }
+            .addOnFailureListener { e -> callback?.onFailure(e) }
     }
 
 
