@@ -69,11 +69,13 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
     }
 
     private fun updateViewModel() {
-        filterViewModel.query = searchView.query.toString()
-        filterViewModel.range = range_value.text.toString().toInt()
-        filterViewModel.minSalary = min_salary_edit_text.text.toString().toFloat().toInt()
-        userSelectedLocation?.let {
-            filterViewModel.location = it
+        filterViewModel.apply {
+            searchView.query.toString()
+            range_value.text.toString().toInt()
+            min_salary_edit_text.text.toString().toFloat().toInt()
+            userSelectedLocation?.let { selectedLocation ->
+                location = selectedLocation
+            }
         }
     }
 
@@ -98,7 +100,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
                 // show location picker dialog
                 activity?.supportFragmentManager?.let { fm ->
                     val locationPickerFragment = LocationPickerFragment(this, filterViewModel.location)
-                    locationPickerFragment.show(fm, "location_picker_fragment")
+                    locationPickerFragment.show(fm, LocationPickerFragment.TAG)
                 }
             }
         }
@@ -116,28 +118,32 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
      * The search view is expanded by default and focused on fragment creation.
      */
     private fun setupSearchView() {
-        searchView.setIconifiedByDefault(false) // expand search view
-        searchView.requestFocus()
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                onSearchClick()
-                return true
-            }
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return true
-            }
-        })
+        searchView.apply {
+            setIconifiedByDefault(false) // expand search view
+            requestFocus()
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    onSearchClick()
+                    return true
+                }
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return true
+                }
+            })
+        }
     }
 
     private fun setupSeekBar() {
-        range_seek_bar.max = filterViewModel.MAX_RANGE_KM
-        range_seek_bar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                range_value.text = progress.toString()
-            }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
+        with(range_seek_bar) {
+            max = filterViewModel.MAX_RANGE_KM
+            setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    range_value.text = progress.toString()
+                }
+                override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+                override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            })
+        }
     }
 
     private fun setClickListeners() {

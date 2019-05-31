@@ -88,7 +88,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         location_edit_text.setOnClickListener {
             fragmentManager?.let { fm ->
                 val locationPickerFragment = LocationPickerFragment(this, null)
-                locationPickerFragment.show(fm, "location_picker_fragment")
+                locationPickerFragment.show(fm, LocationPickerFragment.TAG)
             }
         }
     }
@@ -139,34 +139,28 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
 
         Log.d(TAG, "$type, $title, $location, $range, $salary, $description")
 
-        // TODO replace snackbars with a loading bar
-        addViewModel.status.observe(viewLifecycleOwner, Observer { status ->
-            when (status) {
-                AddViewModel.AddStatus.WAITING -> {
-                    viewDialog.showDialog()
-                }
-                AddViewModel.AddStatus.SUCCESS -> {
-                    viewDialog.hideDialog()
-                    Snackbar.make(
-                        activity!!.findViewById<View>(android.R.id.content),
-                        getString(R.string.add_job_success),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                    findNavController().popBackStack()
-                }
-                AddViewModel.AddStatus.FAILURE -> {
-                    viewDialog.hideDialog()
-                    Snackbar.make(
-                        activity!!.findViewById<View>(android.R.id.content),
-                        getString(R.string.add_job_failure),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        })
+        // called after completion of add task
+        val onItemPushSuccess: () -> Unit = {
+            viewDialog.hideDialog()
+            Snackbar.make(
+                activity!!.findViewById<View>(android.R.id.content),
+                getString(R.string.add_job_success),
+                Snackbar.LENGTH_SHORT
+            ).show()
+            findNavController().popBackStack()
+        }
+        val onItemPushFailure = {
+            viewDialog.hideDialog()
+            Snackbar.make(
+                activity!!.findViewById<View>(android.R.id.content),
+                getString(R.string.add_job_failure),
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
 
         when (type) {
             "job" -> {
+                viewDialog.showDialog()
                 val job = Job(
                     title = title,
                     description = description,
@@ -176,7 +170,8 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
                     active = true,
                     uid = loginViewModel.getUserId()
                 )
-                addViewModel.addJobToRepository(job)
+
+                addViewModel.addJobToRepository(job, onSuccess = onItemPushSuccess, onFailure = onItemPushFailure)
             }
             "proposal" -> {
                 // Proposal(title, description, location, city, salary, range, true, "uid")

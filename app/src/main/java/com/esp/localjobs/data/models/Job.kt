@@ -8,6 +8,7 @@ data class Job(
     override var id: String = "",
     var title: String? = "",
     var description: String? = "",
+    // same name used by GeoFirestore, adopted to avoid duplicating data
     var l: List<Double> = listOf(0.0, 0.0), // l[0] -> latitude, l[1] -> longitude
     var city: String? = "",
     var salary: String? = "",

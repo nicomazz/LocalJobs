@@ -22,13 +22,14 @@ import kotlinx.android.synthetic.main.fragment_location_picker.*
 import java.io.IOException
 import java.util.Locale
 
-private const val TAG = "LocationPickerFragmet"
-
 class LocationPickerFragment(
     private val locationPickedCallback: OnLocationPickedListener,
     private val startLocation: Location?
 ) : DialogFragment(), View.OnClickListener {
 
+    companion object {
+        const val TAG = "LocationPickerFragment"
+    }
     private lateinit var mapBoxMap: MapboxMap
     private lateinit var mapView: MapView
 
@@ -141,7 +142,7 @@ class LocationPickerFragment(
      * marker color to blue
      */
     private fun navigateToLastKnownPosition() {
-        val location = PositionManager.getLastKnownPosition(context!!)
+        val location = context?.let { PositionManager.getLastKnownPosition(it) }
         if (location == null) {
             Toast.makeText(context!!, "Last position unknown", Toast.LENGTH_LONG).show()
             return

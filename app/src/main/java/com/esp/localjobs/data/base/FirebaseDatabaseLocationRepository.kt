@@ -32,37 +32,37 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
         geoQuery = geoFirestore.queryAtLocation(geoQueryCenter, range)
 
         geoQuery?.addGeoQueryDataEventListener(object : GeoQueryDataEventListener {
-            override fun onDocumentEntered(p0: DocumentSnapshot?, p1: GeoPoint?) {
+            override fun onDocumentEntered(document: DocumentSnapshot?, position: GeoPoint?) {
                 try {
 
-                    p0?.toObject()?.let {
+                    document?.toObject()?.let {
                         if (!itemsList.contains(it))
                             itemsList.add(it)
                         callback.onSuccess(itemsList)
                     }
                 } catch (e: RuntimeException) {
-                    Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
+                    Log.d("JobsRepository", "Could not deserialize ${document?.data}")
                     throw e
                 }
             }
-            override fun onDocumentExited(p0: DocumentSnapshot?) {
+            override fun onDocumentExited(document: DocumentSnapshot?) {
                 try {
-                    p0?.toObject()?.let {
+                    document?.toObject()?.let {
                         itemsList.remove(it)
                         callback.onSuccess(itemsList)
                     }
                 } catch (e: RuntimeException) {
-                    Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
+                    Log.d("JobsRepository", "Could not deserialize ${document?.data}")
                     throw e
                 }
             }
-            override fun onGeoQueryError(p0: java.lang.Exception?) {
-                p0?.let {
+            override fun onGeoQueryError(e: java.lang.Exception?) {
+                e?.let {
                     callback.onError(it)
                 }
             }
-            override fun onDocumentMoved(p0: DocumentSnapshot?, p1: GeoPoint?) {}
-            override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) {}
+            override fun onDocumentMoved(document: DocumentSnapshot?, position: GeoPoint?) {}
+            override fun onDocumentChanged(document: DocumentSnapshot?, position: GeoPoint?) {}
             override fun onGeoQueryReady() {}
         })
     }
