@@ -9,6 +9,7 @@ import kotlinx.android.synthetic.main.fragment_map.*
 
 /**
  * Map fragment inside LocationPickerFragment displaying a hovering marker at the center
+ * @author Francesco Pham
  */
 class LocationPickerMapFragment(private val startLocation: Location?) : MapFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -18,6 +18,11 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import java.io.IOException
 import java.util.Locale
 
+/**
+ * A simple fragment showing a basic map providing some useful methods.
+ * Extend this class to add more features.
+ * @author Francesco Pham
+ */
 open class MapFragment : Fragment() {
 
     protected lateinit var mapboxMap: MapboxMap

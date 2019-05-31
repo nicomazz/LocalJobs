@@ -21,6 +21,11 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import java.util.ArrayList
 
+/**
+ * A fragment to display a map showing the locations of the  loaded jobs.
+ * To make this I followed this example: https://docs.mapbox.com/android/maps/examples/icon-size-change-on-click/
+ * @author Francesco Pham
+ */
 class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
@@ -122,7 +127,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     }
 
     /**
-     * When a marker is clicked highlight it
+     * When a marker is clicked select it
      */
     override fun onMapClick(point: LatLng): Boolean {
         mapboxMap.style?.let { style ->
@@ -165,7 +170,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     }
 
     /**
-     * Highlight a marker
+     * Select a marker by making it larger
      */
     private fun selectMarker(iconLayer: SymbolLayer) {
         iconLayer.setProperties(
@@ -174,6 +179,9 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         markerSelected = true
     }
 
+    /**
+     * Deselect a marker by restoring the original size
+     */
     private fun deselectMarker(iconLayer: SymbolLayer) {
         iconLayer.setProperties(
             PropertyFactory.iconSize(1f)

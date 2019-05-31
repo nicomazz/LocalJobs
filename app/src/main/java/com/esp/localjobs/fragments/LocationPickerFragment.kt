@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.fragment_location_picker.*
 
 /**
  * A DialogFragment to pick a location displaying a map
+ * @author Francesco Pham
  */
 class LocationPickerFragment(
     private val locationPickedCallback: OnLocationPickedListener,
