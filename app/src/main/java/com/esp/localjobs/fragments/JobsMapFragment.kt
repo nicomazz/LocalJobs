@@ -1,6 +1,5 @@
 package com.esp.localjobs.fragments
 
-import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
@@ -28,7 +27,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
 
     private var markerSelected = false
     private lateinit var jobs: List<Job>
-    private var markerAnimator = ValueAnimator()
     private var mapCenterLocation: Location? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -136,10 +134,12 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
                 pixel, "selected-marker-layer"
             )
 
+            // if feature already selected do nothing
             if (selectedFeature.size > 0 && markerSelected) {
                 return false
             }
 
+            // if clicked on an empty space deselect marker
             if (features.isEmpty()) {
                 if (markerSelected) {
                     deselectMarker(selectedMarkerSymbolLayer)
@@ -168,32 +168,21 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
      * Highlight a marker
      */
     private fun selectMarker(iconLayer: SymbolLayer) {
-        markerAnimator.setObjectValues(1f, 2f)
-        markerAnimator.duration = 300
-        markerAnimator.addUpdateListener { animator ->
-            iconLayer.setProperties(
-                PropertyFactory.iconSize(animator.animatedValue as Float)
-            )
-        }
-        markerAnimator.start()
+        iconLayer.setProperties(
+            PropertyFactory.iconSize(2f)
+        )
         markerSelected = true
     }
 
     private fun deselectMarker(iconLayer: SymbolLayer) {
-        markerAnimator.setObjectValues(2f, 1f)
-        markerAnimator.duration = 300
-        markerAnimator.addUpdateListener { animator ->
-            iconLayer.setProperties(
-                PropertyFactory.iconSize(animator.animatedValue as Float)
-            )
-        }
-        markerAnimator.start()
+        iconLayer.setProperties(
+            PropertyFactory.iconSize(1f)
+        )
         markerSelected = false
     }
 
     override fun onDestroy() {
         super.onDestroy()
         mapboxMap.removeOnMapClickListener(this)
-        markerAnimator.cancel()
     }
 }
