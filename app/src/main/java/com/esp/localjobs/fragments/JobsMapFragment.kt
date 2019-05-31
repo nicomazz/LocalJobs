@@ -19,7 +19,6 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import java.util.ArrayList
 
 /**
  * A fragment to display a map showing the locations of the  loaded jobs.
@@ -34,11 +33,21 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     private lateinit var jobs: List<Job>
     private var mapCenterLocation: Location? = null
 
+    private companion object Map {
+        const val MARKER_SOURCE = "marker-source"
+        const val MARKER_IMAGE = "marker-image"
+        const val MARKER_LAYER = "marker-layer"
+        const val SELECTED_MARKER = "selected-marker"
+        const val SELECTED_MARKER_LAYER = "selected-marker-layer"
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         mapCenterLocation = filterViewModel.getLocation(context!!)
+    }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
         jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
             this.jobs = jobs ?: listOf()
             setupMap(::onMapSetup, mapCenterLocation)
@@ -54,51 +63,50 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
             // if style is already set update only the markers
             val markerCoordinates = generateCoordinatesFeatureList(jobs)
             val jsonSource = FeatureCollection.fromFeatures(markerCoordinates)
-            style.getSource("marker-source")?.let { source ->
+            style.getSource(MARKER_SOURCE)?.let { source ->
                 if (source is GeoJsonSource)
                     source.setGeoJson(jsonSource)
             }
         } ?: mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
 
             // add coordinates source
-            if (style.getSource("marker-source") == null) {
+            if (style.getSource(MARKER_SOURCE) == null) {
                 val markerCoordinates = generateCoordinatesFeatureList(jobs)
                 val jsonSource = FeatureCollection.fromFeatures(markerCoordinates)
-                style.addSource(GeoJsonSource("marker-source", jsonSource))
+                style.addSource(GeoJsonSource(MARKER_SOURCE, jsonSource))
             }
 
-            // Add the marker image to map
             // val markerImage = BitmapFactory.decodeResource(
             // context.resources, R.drawable.ic_location_on_blue_900_36dp) <-- this returns null idk why
             val markerDrawable = context!!.getDrawable(R.drawable.ic_location_on_blue_900_36dp)
             if (markerDrawable != null) {
                 val markerImage = drawableToBitmap(markerDrawable)
-                style.addImage("my-marker-image", markerImage)
+                style.addImage(MARKER_IMAGE, markerImage)
             }
 
             // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
             // middle of the icon being fixed to the coordinate point.
-            if (style.getLayer("marker-layer") == null) {
+            if (style.getLayer(MARKER_LAYER) == null) {
                 style.addLayer(
-                    SymbolLayer("marker-layer", "marker-source")
+                    SymbolLayer(MARKER_LAYER, MARKER_SOURCE)
                         .withProperties(
-                            PropertyFactory.iconImage("my-marker-image"),
+                            PropertyFactory.iconImage(MARKER_IMAGE),
                             PropertyFactory.iconOffset(arrayOf(0f, -9f))
                         )
                 )
             }
 
             // Add the selected marker source and layer
-            if (style.getSource("selected-marker") == null)
-                style.addSource(GeoJsonSource("selected-marker"))
+            if (style.getSource(SELECTED_MARKER) == null)
+                style.addSource(GeoJsonSource(SELECTED_MARKER))
 
             // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
             // middle of the icon being fixed to the coordinate point.
-            if (style.getLayer("selected-marker-layer") == null) {
+            if (style.getLayer(SELECTED_MARKER_LAYER) == null) {
                 style.addLayer(
-                    SymbolLayer("selected-marker-layer", "selected-marker")
+                    SymbolLayer(SELECTED_MARKER_LAYER, SELECTED_MARKER)
                         .withProperties(
-                            PropertyFactory.iconImage("my-marker-image"),
+                            PropertyFactory.iconImage(MARKER_IMAGE),
                             PropertyFactory.iconOffset(arrayOf(0f, -9f))
                         )
                 )
@@ -111,8 +119,8 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     /**
      * Generate coordinates feature collection given a list of jobs
      */
-    private fun generateCoordinatesFeatureList(jobs: List<Job>): ArrayList<Feature> {
-        val markerCoordinates = ArrayList<Feature>()
+    private fun generateCoordinatesFeatureList(jobs: List<Job>): List<Feature> {
+        val markerCoordinates = mutableListOf<Feature>()
         jobs.forEach { job ->
             val latitude = job.l[0]
             val longitude = job.l[1]
@@ -131,12 +139,12 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
      */
     override fun onMapClick(point: LatLng): Boolean {
         mapboxMap.style?.let { style ->
-            val selectedMarkerSymbolLayer = style.getLayer("selected-marker-layer") as SymbolLayer
+            val selectedMarkerSymbolLayer = style.getLayer(SELECTED_MARKER_LAYER) as SymbolLayer
 
             val pixel = mapboxMap.projection.toScreenLocation(point)
-            val features = mapboxMap.queryRenderedFeatures(pixel, "marker-layer")
+            val features = mapboxMap.queryRenderedFeatures(pixel, MARKER_LAYER)
             val selectedFeature = mapboxMap.queryRenderedFeatures(
-                pixel, "selected-marker-layer"
+                pixel, SELECTED_MARKER_LAYER
             )
 
             // if feature already selected do nothing
@@ -152,7 +160,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
                 return false
             }
 
-            val source = style.getSourceAs<GeoJsonSource>("selected-marker")
+            val source = style.getSourceAs<GeoJsonSource>(SELECTED_MARKER)
             source?.setGeoJson(
                 FeatureCollection.fromFeatures(
                     arrayOf(Feature.fromGeometry(features[0].geometry()))
