@@ -2,13 +2,29 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context=".fragments.MapFragment">
+             android:layout_height="match_parent">
 
     <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/map_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+        <ImageView
+                android:id="@+id/center_user_position_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_location_searching_blue_900_48dp"
+                android:gravity="start"
+                android:padding="10dp"
+                tools:ignore="contentDescription"
+                android:visibility="invisible"/>
+        <ImageView
+                android:id="@+id/hovering_marker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_location_on_blue_900_36dp"
+                android:layout_gravity="center"
+                android:visibility="invisible"
+                tools:ignore="contentDescription"/>
     </com.mapbox.mapboxsdk.maps.MapView>
 
 </FrameLayout>

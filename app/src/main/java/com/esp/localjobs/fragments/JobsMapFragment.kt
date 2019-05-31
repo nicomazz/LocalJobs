@@ -7,6 +7,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
+import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.drawableToBitmap
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
@@ -15,20 +16,20 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import java.util.ArrayList
 
-class JobsMapFragment : MapFragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener {
+class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
 
     private var markerSelected = false
     private lateinit var jobs: List<Job>
     private var markerAnimator = ValueAnimator()
+    private var mapCenterLocation: Location? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,19 +38,14 @@ class JobsMapFragment : MapFragment(), OnMapReadyCallback, MapboxMap.OnMapClickL
 
         jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
             this.jobs = jobs ?: listOf()
-            mapView.getMapAsync(this)
+            setupMap(::onMapSetup, mapCenterLocation)
         })
     }
 
     /**
      * Called after getMapAsync to reload the map
      */
-    override fun onMapReady(mapboxMap: MapboxMap) {
-        this.mapboxMap = mapboxMap
-
-        // disable tilt and rotate gestures
-        mapboxMap.uiSettings.isRotateGesturesEnabled = false
-        mapboxMap.uiSettings.isTiltGesturesEnabled = false
+    private fun onMapSetup(mapboxMap: MapboxMap) {
 
         mapboxMap.style?.let { style ->
             // if style is already set update only the markers
@@ -106,8 +102,6 @@ class JobsMapFragment : MapFragment(), OnMapReadyCallback, MapboxMap.OnMapClickL
             }
 
             mapboxMap.addOnMapClickListener(this@JobsMapFragment)
-
-            centerMap()
         }
     }
 
