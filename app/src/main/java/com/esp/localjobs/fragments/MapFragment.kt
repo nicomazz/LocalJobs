@@ -61,11 +61,9 @@ open class MapFragment : Fragment() {
         if (targetLocation != null)
             navigateToPosition(targetLocation)
         else {
-            val location = PositionManager.getInstance(context!!).getLastKnownPosition()
-            if (location != null)
-                navigateToPosition(Location(location.latitude, location.longitude))
-            else
-                Toast.makeText(context, "Last position unknown", Toast.LENGTH_LONG).show()
+            PositionManager.getInstance(context!!).getLastKnownPosition()?.let {
+                navigateToPosition(Location(it.latitude, it.longitude))
+            } ?: Toast.makeText(context, getString(R.string.position_unknown_toast), Toast.LENGTH_LONG).show()
         }
     }
 
@@ -106,7 +104,7 @@ open class MapFragment : Fragment() {
             val addresses = gcd.getFromLocation(latitude, longitude, 1)
             return if (addresses.size > 0) addresses[0].locality else null
         } catch (e: IOException) {
-            Toast.makeText(context!!, "Error retrieving location name.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context!!, getString(R.string.error_retrieving_location_name), Toast.LENGTH_SHORT).show()
         }
         return null
     }

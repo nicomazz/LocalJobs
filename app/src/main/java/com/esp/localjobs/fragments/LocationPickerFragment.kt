@@ -33,11 +33,11 @@ class LocationPickerFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // add map fragment
         mapFragment = LocationPickerMapFragment.newInstance(startLocation)
-        val fragmentTransaction = childFragmentManager.beginTransaction()
-        fragmentTransaction.add(R.id.map_fragment, mapFragment)
-        fragmentTransaction.commit()
+        childFragmentManager.beginTransaction().apply {
+            add(R.id.map_fragment, mapFragment)
+            commit()
+        }
 
         apply_button.setOnClickListener(this)
         cancel_button.setOnClickListener(this)
