@@ -1,10 +1,17 @@
 package com.esp.localjobs.data
 
-/*
+import com.esp.localjobs.DI.RepositoryModule
+import com.esp.localjobs.data.base.BaseRepository
+import com.esp.localjobs.data.base.FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback
+import com.esp.localjobs.data.models.Job
+import com.esp.localjobs.viewModels.JobsViewModel
+import com.google.firebase.firestore.CollectionReference
+import dagger.Component
 
 class MockRepository : BaseRepository<Job> {
 
     companion object {
+        const val NUMBER_OF_JOBS = 3
     }
 
     private val fakeJobs = 0.until(NUMBER_OF_JOBS).map { Job() }
@@ -31,7 +38,7 @@ class MockRepository : BaseRepository<Job> {
     }
 
     override fun addListener(
-        firebaseCallback: FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job>,
+        firebaseCallback: FirebaseDatabaseRepositoryCallback<Job>,
         filter: ((CollectionReference) -> CollectionReference)?
     ) {
         firebaseCallback.onSuccess(fakeJobs)
@@ -48,5 +55,4 @@ class MockRepositoryModule : RepositoryModule() {
 @Component(modules = [(MockRepositoryModule::class)])
 interface TestViewModelInjector {
     fun inject(presenter: JobsViewModel)
-
-}*/
+}
