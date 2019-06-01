@@ -1,4 +1,4 @@
-package com.esp.localjobs.fragments
+package com.esp.localjobs.fragments.map
 
 import android.os.Bundle
 import android.view.View
@@ -16,7 +16,7 @@ private const val ARG_START_LONGITUDE = "start-location-longitude"
  */
 class LocationPickerMapFragment : MapFragment() {
 
-    private var startLocation: Location? = null
+    override var startLocation: Location? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,18 +31,19 @@ class LocationPickerMapFragment : MapFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupMap(::onMapSetup, startLocation)
         center_user_position_button.setOnClickListener {
             centerMap()
         }
     }
 
-    private fun onMapSetup(mapBoxMap: MapboxMap) {
-        mapBoxMap.setStyle(Style.MAPBOX_STREETS)
+    override fun onMapReady(map: MapboxMap) {
+        super.onMapReady(map)
+        map.setStyle(Style.MAPBOX_STREETS)
         hovering_marker.visibility = View.VISIBLE
         center_user_position_button.visibility = View.VISIBLE
     }
 
+    //todo rimuovere questo
     companion object {
         @JvmStatic
         fun newInstance(startLocation: Location?) =

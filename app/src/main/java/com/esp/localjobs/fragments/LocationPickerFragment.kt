@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.fragments.map.LocationPickerMapFragment
+import com.esp.localjobs.fragments.map.MapFragment
 import kotlinx.android.synthetic.main.fragment_location_picker.*
 
 /**
@@ -68,7 +70,7 @@ class LocationPickerFragment(
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.apply_button -> {
-                mapFragment.getSelectedLocation().let {
+                mapFragment.getCenterLocation().let {
                     locationPickedCallback.onLocationPicked(it)
                     dismiss()
                 }
