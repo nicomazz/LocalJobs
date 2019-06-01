@@ -17,6 +17,7 @@ import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import kotlinx.android.synthetic.main.fragment_map.*
 import java.io.IOException
 import java.util.Locale
@@ -26,12 +27,12 @@ import java.util.Locale
  * Extend this class to add more features.
  * @author Francesco Pham
  */
-open class MapFragment : Fragment() {
+open class MapFragment : Fragment(), OnMapReadyCallback {
 
     private val mapViewModel: MapViewModel by activityViewModels()
 
     protected lateinit var mapboxMap: MapboxMap
-    private lateinit var mapContainer: MapView
+    protected lateinit var mapContainer: MapView
 
     open var startLocation: Location? = null
 
@@ -44,18 +45,13 @@ open class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapContainer = map_container
-        mapContainer.run {
-            onCreate(savedInstanceState)
-            getMapAsync { map ->
-                onMapReady(map)
-            }
-        }
+        mapContainer.onCreate(savedInstanceState)
         center_user_position_button.setOnClickListener {
             centerMap()
         }
     }
 
-    open fun onMapReady(map: MapboxMap) = with(map) {
+    override fun onMapReady(map: MapboxMap) = with(map) {
         mapboxMap = this
 
         // disable tilt and rotate gestures

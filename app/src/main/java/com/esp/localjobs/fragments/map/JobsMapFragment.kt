@@ -32,7 +32,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     private val mapViewModel: MapViewModel by activityViewModels()
 
     private var markerSelected = false
-    private lateinit var jobs: List<Job>
+    private var jobs: List<Job> = listOf()
 
     private companion object Map {
         const val MARKER_SOURCE = "marker-source"
@@ -52,8 +52,13 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         super.onActivityCreated(savedInstanceState)
         jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
             this.jobs = jobs ?: listOf()
-            setJobsInMap()
+            mapContainer.getMapAsync(this)
         })
+    }
+
+    override fun onMapReady(map: MapboxMap) {
+        super.onMapReady(map)
+        setJobsInMap()
     }
 
     private fun setJobsInMap() {
