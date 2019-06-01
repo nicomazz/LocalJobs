@@ -34,6 +34,7 @@ class MapFragmentForPicker : MapFragment() {
         center_user_position_button.setOnClickListener {
             centerMap()
         }
+        mapContainer.getMapAsync(this)
     }
 
     override fun onMapReady(map: MapboxMap) {

@@ -1,4 +1,4 @@
-package com.esp.localjobs.fragments
+package com.esp.localjobs.fragments.map
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -9,7 +9,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.fragments.map.MapFragmentForPicker
 import com.esp.localjobs.viewModels.MapViewModel
 import kotlinx.android.synthetic.main.fragment_location_picker.*
 
