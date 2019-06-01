@@ -19,6 +19,10 @@ class LocationPickerFragment(
     private val startLocation: Location?
 ) : DialogFragment(), View.OnClickListener {
 
+    companion object {
+        const val TAG = "LocationPickerFragment"
+    }
+
     private lateinit var mapFragment: MapFragment
 
     override fun onCreateView(

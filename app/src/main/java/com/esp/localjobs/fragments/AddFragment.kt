@@ -21,6 +21,7 @@ import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENT
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.utils.LoadingViewDialog
 import com.esp.localjobs.viewModels.AddViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_add.*
@@ -35,6 +36,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
     private val loginViewModel: LoginViewModel by activityViewModels()
 
     private var selectedLocation: Location? = null
+    private lateinit var viewDialog: LoadingViewDialog
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
         inflater.inflate(R.layout.fragment_add, container, false).also {
@@ -55,6 +57,8 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         submit_button.setOnClickListener { onSubmit() }
         setupLocationEditTextUI()
         setupRadioButton()
+
+        viewDialog = LoadingViewDialog(activity!!)
     }
 
     private fun ensureLogin() {
@@ -84,7 +88,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         location_edit_text.setOnClickListener {
             fragmentManager?.let { fm ->
                 val locationPickerFragment = LocationPickerFragment(this, null)
-                locationPickerFragment.show(fm, "location_picker_fragment")
+                locationPickerFragment.show(fm, LocationPickerFragment.TAG)
             }
         }
     }
@@ -135,33 +139,28 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
 
         Log.d(TAG, "$type, $title, $location, $range, $salary, $description")
 
-        // TODO replace snackbars with a loading bar
-        addViewModel.status.observe(viewLifecycleOwner, Observer { status ->
-            when (status) {
-                AddViewModel.AddStatus.WAITING -> {
-                    // show loading
-                }
-                AddViewModel.AddStatus.SUCCESS -> {
-                    Snackbar.make(
-                        activity!!.findViewById<View>(android.R.id.content),
-                        getString(R.string.add_job_success),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                    findNavController().popBackStack()
-                }
-                AddViewModel.AddStatus.FAILURE -> {
-
-                    Snackbar.make(
-                        activity!!.findViewById<View>(android.R.id.content),
-                        getString(R.string.add_job_failure),
-                        Snackbar.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        })
+        // called after completion of add task
+        val onItemPushSuccess: () -> Unit = {
+            viewDialog.hideDialog()
+            Snackbar.make(
+                activity!!.findViewById<View>(android.R.id.content),
+                getString(R.string.add_job_success),
+                Snackbar.LENGTH_SHORT
+            ).show()
+            findNavController().popBackStack()
+        }
+        val onItemPushFailure = {
+            viewDialog.hideDialog()
+            Snackbar.make(
+                activity!!.findViewById<View>(android.R.id.content),
+                getString(R.string.add_job_failure),
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
 
         when (type) {
             "job" -> {
+                viewDialog.showDialog()
                 val job = Job(
                     title = title,
                     description = description,
@@ -171,7 +170,8 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
                     active = true,
                     uid = loginViewModel.getUserId()
                 )
-                addViewModel.addJobToRepository(job)
+
+                addViewModel.addJobToRepository(job, onSuccess = onItemPushSuccess, onFailure = onItemPushFailure)
             }
             "proposal" -> {
                 // Proposal(title, description, location, city, salary, range, true, "uid")

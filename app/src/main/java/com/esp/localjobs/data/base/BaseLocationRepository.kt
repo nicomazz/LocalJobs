@@ -1,8 +1,9 @@
 package com.esp.localjobs.data.base
 
-import com.esp.localjobs.data.models.Coordinates
+import com.esp.localjobs.data.models.Localizable
+import com.esp.localjobs.data.models.Identifiable
 
-interface BaseLocationRepository<T : Coordinates> : BaseRepository<T> {
+interface BaseLocationRepository<T> : BaseRepository<T> where T : Identifiable, T : Localizable {
 
     /**
      * Listen for items inside the circle defined by location and range.
@@ -11,7 +12,7 @@ interface BaseLocationRepository<T : Coordinates> : BaseRepository<T> {
      * @param callback called on data update event or error
      */
     fun addLocationListener(
-        coordinates: Coordinates,
+        coordinates: Localizable,
         range: Double,
         callback: BaseRepository.RepositoryCallback<T>
     )
@@ -21,8 +22,7 @@ interface BaseLocationRepository<T : Coordinates> : BaseRepository<T> {
      */
     fun setItemLocation(
         id: String,
-        coordinates: Coordinates,
-        onSuccess: (() -> Unit)? = null,
-        onFailure: ((e: Exception) -> Unit)? = null
+        coordinates: Localizable,
+        callback: BaseRepository.EventCallback? = null
     )
 }

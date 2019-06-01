@@ -1,11 +1,11 @@
 package com.esp.localjobs.data.base
 
-import com.google.firebase.firestore.CollectionReference
+import com.esp.localjobs.data.models.Identifiable
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import java.lang.reflect.ParameterizedType
 
-abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
+abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository<Model> {
 
     //    protected var db: Firebase
     private var firebaseCallback: FirebaseDatabaseRepositoryCallback<Model>? = null
@@ -24,7 +24,7 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
 
     override fun addListener(
         callback: BaseRepository.RepositoryCallback<Model>,
-        filter: ((Any) -> Any)?
+        filters: JobFilters?
     ) {
         (callback as? FirebaseDatabaseRepositoryCallback<Model>)?.let {
             firebaseCallback = it
@@ -32,10 +32,13 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
         } ?: throw Exception("Couldn't cast repository callback to firebase callback")
 
         registration?.remove()
-        var dbCollection = collection
-        filter?.let {
-            dbCollection = filter(dbCollection) as CollectionReference
-        }
+        val dbCollection = collection
+        // todo implement filtering using JobFilters
+        /*  filter?.let {
+              dbCollection = filter(dbCollection) as CollectionReference
+          }*/
+        // dbCollection.ad
+
         registration = dbCollection.addSnapshotListener(listener)
     }
 
@@ -43,26 +46,28 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
         registration?.remove()
     }
 
-    override fun add(item: Model, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
-        collection.document()
-            .set(item!!)
-            .also { task ->
-                onSuccess?.let { task.addOnSuccessListener { it() } }
-                onFailure?.let { task.addOnFailureListener { error -> it(error) } }
-            }
+    override fun add(
+        item: Model,
+        callback: BaseRepository.EventCallback?
+    ) {
+        item.id = collection.document().id
+        collection.document(item.id)
+            .set(item)
+            .addOnSuccessListener { callback?.onSuccess() }
+            .addOnFailureListener { e -> callback?.onFailure(e) }
     }
 
     override fun patch(
         id: String,
         oldItem: Model,
         newItem: Model,
-        onSuccess: (() -> Unit)?,
-        onFailure: ((e: Exception) -> Unit)?
+        callback: BaseRepository.EventCallback?
     ) {
 
         if (oldItem == newItem)
             return
 
+        // create an hash map that define which fields must be updated
         val updates = HashMap<String, Any?>()
         // update only different fields
         typeOfT.declaredFields.forEach {
@@ -73,28 +78,29 @@ abstract class FirebaseDatabaseRepository<Model> : BaseRepository<Model> {
 
         collection.document(id)
             .update(updates)
-            .also { task ->
-                onSuccess?.let { task.addOnSuccessListener { it() } }
-                onFailure?.let { task.addOnFailureListener { exception -> it(exception) } }
-            }
+            .addOnSuccessListener { callback?.onSuccess() }
+            .addOnFailureListener { e -> callback?.onFailure(e) }
     }
 
-    override fun update(id: String, newItem: Model, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
+    override fun update(
+        id: String,
+        newItem: Model,
+        callback: BaseRepository.EventCallback?
+    ) {
         collection.document(id)
-            .set(newItem!!)
-            .also { task ->
-                onSuccess?.let { task.addOnSuccessListener { it() } }
-                onFailure?.let { task.addOnFailureListener { exception -> it(exception) } }
-            }
+            .set(newItem)
+            .addOnSuccessListener { callback?.onSuccess() }
+            .addOnFailureListener { e -> callback?.onFailure(e) }
     }
 
-    override fun delete(id: String, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
+    override fun delete(
+        id: String,
+        callback: BaseRepository.EventCallback?
+    ) {
         collection.document(id)
             .delete()
-            .also { task ->
-                onSuccess?.let { task.addOnSuccessListener { it() } }
-                onFailure?.let { task.addOnFailureListener { exception -> it(exception) } }
-            }
+            .addOnSuccessListener { callback?.onSuccess() }
+            .addOnFailureListener { e -> callback?.onFailure(e) }
     }
 
     interface FirebaseDatabaseRepositoryCallback<T> : BaseRepository.RepositoryCallback<T>

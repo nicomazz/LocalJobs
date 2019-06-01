@@ -1,25 +1,26 @@
 package com.esp.localjobs.data.base
 
 import android.util.Log
-import com.esp.localjobs.data.models.Coordinates
+import com.esp.localjobs.data.models.Identifiable
+import com.esp.localjobs.data.models.Localizable
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.GeoPoint
 import org.imperiumlabs.geofirestore.GeoFirestore
 import org.imperiumlabs.geofirestore.GeoQuery
 import org.imperiumlabs.geofirestore.GeoQueryDataEventListener
-import java.lang.RuntimeException
-import kotlin.Exception
 
-abstract class FirebaseDatabaseLocationRepository<Model : Coordinates> :
+abstract class FirebaseDatabaseLocationRepository<Model> :
     FirebaseDatabaseRepository<Model>(),
-    BaseLocationRepository<Model> {
+    BaseLocationRepository<Model>
+        where Model : Identifiable, Model : Localizable {
 
     val geoFirestore = GeoFirestore(collection)
     var geoQuery: GeoQuery? = null
+    // todo substitute this with a better data structure
     val itemsList = ArrayList<Model>()
 
     override fun addLocationListener(
-        coordinates: Coordinates,
+        coordinates: Localizable,
         range: Double,
         callback: BaseRepository.RepositoryCallback<Model>
     ) {
@@ -30,41 +31,39 @@ abstract class FirebaseDatabaseLocationRepository<Model : Coordinates> :
         val geoQueryCenter = coordinatesToGeoPoint(coordinates)
         geoQuery = geoFirestore.queryAtLocation(geoQueryCenter, range)
 
-        (geoQuery as GeoQuery).addGeoQueryDataEventListener(object : GeoQueryDataEventListener {
-            override fun onDocumentEntered(p0: DocumentSnapshot?, p1: GeoPoint?) {
+        geoQuery?.addGeoQueryDataEventListener(object : GeoQueryDataEventListener {
+            override fun onDocumentEntered(document: DocumentSnapshot?, position: GeoPoint?) {
                 try {
 
-                    p0?.toObject(typeOfT)?.let {
+                    document?.toObject()?.let {
                         if (!itemsList.contains(it))
                             itemsList.add(it)
                         callback.onSuccess(itemsList)
                     }
                 } catch (e: RuntimeException) {
-                    Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
+                    Log.d("JobsRepository", "Could not deserialize ${document?.data}")
                     throw e
                 }
             }
-            override fun onDocumentExited(p0: DocumentSnapshot?) {
+            override fun onDocumentExited(document: DocumentSnapshot?) {
                 try {
-                    p0?.toObject(typeOfT)?.let {
+                    document?.toObject()?.let {
                         itemsList.remove(it)
                         callback.onSuccess(itemsList)
                     }
                 } catch (e: RuntimeException) {
-                    Log.d("JobsRepository", "Could not deserialize ${p0?.data}")
+                    Log.d("JobsRepository", "Could not deserialize ${document?.data}")
                     throw e
                 }
             }
-
-            override fun onGeoQueryError(p0: java.lang.Exception?) {
-                p0?.let {
+            override fun onGeoQueryError(e: java.lang.Exception?) {
+                e?.let {
                     callback.onError(it)
                 }
             }
-            // TODO we could recalculate distance from user and update it
-            override fun onDocumentMoved(p0: DocumentSnapshot?, p1: GeoPoint?) { }
-            override fun onDocumentChanged(p0: DocumentSnapshot?, p1: GeoPoint?) { }
-            override fun onGeoQueryReady() { }
+            override fun onDocumentMoved(document: DocumentSnapshot?, position: GeoPoint?) {}
+            override fun onDocumentChanged(document: DocumentSnapshot?, position: GeoPoint?) {}
+            override fun onGeoQueryReady() {}
         })
     }
 
@@ -75,63 +74,67 @@ abstract class FirebaseDatabaseLocationRepository<Model : Coordinates> :
      */
     override fun add(
         item: Model,
-        onSuccess: (() -> Unit)?,
-        onFailure: ((e: Exception) -> Unit)?
+        callback: BaseRepository.EventCallback?
     ) {
-        val id = collection.document().id
-
-        collection.document(id)
+        item.id = collection.document().id
+        collection.document(item.id)
             .set(item)
             .addOnSuccessListener {
                 // once the job has been added, set GeoFirestore location
                 setItemLocation(
-                    id,
-                    // coordinates = Location(coords.l[0]!!, coords.l[1]!!),
-                    coordinates = item as Coordinates,
-                    onSuccess = onSuccess,
-                    onFailure = { exception ->
-                        delete(id) // try to delete inconsistent data
-                        onFailure?.invoke(exception)
+                    item.id,
+                    coordinates = item as Localizable,
+                    callback = object : BaseRepository.EventCallback {
+                        override fun onSuccess() { callback?.onSuccess() }
+                        override fun onFailure(e: Exception) {
+                            delete(item.id)
+                            callback?.onFailure(e)
+                        }
                     }
                 )
             }
             .addOnFailureListener { exception ->
-                onFailure?.invoke(exception)
+                callback?.onFailure(exception)
             }
     }
 
-    override fun update(id: String, newItem: Model, onSuccess: (() -> Unit)?, onFailure: ((e: Exception) -> Unit)?) {
+    override fun update(
+        id: String,
+        newItem: Model,
+        callback: BaseRepository.EventCallback?
+    ) {
         // as this function overwrite the entire document, just recreate it
         super.delete(
             id,
-            onSuccess = {
-                add(
-                    item = newItem,
-                    onSuccess = onSuccess,
-                    onFailure = onFailure
-                )
-            },
-            onFailure = onFailure
+            callback = object : BaseRepository.EventCallback {
+                override fun onSuccess() {
+                    add(item = newItem, callback = callback)
+                }
+
+                override fun onFailure(e: Exception) { callback?.onFailure(e) }
+            }
+
         )
     }
 
     override fun setItemLocation(
         id: String,
-        coordinates: Coordinates,
-        onSuccess: (() -> Unit)?,
-        onFailure: ((e: Exception) -> Unit)?
+        coordinates: Localizable,
+        callback: BaseRepository.EventCallback?
     ) {
         val geoPoint = coordinatesToGeoPoint(coordinates)
         geoFirestore.setLocation(id, geoPoint) { geoException ->
             if (geoException == null)
-                onSuccess?.invoke()
+                callback?.onSuccess()
             else
-                onFailure?.invoke(geoException)
+                callback?.onFailure(geoException)
         }
     }
 
-    private fun coordinatesToGeoPoint(coordinates: Coordinates): GeoPoint {
+    private fun coordinatesToGeoPoint(coordinates: Localizable): GeoPoint {
         val (lat, lng) = coordinates.latLng()
         return GeoPoint(lat, lng)
     }
+
+    private fun DocumentSnapshot.toObject() = toObject(typeOfT)
 }

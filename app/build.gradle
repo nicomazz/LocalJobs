@@ -92,6 +92,7 @@ dependencies {
 
     // location queries
     implementation 'com.github.imperiumlabs:GeoFirestore-Android:v1.2.1'
+    implementation 'com.github.bumptech.glide:glide:3.7.0' // animate gif
 }
 
 // ktlint
