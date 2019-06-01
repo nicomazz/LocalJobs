@@ -48,7 +48,6 @@ class UserProfileFragment : Fragment() {
             phone.text = phoneNumber
             logout.visibility = View.VISIBLE
             Picasso.get().load(photoUrl).transform(CropCircleTransformation()).into(profilePicture)
-
         }
 
         logout.setOnClickListener {

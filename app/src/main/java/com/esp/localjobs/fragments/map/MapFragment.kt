@@ -19,7 +19,7 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import kotlinx.android.synthetic.main.fragment_map.*
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 
 /**
  * A simple fragment showing a basic map providing some useful methods.

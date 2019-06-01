@@ -43,7 +43,7 @@ class LocationPickerMapFragment : MapFragment() {
         center_user_position_button.visibility = View.VISIBLE
     }
 
-    //todo rimuovere questo
+    // todo rimuovere questo
     companion object {
         @JvmStatic
         fun newInstance(startLocation: Location?) =

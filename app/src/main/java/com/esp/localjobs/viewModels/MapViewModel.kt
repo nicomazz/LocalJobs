@@ -20,5 +20,4 @@ class MapViewModel : ViewModel() {
     fun setLocation(newLocation: Location) = _location.postValue(newLocation)
 
     fun setSelectedJob(job: Job) = _selectedJob.postValue(job)
-
 }

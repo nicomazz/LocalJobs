@@ -34,7 +34,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     private var markerSelected = false
     private lateinit var jobs: List<Job>
 
-
     private companion object Map {
         const val MARKER_SOURCE = "marker-source"
         const val MARKER_IMAGE = "marker-image"
@@ -74,7 +73,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         }
     }
 
-
     private fun setupJobsInMap() = with(mapboxMap) {
         setStyle(Style.MAPBOX_STREETS) { style ->
 
@@ -84,7 +82,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
             }
 
             style.addImage(MARKER_IMAGE, getMarkerIcon())
-
 
             // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
             // middle of the icon being fixed to the coordinate point.
@@ -123,7 +120,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         }
     }
 
-
     private fun generateJsonSourceFromJobs() = FeatureCollection.fromFeatures(generateCoordinatesFeatureList(jobs))
 
     private fun getMarkerIcon() =
@@ -140,7 +136,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
                 addStringProperty(JOB_ID_PROPERTY, job.uid)
             }
         }
-
 
     /**
      * When a marker is clicked select it
