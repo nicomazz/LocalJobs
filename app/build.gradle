@@ -89,6 +89,8 @@ dependencies {
 
     // picasso image loader
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'jp.wasabeef:picasso-transformations:2.2.1'
+
 
     // location queries
     implementation 'com.github.imperiumlabs:GeoFirestore-Android:v1.2.1'

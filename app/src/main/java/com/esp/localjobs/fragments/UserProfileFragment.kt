@@ -10,9 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import com.esp.localjobs.viewModels.LoginViewModel
 import com.esp.localjobs.R
+import com.esp.localjobs.viewModels.LoginViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.squareup.picasso.Picasso
+import jp.wasabeef.picasso.transformations.CropCircleTransformation
 import kotlinx.android.synthetic.main.fragment_user_profile.*
 
 /**
@@ -45,6 +47,7 @@ class UserProfileFragment : Fragment() {
             mail.text = email
             phone.text = phoneNumber
             logout.visibility = View.VISIBLE
+            Picasso.get().load(photoUrl).transform(CropCircleTransformation()).into(profilePicture)
         }
 
         logout.setOnClickListener {

@@ -1,15 +1,16 @@
-package com.esp.localjobs.fragments
+package com.esp.localjobs.fragments.map
 
+import android.content.Context
 import android.os.Bundle
-import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
-import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.drawableToBitmap
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
+import com.esp.localjobs.viewModels.MapViewModel
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.Point
@@ -28,10 +29,10 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
+    private val mapViewModel: MapViewModel by activityViewModels()
 
     private var markerSelected = false
     private lateinit var jobs: List<Job>
-    private var mapCenterLocation: Location? = null
 
     private companion object Map {
         const val MARKER_SOURCE = "marker-source"
@@ -39,60 +40,60 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         const val MARKER_LAYER = "marker-layer"
         const val SELECTED_MARKER = "selected-marker"
         const val SELECTED_MARKER_LAYER = "selected-marker-layer"
+        const val JOB_ID_PROPERTY = "job_id"
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mapCenterLocation = filterViewModel.getLocation(context!!)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        startLocation = filterViewModel.getLocation(context)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
             this.jobs = jobs ?: listOf()
-            setupMap(::onMapSetup, mapCenterLocation)
+            setJobsInMap()
         })
     }
 
-    /**
-     * Called after getMapAsync to reload the map
-     */
-    private fun onMapSetup(mapboxMap: MapboxMap) {
+    private fun setJobsInMap() {
+        if (jobsPresentInMap()) {
+            updateJobsInMap()
+        } else {
+            setupJobsInMap()
+        }
+    }
 
-        mapboxMap.style?.let { style ->
-            // if style is already set update only the markers
-            val markerCoordinates = generateCoordinatesFeatureList(jobs)
-            val jsonSource = FeatureCollection.fromFeatures(markerCoordinates)
-            style.getSource(MARKER_SOURCE)?.let { source ->
-                if (source is GeoJsonSource)
-                    source.setGeoJson(jsonSource)
-            }
-        } ?: mapboxMap.setStyle(Style.MAPBOX_STREETS) { style ->
+    private fun jobsPresentInMap() = mapboxMap.style != null
+
+    private fun updateJobsInMap() {
+        mapboxMap.style?.getSource(MARKER_SOURCE)?.let { source ->
+            if (source is GeoJsonSource)
+                source.setGeoJson(generateJsonSourceFromJobs())
+        }
+    }
+
+    private fun setupJobsInMap() = with(mapboxMap) {
+        setStyle(Style.MAPBOX_STREETS) { style ->
 
             // add coordinates source
             if (style.getSource(MARKER_SOURCE) == null) {
-                val markerCoordinates = generateCoordinatesFeatureList(jobs)
-                val jsonSource = FeatureCollection.fromFeatures(markerCoordinates)
-                style.addSource(GeoJsonSource(MARKER_SOURCE, jsonSource))
+                style.addSource(GeoJsonSource(MARKER_SOURCE, generateJsonSourceFromJobs()))
             }
 
-            // val markerImage = BitmapFactory.decodeResource(
-            // context.resources, R.drawable.ic_location_on_blue_900_36dp) <-- this returns null idk why
-            val markerDrawable = context!!.getDrawable(R.drawable.ic_location_on_blue_900_36dp)
-            if (markerDrawable != null) {
-                val markerImage = drawableToBitmap(markerDrawable)
-                style.addImage(MARKER_IMAGE, markerImage)
-            }
+            style.addImage(MARKER_IMAGE, getMarkerIcon())
 
             // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
             // middle of the icon being fixed to the coordinate point.
             if (style.getLayer(MARKER_LAYER) == null) {
                 style.addLayer(
-                    SymbolLayer(MARKER_LAYER, MARKER_SOURCE)
-                        .withProperties(
-                            PropertyFactory.iconImage(MARKER_IMAGE),
-                            PropertyFactory.iconOffset(arrayOf(0f, -9f))
-                        )
+                    SymbolLayer(
+                        MARKER_LAYER,
+                        MARKER_SOURCE
+                    ).withProperties(
+                        PropertyFactory.iconImage(MARKER_IMAGE),
+                        PropertyFactory.iconOffset(arrayOf(0f, -9f))
+                    )
                 )
             }
 
@@ -104,34 +105,37 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
             // middle of the icon being fixed to the coordinate point.
             if (style.getLayer(SELECTED_MARKER_LAYER) == null) {
                 style.addLayer(
-                    SymbolLayer(SELECTED_MARKER_LAYER, SELECTED_MARKER)
+                    SymbolLayer(
+                        SELECTED_MARKER_LAYER,
+                        SELECTED_MARKER
+                    )
                         .withProperties(
                             PropertyFactory.iconImage(MARKER_IMAGE),
                             PropertyFactory.iconOffset(arrayOf(0f, -9f))
                         )
                 )
             }
-
-            mapboxMap.addOnMapClickListener(this@JobsMapFragment)
+            removeOnMapClickListener(this@JobsMapFragment)
+            addOnMapClickListener(this@JobsMapFragment)
         }
     }
+
+    private fun generateJsonSourceFromJobs() = FeatureCollection.fromFeatures(generateCoordinatesFeatureList(jobs))
+
+    private fun getMarkerIcon() =
+        drawableToBitmap(ContextCompat.getDrawable(context!!, R.drawable.ic_location_on_blue_900_36dp)!!)
 
     /**
      * Generate coordinates feature collection given a list of jobs
      */
-    private fun generateCoordinatesFeatureList(jobs: List<Job>): List<Feature> {
-        val markerCoordinates = mutableListOf<Feature>()
-        jobs.forEach { job ->
-            val latitude = job.l[0]
-            val longitude = job.l[1]
-            markerCoordinates.add(
-                Feature.fromGeometry(
-                    Point.fromLngLat(longitude, latitude)
-                )
-            )
+    private fun generateCoordinatesFeatureList(jobs: List<Job>): List<Feature> =
+        jobs.map { job ->
+            Feature.fromGeometry(
+                Point.fromLngLat(job.getLongitude(), job.getLatitude())
+            ).apply {
+                addStringProperty(JOB_ID_PROPERTY, job.uid)
+            }
         }
-        return markerCoordinates
-    }
 
     /**
      * When a marker is clicked select it
@@ -141,7 +145,10 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
             val selectedMarkerSymbolLayer = style.getLayer(SELECTED_MARKER_LAYER) as SymbolLayer
 
             val pixel = mapboxMap.projection.toScreenLocation(point)
-            val features = mapboxMap.queryRenderedFeatures(pixel, MARKER_LAYER)
+            val features = mapboxMap.queryRenderedFeatures(
+                pixel,
+                MARKER_LAYER
+            )
             val selectedFeature = mapboxMap.queryRenderedFeatures(
                 pixel, SELECTED_MARKER_LAYER
             )
@@ -170,6 +177,10 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
                 deselectMarker(selectedMarkerSymbolLayer)
             }
             if (features.size > 0) {
+                val selectedJobUid = features.first().getStringProperty(JOB_ID_PROPERTY)
+                jobs.firstOrNull { it.uid == selectedJobUid }?.let { selected_job ->
+                    mapViewModel.setSelectedJob(selected_job)
+                }
                 selectMarker(selectedMarkerSymbolLayer)
             }
         }
@@ -181,8 +192,9 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
      */
     private fun selectMarker(iconLayer: SymbolLayer) {
         iconLayer.setProperties(
-            PropertyFactory.iconSize(2f)
+            PropertyFactory.iconSize(1.5f)
         )
+
         markerSelected = true
     }
 

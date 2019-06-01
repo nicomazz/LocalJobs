@@ -18,4 +18,7 @@ data class Job(
     override fun latLng(): Pair<Double, Double> {
         return Pair(l[0], l[1])
     }
+    fun getLatitude() = l[0]
+
+    fun getLongitude() = l[1]
 }

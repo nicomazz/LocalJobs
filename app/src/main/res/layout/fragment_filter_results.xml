@@ -35,7 +35,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         app:layout_constraintLeft_toRightOf="@id/range_text_view"
-                        app:layout_constraintRight_toLeftOf="@id/range_value" />
+                        app:layout_constraintRight_toLeftOf="@id/range_value"/>
 
                 <TextView
                         android:id="@+id/range_value"
@@ -98,7 +98,6 @@
             </com.google.android.material.textfield.TextInputLayout>
 
 
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
@@ -108,6 +107,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
             android:src="@drawable/ic_search_white_24dp"
-            android:layout_margin="16dp" />
+            android:layout_margin="16dp"/>
 
 </FrameLayout>

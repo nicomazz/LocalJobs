@@ -1,20 +1,23 @@
-package com.esp.localjobs.fragments
+package com.esp.localjobs.fragments.map
 
 import android.location.Geocoder
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.utils.PositionManager
+import com.esp.localjobs.viewModels.MapViewModel
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
+import kotlinx.android.synthetic.main.fragment_map.*
 import java.io.IOException
 import java.util.Locale
 
@@ -25,34 +28,49 @@ import java.util.Locale
  */
 open class MapFragment : Fragment() {
 
+    private val mapViewModel: MapViewModel by activityViewModels()
+
     protected lateinit var mapboxMap: MapboxMap
-    private lateinit var mapView: MapView
+    private lateinit var mapContainer: MapView
+
+    open var startLocation: Location? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_map, container, false)
-    }
+    ) = inflater.inflate(R.layout.fragment_map, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mapView = view.findViewById(R.id.map_view)
-        mapView.onCreate(savedInstanceState)
+        mapContainer = map_container
+        mapContainer.run {
+            onCreate(savedInstanceState)
+            getMapAsync { map ->
+                onMapReady(map)
+            }
+        }
+        center_user_position_button.setOnClickListener {
+            centerMap()
+        }
     }
 
-    fun setupMap(setupCallback: (MapboxMap) -> Unit, mapCenterLocation: Location? = null) {
-        mapView.getMapAsync {
-            mapboxMap = it
+    open fun onMapReady(map: MapboxMap) = with(map) {
+        mapboxMap = this
 
-            // disable tilt and rotate gestures
-            mapboxMap.uiSettings.isRotateGesturesEnabled = false
-            mapboxMap.uiSettings.isTiltGesturesEnabled = false
-
-            setupCallback(mapboxMap)
-            centerMap(mapCenterLocation)
+        // disable tilt and rotate gestures
+        uiSettings.apply {
+            isRotateGesturesEnabled = false
+            isTiltGesturesEnabled = false
         }
+
+        centerMap(startLocation)
+        removeOnCameraIdleListener(mapIdleListener)
+        addOnCameraIdleListener(mapIdleListener)
+    }
+
+    private val mapIdleListener = {
+        mapViewModel.setLocation(getCenterLocation())
     }
 
     /**
@@ -77,18 +95,19 @@ open class MapFragment : Fragment() {
             .target(
                 LatLng(
                     location.l[0],
-                    location.l[1])
+                    location.l[1]
+                )
             )
             .zoom(12.0)
             .build()
-        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000)
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 600)
     }
 
     /**
      * Get location coordinates of the center of the map-view
      * @return null if could not retrieve
      */
-    fun getSelectedLocation(): Location {
+    fun getCenterLocation(): Location {
         // get location coordinates of the center of the map-view
         val latLng = mapboxMap.cameraPosition.target
         val city = coordinatesToCity(latLng.latitude, latLng.longitude)
@@ -112,36 +131,36 @@ open class MapFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        mapView.onResume()
+        mapContainer.onResume()
     }
 
     override fun onStart() {
         super.onStart()
-        mapView.onStart()
+        mapContainer.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        mapView.onStop()
+        mapContainer.onStop()
     }
 
     override fun onPause() {
         super.onPause()
-        mapView.onPause()
+        mapContainer.onPause()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapView.onLowMemory()
+        mapContainer.onLowMemory()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mapView.onDestroy()
+        mapContainer.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mapView.onSaveInstanceState(outState)
+        mapContainer.onSaveInstanceState(outState)
     }
 }
