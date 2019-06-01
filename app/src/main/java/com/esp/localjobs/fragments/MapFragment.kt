@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.managers.PositionManager
+import com.esp.localjobs.utils.PositionManager
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -39,6 +39,7 @@ open class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapView = view.findViewById(R.id.map_view)
+        mapView.onCreate(savedInstanceState)
     }
 
     fun setupMap(setupCallback: (MapboxMap) -> Unit, mapCenterLocation: Location? = null) {
@@ -61,7 +62,7 @@ open class MapFragment : Fragment() {
         if (targetLocation != null)
             navigateToPosition(targetLocation)
         else {
-            PositionManager.getInstance(context!!).getLastKnownPosition()?.let {
+            PositionManager.getLastKnownPosition(context!!)?.let {
                 navigateToPosition(Location(it.latitude, it.longitude))
             } ?: Toast.makeText(context, getString(R.string.position_unknown_toast), Toast.LENGTH_LONG).show()
         }
@@ -80,7 +81,7 @@ open class MapFragment : Fragment() {
             )
             .zoom(12.0)
             .build()
-        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 2000)
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000)
     }
 
     /**
