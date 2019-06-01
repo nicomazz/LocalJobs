@@ -14,7 +14,7 @@ private const val ARG_START_LONGITUDE = "start-location-longitude"
  * Map fragment inside LocationPickerFragment displaying a hovering marker at the center
  * @author Francesco Pham
  */
-class LocationPickerMapFragment : MapFragment() {
+class MapFragmentForPicker : MapFragment() {
 
     override var startLocation: Location? = null
 
@@ -47,7 +47,7 @@ class LocationPickerMapFragment : MapFragment() {
     companion object {
         @JvmStatic
         fun newInstance(startLocation: Location?) =
-            LocationPickerMapFragment().apply {
+            MapFragmentForPicker().apply {
                 arguments = Bundle().apply {
                     if (startLocation != null) {
                         putDouble(ARG_START_LATITUDE, startLocation.l[0])

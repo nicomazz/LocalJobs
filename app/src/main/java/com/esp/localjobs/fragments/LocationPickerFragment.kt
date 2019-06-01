@@ -6,10 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.fragments.map.LocationPickerMapFragment
-import com.esp.localjobs.fragments.map.MapFragment
+import com.esp.localjobs.fragments.map.MapFragmentForPicker
+import com.esp.localjobs.viewModels.MapViewModel
 import kotlinx.android.synthetic.main.fragment_location_picker.*
 
 /**
@@ -18,14 +19,14 @@ import kotlinx.android.synthetic.main.fragment_location_picker.*
  */
 class LocationPickerFragment(
     private val locationPickedCallback: OnLocationPickedListener,
-    private val startLocation: Location?
+    private val startLocation: Location? = null
 ) : DialogFragment(), View.OnClickListener {
 
     companion object {
         const val TAG = "LocationPickerFragment"
     }
 
-    private lateinit var mapFragment: MapFragment
+    private val mapViewModel: MapViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,7 +40,7 @@ class LocationPickerFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        mapFragment = LocationPickerMapFragment.newInstance(startLocation)
+        val mapFragment = MapFragmentForPicker.newInstance(startLocation)
         childFragmentManager.beginTransaction().apply {
             add(R.id.map_fragment, mapFragment)
             commit()
@@ -70,7 +71,7 @@ class LocationPickerFragment(
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.apply_button -> {
-                mapFragment.getCenterLocation().let {
+                mapViewModel.location.value?.let {
                     locationPickedCallback.onLocationPicked(it)
                     dismiss()
                 }

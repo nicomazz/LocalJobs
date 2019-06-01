@@ -64,7 +64,7 @@ open class MapFragment : Fragment() {
             isTiltGesturesEnabled = false
         }
 
-        startLocation?.let { centerMap(it) }
+        centerMap(startLocation)
         removeOnCameraIdleListener(mapIdleListener)
         addOnCameraIdleListener(mapIdleListener)
     }
