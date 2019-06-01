@@ -6,10 +6,11 @@
              xmlns:app="http://schemas.android.com/apk/res-auto"
              tools:context=".fragments.JobsFragment">
 
-    <fragment class="com.esp.localjobs.fragments.JobsMapFragment"
-              android:id="@+id/map_fragment"
-              android:layout_height="match_parent"
-              android:layout_width="match_parent">
+    <fragment class="com.esp.localjobs.fragments.map.JobsMapFragment"
+            android:id="@+id/map_fragment"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="340dp">
     </fragment>
 
     <androidx.recyclerview.widget.RecyclerView
