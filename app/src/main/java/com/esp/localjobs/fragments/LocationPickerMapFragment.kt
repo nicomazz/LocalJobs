@@ -49,8 +49,8 @@ class LocationPickerMapFragment : MapFragment() {
             LocationPickerMapFragment().apply {
                 arguments = Bundle().apply {
                     if (startLocation != null) {
-                        putDouble(ARG_START_LATITUDE, startLocation.latitude)
-                        putDouble(ARG_START_LONGITUDE, startLocation.longitude)
+                        putDouble(ARG_START_LATITUDE, startLocation.l[0])
+                        putDouble(ARG_START_LONGITUDE, startLocation.l[1])
                     }
                 }
             }

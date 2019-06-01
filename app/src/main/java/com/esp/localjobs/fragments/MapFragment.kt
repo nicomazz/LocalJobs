@@ -75,8 +75,8 @@ open class MapFragment : Fragment() {
         val cameraPosition = CameraPosition.Builder()
             .target(
                 LatLng(
-                    location.latitude,
-                    location.longitude)
+                    location.l[0],
+                    location.l[1])
             )
             .zoom(12.0)
             .build()

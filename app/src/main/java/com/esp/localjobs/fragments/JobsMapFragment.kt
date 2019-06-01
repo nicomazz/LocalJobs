@@ -124,12 +124,11 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         jobs.forEach { job ->
             val latitude = job.l[0]
             val longitude = job.l[1]
-            if (latitude != null && longitude != null)
-                markerCoordinates.add(
-                    Feature.fromGeometry(
-                        Point.fromLngLat(longitude, latitude)
-                    )
+            markerCoordinates.add(
+                Feature.fromGeometry(
+                    Point.fromLngLat(longitude, latitude)
                 )
+            )
         }
         return markerCoordinates
     }
