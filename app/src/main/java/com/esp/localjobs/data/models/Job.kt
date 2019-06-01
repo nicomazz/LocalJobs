@@ -5,11 +5,17 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Job(
+    override var id: String = "",
     var title: String? = "",
     var description: String? = "",
-    override var l: List<Double> = listOf(0.0, 0.0), // l[0] -> latitude, l[1] -> longitude
-    override var city: String? = "",
+    // same name used by GeoFirestore, adopted to avoid duplicating data
+    var l: List<Double> = listOf(0.0, 0.0), // l[0] -> latitude, l[1] -> longitude
+    var city: String? = "",
     var salary: String? = "",
     var active: Boolean? = false,
     var uid: String? = ""
-) : Location(listOf(l[0], l[1])), Parcelable
+) : Parcelable, Identifiable, Localizable {
+    override fun latLng(): Pair<Double, Double> {
+        return Pair(l[0], l[1])
+    }
+}
