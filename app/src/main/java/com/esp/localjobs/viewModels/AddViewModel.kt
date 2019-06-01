@@ -1,5 +1,6 @@
 package com.esp.localjobs.viewModels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,7 +8,6 @@ import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.repository.JobsRepository
 
 class AddViewModel : ViewModel() {
-
     enum class AddStatus {
         WAITING,
         SUCCESS,
@@ -25,6 +25,7 @@ class AddViewModel : ViewModel() {
                 _status.value = AddStatus.SUCCESS
             },
             onFailure = { e: Exception ->
+                Log.e("AddViewModel", e.toString())
                 _status.value = AddStatus.FAILURE
             }
         )

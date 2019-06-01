@@ -23,7 +23,6 @@ import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.viewModels.AddViewModel
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.firestore.GeoPoint
 import kotlinx.android.synthetic.main.fragment_add.*
 
 private const val TAG = "AddFragment"
@@ -127,7 +126,8 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
             ?.tag // the tag is how we identify the type inside data object
         val title = title_edit_text.text.toString()
         // val location = selectedLocation?.latitude.toString() + ' ' + selectedLocation?.longitude.toString()
-        val location = GeoPoint(selectedLocation!!.latitude, selectedLocation!!.longitude)
+
+        val location = selectedLocation
         val city = location_edit_text.text.toString()
         val range = range_seekbar.progress.toString()
         val salary = salary_edit_text.text.toString()
@@ -165,8 +165,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
                 val job = Job(
                     title = title,
                     description = description,
-                    g = null,
-                    l = listOf(location.latitude, location.longitude),
+                    l = location!!.latLng().toList(),
                     city = city,
                     salary = salary,
                     active = true,
@@ -187,7 +186,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
     override fun onLocationPicked(location: Location) {
         val locationText =
             if (location.city != null) location.city
-            else getString(R.string.coordinates, location.latitude.toString(), location.longitude.toString())
+            else getString(R.string.coordinates, location.l[0].toString(), location.l[1].toString())
         location_edit_text.setText(locationText)
         selectedLocation = location
     }
