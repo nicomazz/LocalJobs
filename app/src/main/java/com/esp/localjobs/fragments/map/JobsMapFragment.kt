@@ -7,7 +7,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
-import com.esp.localjobs.drawableToBitmap
+import com.esp.localjobs.utils.drawableToBitmap
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.esp.localjobs.viewModels.MapViewModel

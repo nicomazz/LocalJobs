@@ -14,7 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
-import kotlinx.android.synthetic.main.fragment_add.*
+import com.esp.localjobs.fragments.map.LocationPickerFragment
 import kotlinx.android.synthetic.main.fragment_add.range_value
 import kotlinx.android.synthetic.main.fragment_filter_results.*
 
@@ -99,7 +99,8 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
             R.id.filter_location_edit_text -> {
                 // show location picker dialog
                 activity?.supportFragmentManager?.let { fm ->
-                    val locationPickerFragment = LocationPickerFragment(this, filterViewModel.location)
+                    val locationPickerFragment =
+                        LocationPickerFragment(this, filterViewModel.location)
                     locationPickerFragment.show(fm, LocationPickerFragment.TAG)
                 }
             }
