@@ -1,6 +1,5 @@
 package com.esp.localjobs.adapters
 
-import android.graphics.Color
 import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -13,7 +12,7 @@ import com.esp.localjobs.fragments.JobsFragmentDirections
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.databinding.BindableItem
 
-class JobItem(val job: Job, private val isSelected: Boolean) : BindableItem<ItemJobBinding>() {
+class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
 
     override fun getId() = job.uid.hashCode().toLong()
 
@@ -34,9 +33,6 @@ class JobItem(val job: Job, private val isSelected: Boolean) : BindableItem<Item
                     action.arguments, null, extras
                 )
         }
-
-        // highlight card if is selected
-        cardView.setBackgroundColor(if (isSelected) Color.CYAN else Color.WHITE)
     }
 
     override fun getLayout() = R.layout.item_job

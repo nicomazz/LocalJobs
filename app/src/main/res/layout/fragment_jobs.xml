@@ -7,37 +7,11 @@
         android:layout_height="match_parent"
         tools:context=".fragments.JobsFragment">
 
-    <fragment
-            class="com.esp.localjobs.fragments.map.JobsMapFragment"
-            android:id="@+id/map_fragment"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"/>
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.FloatingActionButton"
-            app:fabSize="auto"
-            android:id="@+id/fabAdd"
-            app:tint="@android:color/white"
-            android:layout_marginRight="10dp"
-            app:fabCustomSize="70dp"
-            app:backgroundTint="@color/colorPrimary"
-            app:srcCompat="@android:drawable/ic_input_add"
-            app:layout_anchor="@+id/bottom_sheet"
-            app:layout_anchorGravity="top|end"/>
-
-
     <LinearLayout
             android:id="@+id/bottom_sheet"
             android:layout_width="match_parent"
-            android:layout_height="500dp"
-            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
-            android:orientation="vertical"
-            app:behavior_hideable="false"
-            app:behavior_peekHeight="200dp"
-            android:weightSum="3">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
         <View
                 android:layout_width="match_parent"
@@ -54,5 +28,16 @@
                 android:layout_height="match_parent"/>
     </LinearLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            app:fabSize="auto"
+            android:id="@+id/fabAdd"
+            app:tint="@android:color/white"
+            android:layout_margin="16dp"
+            app:backgroundTint="@color/colorPrimary"
+            app:srcCompat="@android:drawable/ic_input_add"
+            android:layout_gravity="end|bottom"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

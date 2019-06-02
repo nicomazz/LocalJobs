@@ -2,7 +2,6 @@ package com.esp.localjobs.fragments.map
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
@@ -33,15 +32,12 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     private val filterViewModel: FilterViewModel by activityViewModels()
     private val mapViewModel: MapViewModel by activityViewModels()
 
-    private var markerSelected = false
     private var jobs: List<Job> = listOf()
 
     private companion object Map {
         const val MARKER_SOURCE = "marker-source"
         const val MARKER_IMAGE = "marker-image"
         const val MARKER_LAYER = "marker-layer"
-        const val SELECTED_MARKER = "selected-marker"
-        const val SELECTED_MARKER_LAYER = "selected-marker-layer"
         const val JOB_ID_PROPERTY = "job_id"
     }
 
@@ -49,10 +45,9 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         super.onAttach(context)
         startLocation = filterViewModel.getLocation(context)
         observeJobs()
-        observeMapPadding()
     }
 
-    fun observeJobs() {
+    private fun observeJobs() {
         jobsViewModel.jobs.observe(this, Observer { jobs ->
             this.jobs = jobs ?: listOf()
             setJobsInMap()
@@ -62,13 +57,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mapContainer?.getMapAsync(this)
-    }
-    fun observeMapPadding() {
-        mapViewModel.bottomPadding.observe(this, Observer {
-            Log.d("MapViewModel", "Setting padding to: $it")
-            mapboxMap?.setPadding(0, 0, 0, it.toInt())
-            navigateToLastPosition()
-        })
     }
 
     override fun onMapReady(map: MapboxMap) {
