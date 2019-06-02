@@ -14,7 +14,7 @@ class JobsViewModel : ViewModel() {
 
     private val _jobs = MutableLiveData<List<Job>?>()
     @Inject
-    lateinit var repository: BaseLocationRepository<Job> //= JobsRepository()
+    lateinit var repository: BaseLocationRepository<Job> // = JobsRepository()
 
     val jobs: LiveData<List<Job>?>
         get() = _jobs
