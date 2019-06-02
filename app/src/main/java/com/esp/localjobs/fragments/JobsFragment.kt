@@ -75,7 +75,7 @@ class JobsFragment : Fragment() {
     private fun observeChangesInJobList() {
         jobsViewModel.jobs.observe(this, Observer { jobs ->
             Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
-            adapter.update(jobs?.map{ JobItem(it) } ?: listOf())
+            adapter.update(jobs?.map { JobItem(it) } ?: listOf())
         })
     }
 
