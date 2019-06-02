@@ -18,6 +18,8 @@ import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.esp.localjobs.viewModels.MapViewModel
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_jobs.*
@@ -65,8 +67,10 @@ class JobsFragment : Fragment() {
             jobsViewModel.jobs.value?.indexOfFirst { it.id == job?.id }?.let {
                 if (it >= 0) {
                     jobList.smoothScrollToPosition(it)
-                    updateJobList(jobsViewModel.jobs.value)
+                    val bottomSheetBehaviour = BottomSheetBehavior.from(jobList)
+                    bottomSheetBehaviour.state = STATE_EXPANDED
                 }
+                updateJobList(jobsViewModel.jobs.value)
             }
         })
     }
