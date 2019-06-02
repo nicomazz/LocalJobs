@@ -1,5 +1,6 @@
 package com.esp.localjobs.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -16,8 +18,10 @@ import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
+import com.esp.localjobs.viewModels.MapViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.fragment_jobs.*
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
 
 /**
@@ -26,6 +30,7 @@ import kotlinx.android.synthetic.main.fragment_jobs.view.*
 class JobsFragment : Fragment() {
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
+    private val mapViewModel: MapViewModel by activityViewModels()
 
     val adapter = GroupAdapter<ViewHolder>()
 
@@ -55,6 +60,14 @@ class JobsFragment : Fragment() {
                 filterViewModel.range.toDouble()
             )
         } ?: jobsViewModel.loadJobs()
+
+        mapViewModel.selectedJob.observe(viewLifecycleOwner, Observer { job ->
+            jobsViewModel.jobs.value?.indexOfFirst { it.id == job?.id }?.let {
+                if (it >= 0) {
+                    jobList.smoothScrollToPosition(it)
+                }
+            }
+        })
     }
 
     private fun setupJobList(view: View) {
