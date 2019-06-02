@@ -1,7 +1,6 @@
 package com.esp.localjobs.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -125,11 +124,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         if (!validateForm())
             return
 
-        // retrieve content of the form
-        val selectedTypeId = type_radio_group.checkedRadioButtonId
-        val type = view?.findViewById<RadioButton>(selectedTypeId)
-            ?.tag // the tag is how we identify the type inside data object
-        val userSelectedJob = type == "job"
+        val userSelectedJob = type_radio_group.checkedRadioButtonId == R.id.radio_job
 
         val job = Job()
         // set shared fields
@@ -144,9 +139,8 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
             uid = loginViewModel.getUserId()
         }
 
-        if (!userSelectedJob) { // if it's a proposal set proposal fields
+        if (!userSelectedJob) { // if it's a proposal set range
             job.range = range_seekbar.progress
-            job.isJob = false
         }
 
         // called after completion of add task

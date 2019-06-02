@@ -1,14 +1,12 @@
 package com.esp.localjobs.fragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
 import android.widget.SearchView
 import android.widget.SeekBar
 import androidx.fragment.app.activityViewModels
