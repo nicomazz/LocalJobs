@@ -8,6 +8,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.SearchView
 import android.widget.SeekBar
 import androidx.fragment.app.activityViewModels
@@ -16,8 +17,10 @@ import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
+import kotlinx.android.synthetic.main.fragment_add.*
 import kotlinx.android.synthetic.main.fragment_add.range_value
 import kotlinx.android.synthetic.main.fragment_filter_results.*
+import kotlinx.android.synthetic.main.fragment_filter_results.type_radio_group
 
 /**
  * Fragment used to set filter params (longitude, latitude, range, text)
@@ -58,6 +61,8 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
     }
 
     private fun updateView() {
+        val checkedId = if (filterViewModel.filteringJobs) R.id.radio_job else R.id.radio_proposal
+        type_radio_group.check(checkedId)
         range_value.text = filterViewModel.range.toString()
         range_seek_bar.progress = filterViewModel.range
         min_salary_edit_text.setText(filterViewModel.minSalary.toString())
@@ -70,7 +75,11 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
     }
 
     private fun updateViewModel() {
+        // check selected radio type
+        val userSelectedJob = type_radio_group.checkedRadioButtonId == R.id.radio_job
+
         filterViewModel.apply {
+            filteringJobs = userSelectedJob
             query = searchView.query.toString()
             range = range_value.text.toString().toInt()
             minSalary = min_salary_edit_text.text.toString().toFloat().toInt()

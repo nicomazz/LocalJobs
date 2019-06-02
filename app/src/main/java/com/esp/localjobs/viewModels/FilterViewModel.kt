@@ -18,6 +18,7 @@ class FilterViewModel : ViewModel() {
     var query: String = ""
     var location: Location? = null
     var minSalary: Int = 0
+    var filteringJobs: Boolean = true // used to load jobs or proposal
     val userRequestedFilteredResults = MutableLiveData<Boolean>()
 
     init {
