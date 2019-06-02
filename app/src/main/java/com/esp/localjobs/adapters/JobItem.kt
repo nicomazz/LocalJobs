@@ -1,6 +1,9 @@
 package com.esp.localjobs.adapters
 
 import android.graphics.Color
+import android.view.View
+import android.widget.TextView
+import androidx.databinding.BindingAdapter
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import com.esp.localjobs.R
@@ -11,12 +14,13 @@ import com.squareup.picasso.Picasso
 import com.xwray.groupie.databinding.BindableItem
 
 class JobItem(val job: Job, private val isSelected: Boolean) : BindableItem<ItemJobBinding>() {
+
     override fun getId() = job.uid.hashCode().toLong()
 
     override fun bind(viewBinding: ItemJobBinding, position: Int) = with(viewBinding) {
         job = this@JobItem.job
         Picasso.get().load("https://picsum.photos/200").into(imageView)
-        imageView.setOnClickListener {
+        cardView.setOnClickListener {
             val extras = FragmentNavigatorExtras(
                 imageView to "image",
                 title to "title",
@@ -36,4 +40,24 @@ class JobItem(val job: Job, private val isSelected: Boolean) : BindableItem<Item
     }
 
     override fun getLayout() = R.layout.item_job
+}
+
+@BindingAdapter("salary")
+fun TextView.setSalary(salary: String) {
+    val value = salary.toIntOrNull()
+    text = value?.let {
+        if (it > 0)
+            "You will earn $value £"
+        else
+            "You have to pay $value £"
+    } ?: resources.getString(R.string.no_price_info)
+}
+
+@BindingAdapter("salary")
+fun View.setSalary(salary: String) {
+    val value = salary.toIntOrNull()
+    resources.getColor(if (value == null || value > 0) android.R.color.holo_green_dark else android.R.color.holo_red_dark)
+        .let {
+            setBackgroundColor(it)
+        }
 }
