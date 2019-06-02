@@ -94,7 +94,6 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
      */
     private fun onSearchClick() {
         updateViewModel()
-        filterViewModel.userRequestedFilteredResults.value = true
         findNavController().popBackStack()
     }
 

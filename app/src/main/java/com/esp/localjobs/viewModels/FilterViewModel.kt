@@ -1,7 +1,6 @@
 package com.esp.localjobs.viewModels
 
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.utils.PositionManager
@@ -19,7 +18,6 @@ class FilterViewModel : ViewModel() {
     var location: Location? = null
     var minSalary: Int = 0
     var filteringJobs: Boolean = true // used to load jobs or proposal
-    val userRequestedFilteredResults = MutableLiveData<Boolean>()
 
     init {
         setDefaultValues()
@@ -28,7 +26,6 @@ class FilterViewModel : ViewModel() {
     fun setDefaultValues() {
         range = MAX_RANGE_KM // -1 is interpreted as +inf
         query = ""
-        userRequestedFilteredResults.value = false
     }
 
     /**
