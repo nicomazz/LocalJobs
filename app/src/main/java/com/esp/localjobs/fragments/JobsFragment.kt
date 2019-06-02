@@ -1,6 +1,5 @@
 package com.esp.localjobs.fragments
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,13 +8,13 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
+import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.esp.localjobs.viewModels.MapViewModel
@@ -49,7 +48,7 @@ class JobsFragment : Fragment() {
         setupJobList(view)
         jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
             Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
-            adapter.update(jobs?.map { JobItem(it) } ?: listOf())
+            updateJobList(jobs)
         })
 
         // Listen for jobs near user selected location or his last known position.
@@ -61,10 +60,12 @@ class JobsFragment : Fragment() {
             )
         } ?: jobsViewModel.loadJobs()
 
+        // when a job is selected in the map highlight the corresponding card
         mapViewModel.selectedJob.observe(viewLifecycleOwner, Observer { job ->
             jobsViewModel.jobs.value?.indexOfFirst { it.id == job?.id }?.let {
                 if (it >= 0) {
                     jobList.smoothScrollToPosition(it)
+                    updateJobList(jobsViewModel.jobs.value)
                 }
             }
         })
@@ -72,6 +73,14 @@ class JobsFragment : Fragment() {
 
     private fun setupJobList(view: View) {
         view.jobList.adapter = adapter
+    }
+
+    private fun updateJobList(jobs: List<Job>?) {
+        val jobItems = jobs?.map {
+            val isSelected = it.id == mapViewModel.selectedJob.value?.id
+            JobItem(it, isSelected)
+        }
+        adapter.update(jobItems ?: listOf())
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
