@@ -63,6 +63,7 @@ dependencies {
     //implementation 'com.firebaseui:firebase-ui-database:4.3.2'
     implementation 'com.google.firebase:firebase-firestore:19.0.0'
     implementation 'com.google.firebase:firebase-auth:17.0.0'
+    implementation 'com.google.firebase:firebase-messaging:18.0.0'
 
     ktlint "com.pinterest:ktlint:0.32.0"
     testImplementation 'junit:junit:4.12'

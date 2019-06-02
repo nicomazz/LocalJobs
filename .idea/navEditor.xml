@@ -8,6 +8,11 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
+                  <entry key="action_destination_add">
+                    <value>
+                      <LayoutPositions />
+                    </value>
+                  </entry>
                   <entry key="destination_add">
                     <value>
                       <LayoutPositions>
@@ -87,44 +92,6 @@
                             <option name="x" value="-2451" />
                             <option name="y" value="581" />
                           </Point>
-                        </option>
-                      </LayoutPositions>
-                    </value>
-                  </entry>
-                  <entry key="destination_proposal_details">
-                    <value>
-                      <LayoutPositions>
-                        <option name="myPosition">
-                          <Point>
-                            <option name="x" value="-1573" />
-                            <option name="y" value="1295" />
-                          </Point>
-                        </option>
-                      </LayoutPositions>
-                    </value>
-                  </entry>
-                  <entry key="destination_proposals">
-                    <value>
-                      <LayoutPositions>
-                        <option name="myPosition">
-                          <Point>
-                            <option name="x" value="-2825" />
-                            <option name="y" value="1373" />
-                          </Point>
-                        </option>
-                        <option name="myPositions">
-                          <map>
-                            <entry key="action_destination_proposals_to_destination_filter">
-                              <value>
-                                <LayoutPositions />
-                              </value>
-                            </entry>
-                            <entry key="action_destination_proposals_to_destination_proposal_details">
-                              <value>
-                                <LayoutPositions />
-                              </value>
-                            </entry>
-                          </map>
                         </option>
                       </LayoutPositions>
                     </value>

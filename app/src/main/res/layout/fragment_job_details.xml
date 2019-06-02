@@ -5,7 +5,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:padding="10dp">
 
     <TextView
@@ -13,6 +13,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/title"
+            style="@style/TextAppearance.AppCompat.Title"
             android:transitionName="title"
             app:layout_collapseMode="parallax"
             tools:text="this is a title test"
@@ -28,13 +29,11 @@
             android:id="@+id/description"
             android:transitionName="@string/description"
             app:layout_collapseMode="parallax"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="8dp"
             app:layout_constraintTop_toBottomOf="@+id/title"
             tools:text="this is a description test"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="10dp"/>
+            />
 
     <ImageView
             android:layout_width="200dp"
@@ -46,4 +45,18 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!--todo centrare il testo-->
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/contact"
+            android:gravity="center"
+            android:id="@+id/contattaFab"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="16dp">
+
+    </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
 </androidx.constraintlayout.widget.ConstraintLayout>
