@@ -20,6 +20,7 @@ import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.esp.localjobs.viewModels.MapViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -35,6 +36,11 @@ class JobsFragment : Fragment() {
     private val mapViewModel: MapViewModel by activityViewModels()
 
     private val adapter = GroupAdapter<ViewHolder>()
+    private var bottomSheetState = STATE_COLLAPSED // temporary
+
+    companion object {
+        const val TAG = "JobsFragment"
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,6 +75,7 @@ class JobsFragment : Fragment() {
          Log.d("new height","heihgt $hh")
          bottom_sheet.layoutParams =
              bottom_sheet.layoutParams.apply { height = (displayMetrics.heightPixels * 0.66).toInt() }*/
+        bottomSheetBehavior.state = bottomSheetState
         bottomSheetBehavior.saveFlags = BottomSheetBehavior.SAVE_ALL
         bottomSheetBehavior
             .setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -79,6 +86,7 @@ class JobsFragment : Fragment() {
 
                 override fun onStateChanged(bottomSheet: View, newState: Int) {
                     mapViewModel.setBottomPadding((bottomSheet.height * offset).toInt())
+                    bottomSheetState = newState
                 }
             })
     }
