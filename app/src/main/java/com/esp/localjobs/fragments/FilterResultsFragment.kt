@@ -1,6 +1,7 @@
 package com.esp.localjobs.fragments
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -70,9 +71,9 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
 
     private fun updateViewModel() {
         filterViewModel.apply {
-            searchView.query.toString()
-            range_value.text.toString().toInt()
-            min_salary_edit_text.text.toString().toFloat().toInt()
+            query = searchView.query.toString()
+            range = range_value.text.toString().toInt()
+            minSalary = min_salary_edit_text.text.toString().toFloat().toInt()
             userSelectedLocation?.let { selectedLocation ->
                 location = selectedLocation
             }
