@@ -139,7 +139,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
                 jobs.firstOrNull { it.id == selectedJobId }?.let { selected_job ->
                     mapViewModel.setSelectedJob(selected_job)
                 }
-            }
+            } else mapViewModel.setSelectedJob(null)
         }
         return true
     }
