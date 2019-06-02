@@ -8,6 +8,11 @@
             <LayoutPositions>
               <option name="myPositions">
                 <map>
+                  <entry key="action_destination_add">
+                    <value>
+                      <LayoutPositions />
+                    </value>
+                  </entry>
                   <entry key="destination_add">
                     <value>
                       <LayoutPositions>
@@ -25,6 +30,18 @@
                               </value>
                             </entry>
                           </map>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="destination_edit_job">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="-824" />
+                            <option name="y" value="-223" />
+                          </Point>
                         </option>
                       </LayoutPositions>
                     </value>
@@ -49,6 +66,15 @@
                             <option name="x" value="-1621" />
                             <option name="y" value="-229" />
                           </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_destination_job_details_to_editJobFragment">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>

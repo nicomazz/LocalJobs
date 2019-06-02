@@ -57,6 +57,9 @@
         <argument
                 android:name="job"
                 app:argType="com.esp.localjobs.data.models.Job"/>
+        <action
+                android:id="@+id/action_destination_job_details_to_destination_edit"
+                app:destination="@id/destination_edit"/>
     </fragment>
     <fragment
             android:id="@+id/destination_user_profile"
@@ -118,4 +121,13 @@
             app:popExitAnim="@anim/slide_out_right"
             android:id="@+id/action_destination_add"
             app:destination="@id/destination_add"/>
+    <fragment
+            android:id="@+id/destination_edit"
+            android:name="com.esp.localjobs.fragments.EditFragment"
+            android:label="fragment_edit"
+            >
+        <argument
+                android:name="job"
+                app:argType="com.esp.localjobs.data.models.Job"/>
+    </fragment>
 </navigation>

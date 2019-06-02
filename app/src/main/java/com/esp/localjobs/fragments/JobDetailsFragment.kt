@@ -60,7 +60,9 @@ class JobDetailsFragment : Fragment() {
         inflater.inflate(R.menu.menu_edit, menu)
         val editMenu = menu.findItem(R.id.menu_edit_item)
         editMenu.setOnMenuItemClickListener {
-            Log.d("JobDetailsFragment", "Wella")
+            val action =
+                JobDetailsFragmentDirections.actionDestinationJobDetailsToDestinationEdit(args.job)
+            findNavController().navigate(action.actionId, action.arguments)
             true
         }
     }
