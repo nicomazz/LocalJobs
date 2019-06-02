@@ -2,6 +2,8 @@ package com.esp.localjobs.fragments.map
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -46,13 +48,26 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         startLocation = filterViewModel.getLocation(context)
+        observeJobs()
+        observeMapPadding()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
+    fun observeJobs() {
+        jobsViewModel.jobs.observe(this, Observer { jobs ->
             this.jobs = jobs ?: listOf()
-            mapContainer.getMapAsync(this)
+            setJobsInMap()
+        })
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mapContainer?.getMapAsync(this)
+    }
+    fun observeMapPadding() {
+        mapViewModel.bottomPadding.observe(this, Observer {
+            Log.d("MapViewModel", "Setting padding to: $it")
+            mapboxMap?.setPadding(0, 0, 0, it.toInt())
+            navigateToLastPosition()
         })
     }
 
@@ -69,16 +84,16 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         }
     }
 
-    private fun jobsPresentInMap() = mapboxMap.style != null
+    private fun jobsPresentInMap() = mapboxMap?.style != null
 
     private fun updateJobsInMap() {
-        mapboxMap.style?.getSource(MARKER_SOURCE)?.let { source ->
+        mapboxMap?.style?.getSource(MARKER_SOURCE)?.let { source ->
             if (source is GeoJsonSource)
                 source.setGeoJson(generateJsonSourceFromJobs())
         }
     }
 
-    private fun setupJobsInMap() = with(mapboxMap) {
+    private fun setupJobsInMap() = mapboxMap?.run {
         setStyle(Style.MAPBOX_STREETS) { style ->
 
             // add coordinates source
@@ -126,26 +141,27 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     /**
      * When a marker is clicked select it
      */
-    override fun onMapClick(point: LatLng): Boolean {
-        mapboxMap.style?.let { style ->
-            val pixel = mapboxMap.projection.toScreenLocation(point)
-            val features = mapboxMap.queryRenderedFeatures(
+    override fun onMapClick(point: LatLng): Boolean = mapboxMap?.run {
+        style?.let { _ ->
+            val pixel = projection.toScreenLocation(point)
+            val features = queryRenderedFeatures(
                 pixel,
                 MARKER_LAYER
             )
 
             if (features.size > 0) {
+                centerMap(point)
                 val selectedJobId = features.first().getStringProperty(JOB_ID_PROPERTY)
                 jobs.firstOrNull { it.id == selectedJobId }?.let { selected_job ->
                     mapViewModel.setSelectedJob(selected_job)
                 }
             } else mapViewModel.setSelectedJob(null)
         }
-        return true
-    }
+        true
+    } ?: false
 
     override fun onDestroy() {
         super.onDestroy()
-        mapboxMap.removeOnMapClickListener(this)
+        mapboxMap?.removeOnMapClickListener(this)
     }
 }

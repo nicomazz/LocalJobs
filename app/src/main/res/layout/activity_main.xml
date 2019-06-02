@@ -39,25 +39,7 @@
                     app:defaultNavHost="true"/>
         </FrameLayout>
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/bottom_nav_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:menu="@menu/menu_bottom_nav"/>
     </LinearLayout>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Widget.MaterialComponents.FloatingActionButton"
-            app:fabSize="auto"
-            app:fabCustomSize="70dp"
-            android:id="@+id/fabAdd"
-            android:layout_gravity="center_horizontal|bottom"
-            android:translationY="10dp"
-            app:layout_anchorGravity="bottom|center_horizontal"
-            app:tint="@android:color/white"
-            app:backgroundTint="@color/colorPrimary"
-            app:srcCompat="@android:drawable/ic_input_add"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

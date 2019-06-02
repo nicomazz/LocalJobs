@@ -1,5 +1,6 @@
 package com.esp.localjobs.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -33,7 +34,7 @@ class JobsFragment : Fragment() {
     private val filterViewModel: FilterViewModel by activityViewModels()
     private val mapViewModel: MapViewModel by activityViewModels()
 
-    val adapter = GroupAdapter<ViewHolder>()
+    private val adapter = GroupAdapter<ViewHolder>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,15 +45,64 @@ class JobsFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_jobs, container, false)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        loadJobs()
+        observeChangesInJobList()
+        observeSelectedJob()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupJobList(view)
-        jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
-            Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
-            updateJobList(jobs)
-        })
+        setupBottomSheetBehavior()
+        setupAddFab(view)
+    }
 
+    private val bottomSheetBehavior: BottomSheetBehavior<View>
+        get() = BottomSheetBehavior.from(bottom_sheet)
+
+    private fun setupBottomSheetBehavior() {
+        /* val displayMetrics = DisplayMetrics()
+         activity?.windowManager?.defaultDisplay?.getMetrics(displayMetrics)
+         val hh = (displayMetrics.heightPixels * 0.30).toInt()
+         Log.d("new height","heihgt $hh")
+         bottom_sheet.layoutParams =
+             bottom_sheet.layoutParams.apply { height = (displayMetrics.heightPixels * 0.66).toInt() }*/
+        bottomSheetBehavior.saveFlags = BottomSheetBehavior.SAVE_ALL
+        bottomSheetBehavior
+            .setBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                var offset: Float = 0f
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                    offset = slideOffset
+                }
+
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    mapViewModel.setBottomPadding((bottomSheet.height * offset).toInt())
+                }
+            })
+    }
+
+    private fun setupAddFab(view: View) {
+        view.fabAdd.setOnClickListener {
+            findNavController().navigate(R.id.destination_add)
+        }
+    }
+
+    private fun observeSelectedJob() {
+        mapViewModel.selectedJob.observe(this, Observer { job ->
+            jobsViewModel.jobs.value?.indexOfFirst { it.id == job?.id }?.let {
+                if (it >= 0) {
+                    jobList.smoothScrollToPosition(it)
+                    bottomSheetBehavior.state = STATE_EXPANDED
+                }
+                // adapter.notifyDataSetChanged()
+                updateJobList(jobsViewModel.jobs.value)
+            }
+        })
+    }
+
+    private fun loadJobs() {
         // Listen for jobs near user selected location or his last known position.
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
         filterViewModel.getLocation(context!!)?.let {
@@ -61,23 +111,18 @@ class JobsFragment : Fragment() {
                 filterViewModel.range.toDouble()
             )
         } ?: jobsViewModel.loadJobs()
-
-        // when a job is selected in the map highlight the corresponding card
-        mapViewModel.selectedJob.observe(viewLifecycleOwner, Observer { job ->
-            jobsViewModel.jobs.value?.indexOfFirst { it.id == job?.id }?.let {
-                if (it >= 0) {
-                    jobList.smoothScrollToPosition(it)
-                    val bottomSheetBehaviour = BottomSheetBehavior.from(jobList)
-                    bottomSheetBehaviour.state = STATE_EXPANDED
-                }
-                updateJobList(jobsViewModel.jobs.value)
-            }
-        })
     }
 
-    private fun setupJobList(view: View) = with (view.jobList){
+    private fun setupJobList(view: View) = with(view.jobList) {
         adapter = this@JobsFragment.adapter
         itemAnimator = null
+    }
+
+    private fun observeChangesInJobList() {
+        jobsViewModel.jobs.observe(this, Observer { jobs ->
+            Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
+            updateJobList(jobs)
+        })
     }
 
     private fun updateJobList(jobs: List<Job>?) {

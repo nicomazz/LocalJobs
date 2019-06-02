@@ -24,8 +24,9 @@ import kotlinx.android.synthetic.main.fragment_map.*
  */
 open class MapFragment : Fragment(), OnMapReadyCallback {
 
-    protected lateinit var mapboxMap: MapboxMap
-    protected lateinit var mapContainer: MapView
+    private var lastCameraMovementPosition: Location? = null
+    protected var mapboxMap: MapboxMap? = null
+    protected var mapContainer: MapView? = null
 
     open var startLocation: Location? = null
 
@@ -37,8 +38,9 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mapContainer = map_container
-        mapContainer.onCreate(savedInstanceState)
+        mapContainer = map_container.apply {
+            onCreate(savedInstanceState)
+        }
         center_user_position_button.setOnClickListener {
             centerMap()
         }
@@ -69,6 +71,10 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+    fun centerMap(pos: LatLng) {
+        centerMap(Location(latitude = pos.latitude, longitude = pos.longitude))
+    }
+
     /**
      * Center the map view on given location.
      */
@@ -83,41 +89,48 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
             )
             .zoom(12.0)
             .build()
-        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 600)
+        lastCameraMovementPosition = location
+        mapboxMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 600)
+    }
+
+    fun navigateToLastPosition() {
+        lastCameraMovementPosition?.let {
+            navigateToPosition(it)
+        }
     }
 
     override fun onResume() {
         super.onResume()
-        mapContainer.onResume()
+        mapContainer?.onResume()
     }
 
     override fun onStart() {
         super.onStart()
-        mapContainer.onStart()
+        mapContainer?.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        mapContainer.onStop()
+        mapContainer?.onStop()
     }
 
     override fun onPause() {
         super.onPause()
-        mapContainer.onPause()
+        mapContainer?.onPause()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapContainer.onLowMemory()
+        mapContainer?.onLowMemory()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mapContainer.onDestroy()
+        mapContainer?.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mapContainer.onSaveInstanceState(outState)
+        mapContainer?.onSaveInstanceState(outState)
     }
 }
