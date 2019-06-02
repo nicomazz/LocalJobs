@@ -77,6 +77,7 @@ class JobsFragment : Fragment() {
 
     private fun setupJobList(view: View) {
         view.jobList.adapter = adapter
+        view.jobList.itemAnimator = null
     }
 
     private fun updateJobList(jobs: List<Job>?) {
