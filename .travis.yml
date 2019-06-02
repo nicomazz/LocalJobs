@@ -1,4 +1,5 @@
 language: android
+dist: trusty
 jdk: oraclejdk8
 env:
   global:
@@ -9,8 +10,15 @@ android:
   - build-tools-$ANDROID_BUILD_TOOLS_VERSION
   - android-$ANDROID_API_LEVEL
   - extra
+  - sys-img-x86-android-28
 script:
-- "./gradlew build check"
+- "gradle build check connectedCheck"
 before_install:
 - openssl aes-256-cbc -K $encrypted_0d5de8646f20_key -iv $encrypted_0d5de8646f20_iv
   -in google-services.json.enc -out app/google-services.json -d
+# Emulator Management: Create, Start and Wait
+before_script:
+  - echo no | android create avd --force -n test -t android-28 --abi x86 -c 100M
+  - emulator -avd test -no-audio -no-window &
+  - android-wait-for-emulator
+  - adb shell input keyevent 82 &
