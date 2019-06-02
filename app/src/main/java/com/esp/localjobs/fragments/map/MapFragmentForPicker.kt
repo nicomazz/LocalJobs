@@ -2,7 +2,9 @@ package com.esp.localjobs.fragments.map
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.viewModels.MapViewModel
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import kotlinx.android.synthetic.main.fragment_map.*
@@ -17,6 +19,7 @@ private const val ARG_START_LONGITUDE = "start-location-longitude"
 class MapFragmentForPicker : MapFragment() {
 
     override var startLocation: Location? = null
+    private val mapViewModel: MapViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +37,7 @@ class MapFragmentForPicker : MapFragment() {
         center_user_position_button.setOnClickListener {
             centerMap()
         }
-        mapContainer.getMapAsync(this)
+        mapContainer?.getMapAsync(this)
     }
 
     override fun onMapReady(map: MapboxMap) {
@@ -42,6 +45,25 @@ class MapFragmentForPicker : MapFragment() {
         map.setStyle(Style.MAPBOX_STREETS)
         hovering_marker.visibility = View.VISIBLE
         center_user_position_button.visibility = View.VISIBLE
+
+        map.apply {
+            removeOnCameraIdleListener(mapIdleListener)
+            addOnCameraIdleListener(mapIdleListener)
+        }
+    }
+
+    private val mapIdleListener = {
+        mapViewModel.setLocation(getCenterLocation())
+    }
+
+    /**
+     * Get location coordinates of the center of the map-view
+     * @return null if could not retrieve
+     */
+    private fun getCenterLocation(): Location {
+        // get location coordinates of the center of the map-view
+        val latLng = mapboxMap?.cameraPosition?.target!!
+        return Location(latLng.latitude, latLng.longitude)
     }
 
     // todo rimuovere questo

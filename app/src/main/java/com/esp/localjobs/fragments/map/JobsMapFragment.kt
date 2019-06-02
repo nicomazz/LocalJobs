@@ -2,6 +2,7 @@ package com.esp.localjobs.fragments.map
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -31,29 +32,31 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     private val filterViewModel: FilterViewModel by activityViewModels()
     private val mapViewModel: MapViewModel by activityViewModels()
 
-    private var markerSelected = false
     private var jobs: List<Job> = listOf()
 
     private companion object Map {
         const val MARKER_SOURCE = "marker-source"
         const val MARKER_IMAGE = "marker-image"
         const val MARKER_LAYER = "marker-layer"
-        const val SELECTED_MARKER = "selected-marker"
-        const val SELECTED_MARKER_LAYER = "selected-marker-layer"
         const val JOB_ID_PROPERTY = "job_id"
     }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
         startLocation = filterViewModel.getLocation(context)
+        observeJobs()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
+    private fun observeJobs() {
+        jobsViewModel.jobs.observe(this, Observer { jobs ->
             this.jobs = jobs ?: listOf()
-            mapContainer.getMapAsync(this)
+            setJobsInMap()
         })
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        mapContainer?.getMapAsync(this)
     }
 
     override fun onMapReady(map: MapboxMap) {
@@ -69,16 +72,16 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         }
     }
 
-    private fun jobsPresentInMap() = mapboxMap.style != null
+    private fun jobsPresentInMap() = mapboxMap?.style != null
 
     private fun updateJobsInMap() {
-        mapboxMap.style?.getSource(MARKER_SOURCE)?.let { source ->
+        mapboxMap?.style?.getSource(MARKER_SOURCE)?.let { source ->
             if (source is GeoJsonSource)
                 source.setGeoJson(generateJsonSourceFromJobs())
         }
     }
 
-    private fun setupJobsInMap() = with(mapboxMap) {
+    private fun setupJobsInMap() = mapboxMap?.run {
         setStyle(Style.MAPBOX_STREETS) { style ->
 
             // add coordinates source
@@ -101,25 +104,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
                     )
                 )
             }
-
-            // Add the selected marker source and layer
-            if (style.getSource(SELECTED_MARKER) == null)
-                style.addSource(GeoJsonSource(SELECTED_MARKER))
-
-            // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
-            // middle of the icon being fixed to the coordinate point.
-            if (style.getLayer(SELECTED_MARKER_LAYER) == null) {
-                style.addLayer(
-                    SymbolLayer(
-                        SELECTED_MARKER_LAYER,
-                        SELECTED_MARKER
-                    )
-                        .withProperties(
-                            PropertyFactory.iconImage(MARKER_IMAGE),
-                            PropertyFactory.iconOffset(arrayOf(0f, -9f))
-                        )
-                )
-            }
             removeOnMapClickListener(this@JobsMapFragment)
             addOnMapClickListener(this@JobsMapFragment)
         }
@@ -138,83 +122,34 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
             Feature.fromGeometry(
                 Point.fromLngLat(job.getLongitude(), job.getLatitude())
             ).apply {
-                addStringProperty(JOB_ID_PROPERTY, job.uid)
+                addStringProperty(JOB_ID_PROPERTY, job.id)
             }
         }
 
     /**
      * When a marker is clicked select it
      */
-    override fun onMapClick(point: LatLng): Boolean {
-        mapboxMap.style?.let { style ->
-            val selectedMarkerSymbolLayer = style.getLayer(SELECTED_MARKER_LAYER) as SymbolLayer
-
-            val pixel = mapboxMap.projection.toScreenLocation(point)
-            val features = mapboxMap.queryRenderedFeatures(
+    override fun onMapClick(point: LatLng): Boolean = mapboxMap?.run {
+        style?.let { _ ->
+            val pixel = projection.toScreenLocation(point)
+            val features = queryRenderedFeatures(
                 pixel,
                 MARKER_LAYER
             )
-            val selectedFeature = mapboxMap.queryRenderedFeatures(
-                pixel, SELECTED_MARKER_LAYER
-            )
 
-            // if feature already selected do nothing
-            if (selectedFeature.size > 0 && markerSelected) {
-                return false
-            }
-
-            // if clicked on an empty space deselect marker
-            if (features.isEmpty()) {
-                if (markerSelected) {
-                    deselectMarker(selectedMarkerSymbolLayer)
-                }
-                return false
-            }
-
-            val source = style.getSourceAs<GeoJsonSource>(SELECTED_MARKER)
-            source?.setGeoJson(
-                FeatureCollection.fromFeatures(
-                    arrayOf(Feature.fromGeometry(features[0].geometry()))
-                )
-            )
-
-            if (markerSelected) {
-                deselectMarker(selectedMarkerSymbolLayer)
-            }
             if (features.size > 0) {
-                val selectedJobUid = features.first().getStringProperty(JOB_ID_PROPERTY)
-                jobs.firstOrNull { it.uid == selectedJobUid }?.let { selected_job ->
+                centerMap(point)
+                val selectedJobId = features.first().getStringProperty(JOB_ID_PROPERTY)
+                jobs.firstOrNull { it.id == selectedJobId }?.let { selected_job ->
                     mapViewModel.setSelectedJob(selected_job)
                 }
-                selectMarker(selectedMarkerSymbolLayer)
-            }
+            } else mapViewModel.setSelectedJob(null)
         }
-        return true
-    }
-
-    /**
-     * Select a marker by making it larger
-     */
-    private fun selectMarker(iconLayer: SymbolLayer) {
-        iconLayer.setProperties(
-            PropertyFactory.iconSize(1.5f)
-        )
-
-        markerSelected = true
-    }
-
-    /**
-     * Deselect a marker by restoring the original size
-     */
-    private fun deselectMarker(iconLayer: SymbolLayer) {
-        iconLayer.setProperties(
-            PropertyFactory.iconSize(1f)
-        )
-        markerSelected = false
-    }
+        true
+    } ?: false
 
     override fun onDestroy() {
         super.onDestroy()
-        mapboxMap.removeOnMapClickListener(this)
+        mapboxMap?.removeOnMapClickListener(this)
     }
 }

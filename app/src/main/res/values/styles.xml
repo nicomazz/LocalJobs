@@ -9,5 +9,6 @@
         <item name="textInputStyle" parent="com.google.android.material.textfield.TextInputLayout">
             @style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
         </item>
+        <item name="android:windowContentTransitions">true</item>
     </style>
 </resources>

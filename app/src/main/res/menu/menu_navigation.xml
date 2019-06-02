@@ -5,9 +5,17 @@
     Using the same destinations ID on the items ID, the navigation component will automatically bind these items with
     the corresponding fragment.
      -->
+
+    <item
+            android:id="@id/destination_map"
+            android:icon="@drawable/ic_map_24px"
+            app:showAsAction="always"
+            android:title="@string/menu_map" />
+
     <item
             android:id="@id/destination_user_profile"
             android:icon="@drawable/ic_account_circle_white_24dp"
-            app:showAsAction="always"
+            app:showAsAction="ifRoom"
             android:title="@string/menu_profile" />
+
 </menu>
