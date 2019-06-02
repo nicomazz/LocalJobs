@@ -39,4 +39,5 @@
     <string name="position_unknown_toast">Last position unknown</string>
     <string name="error_retrieving_location_name">Error retrieving location name.</string>
     <string name="no_price_info">No information about the price</string>
+    <string name="menu_map">Map</string>
 </resources>
