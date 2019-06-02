@@ -136,5 +136,6 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
         return GeoPoint(lat, lng)
     }
 
+    // launch runtimeException if cast fails
     private fun DocumentSnapshot.toObject() = toObject(typeOfT)
 }
