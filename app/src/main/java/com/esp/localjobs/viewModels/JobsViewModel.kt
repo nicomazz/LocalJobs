@@ -26,10 +26,10 @@ class JobsViewModel : ViewModel() {
             override fun onError(e: Exception) {
                 _jobs.postValue(null)
             }
-        }) { collectionToFilter ->
+        }, filters = null) /* { collectionToFilter ->
             // here we can do filtering
             collectionToFilter
-        }
+        } */
     }
 
     fun loadJobs(location: Location, range: Double) {

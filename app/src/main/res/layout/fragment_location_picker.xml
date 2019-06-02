@@ -4,34 +4,18 @@
                                                    android:layout_width="match_parent"
                                                    android:layout_height="match_parent"
                                                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                   tools:context=".fragments.LocationPickerFragment"
+                                                   tools:context=".fragments.map.LocationPickerFragment"
                                                    xmlns:mapbox="http://schemas.android.com/apk/res-auto">
 
-    <com.mapbox.mapboxsdk.maps.MapView
-            android:id="@+id/map_view"
+    <FrameLayout
+            android:id="@+id/map_fragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             mapbox:layout_constraintLeft_toLeftOf="parent"
             mapbox:layout_constraintTop_toTopOf="parent"
             mapbox:layout_constraintBottom_toTopOf="@id/fragment_buttons"
             android:layout_margin="20dp">
-        <ImageView
-                android:id="@+id/center_user_position_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_location_searching_blue_900_48dp"
-                android:gravity="start"
-                android:padding="10dp"
-                tools:ignore="contentDescription"/>
-        <ImageView
-                android:id="@+id/hovering_marker"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_location_on_blue_900_36dp"
-                android:layout_gravity="center"
-                android:visibility="invisible"
-                tools:ignore="contentDescription"/>
-    </com.mapbox.mapboxsdk.maps.MapView>
+    </FrameLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"

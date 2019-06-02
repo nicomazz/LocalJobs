@@ -1,66 +1,27 @@
-package com.esp.localjobs.managers
+package com.esp.localjobs.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
-import androidx.lifecycle.MutableLiveData
 import com.mapbox.android.core.permissions.PermissionsManager
 
 private const val TWO_MINUTES: Long = 1000 * 60 * 2
 
-/**
- * Singleton used to start listening for position, any update will modify @variable currentBestLocation which can be
- * observed.
- */
-class PositionManager private constructor(private val context: Context) {
-    private val locationManager: LocationManager =
-        context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    private var isListening: Boolean = false
-    val currentBestLocation = MutableLiveData<Location?>()
-
+object PositionManager {
     /**
-     * Register a listener that updates @variable currentBestPosition, which is initialized with the last known
-     * position.
+     * Retrieve the last known position of the device.
+     * Can return null in edge cases like after a factory reset.
      */
     @SuppressLint("MissingPermission")
-    fun startListeningForPosition(): Boolean {
-        if (isListening)
-            return true
+    fun getLastKnownPosition(context: Context): Location? {
         if (PermissionsManager.areLocationPermissionsGranted(context)) {
-            // init value with last position
-            getLastKnownPosition()?.let {
-                currentBestLocation.value = it
-            }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, locationListener)
-            isListening = true
-            return true
-        }
-        return false
-    }
-
-    fun stopListeningForPosition() {
-        locationManager.removeUpdates(locationListener)
-        isListening = false
-    }
-
-    private val locationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location?) {
-            if (location == null || !isBetterLocation(location, currentBestLocation.value))
-                return
-            currentBestLocation.value = location
-        }
-        override fun onProviderDisabled(provider: String?) { }
-        override fun onProviderEnabled(provider: String?) { }
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) { }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun getLastKnownPosition(): Location? {
-        if (PermissionsManager.areLocationPermissionsGranted(context)) {
+            val locationManager: LocationManager =
+                context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val netPos = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
             val gpsPos = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
             return if (isBetterLocation(netPos, gpsPos)) netPos else gpsPos
@@ -112,30 +73,23 @@ class PositionManager private constructor(private val context: Context) {
             else -> false
         }
     }
-
-    companion object : SingletonHolder<PositionManager, Context>(::PositionManager)
 }
 
-open class SingletonHolder<out T, in A>(creator: (A) -> T) {
-    private var creator: ((A) -> T)? = creator
-    @Volatile private var instance: T? = null
-
-    fun getInstance(arg: A): T {
-        val i = instance
-        if (i != null) {
-            return i
-        }
-
-        return synchronized(this) {
-            val i2 = instance
-            if (i2 != null) {
-                i2
-            } else {
-                val created = creator!!(arg)
-                instance = created
-                creator = null
-                created
-            }
+fun drawableToBitmap(drawable: Drawable): Bitmap {
+    if (drawable is BitmapDrawable) {
+        if (drawable.bitmap != null) {
+            return drawable.bitmap
         }
     }
+
+    val bitmap = if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {
+        Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888) // Single color bitmap will be created of 1x1 pixel
+    } else {
+        Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+    }
+
+    val canvas = Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+    return bitmap
 }

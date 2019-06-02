@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.managers.PositionManager
+import com.esp.localjobs.utils.PositionManager
 
 /**
  * Shared view model between filter, jobs and proposals fragment.
@@ -36,7 +36,7 @@ class FilterViewModel : ViewModel() {
      */
     fun getLocation(context: Context): Location? {
         if (location == null) {
-            val l = PositionManager.getInstance(context).getLastKnownPosition()
+            val l = PositionManager.getLastKnownPosition(context)
             l?.let { location = Location(it.latitude, it.longitude) }
         }
         return location
