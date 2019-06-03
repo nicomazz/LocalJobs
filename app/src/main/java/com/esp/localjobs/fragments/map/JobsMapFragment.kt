@@ -120,9 +120,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     private fun setupSource(loadedStyle: Style) = with(loadedStyle) {
         if (getSource(MARKER_SOURCE) == null) {
             featureCollection = generateJsonSourceFromJobs()
-            featureCollection?.features()?.forEach {
-                it.addBooleanProperty(PROPERTY_SELECTED, false)
-            }
             addSource(GeoJsonSource(MARKER_SOURCE, featureCollection))
         }
     }
@@ -171,7 +168,13 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         )
     }
 
-    private fun generateJsonSourceFromJobs() = FeatureCollection.fromFeatures(generateCoordinatesFeatureList(jobs))
+    private fun generateJsonSourceFromJobs(): FeatureCollection {
+        val features = FeatureCollection.fromFeatures(generateCoordinatesFeatureList(jobs))
+        features.features()?.forEach {
+            it.addBooleanProperty(PROPERTY_SELECTED, false)
+        }
+        return features
+    }
 
     /**
      * Generate coordinates feature collection given a list of jobs
