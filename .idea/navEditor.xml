@@ -29,6 +29,11 @@
                                 <LayoutPositions />
                               </value>
                             </entry>
+                            <entry key="action_destination_add_to_destination_map">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
                           </map>
                         </option>
                       </LayoutPositions>
@@ -91,6 +96,18 @@
                           <Point>
                             <option name="x" value="-2451" />
                             <option name="y" value="581" />
+                          </Point>
+                        </option>
+                      </LayoutPositions>
+                    </value>
+                  </entry>
+                  <entry key="destination_map">
+                    <value>
+                      <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="12" />
+                            <option name="y" value="12" />
                           </Point>
                         </option>
                       </LayoutPositions>
