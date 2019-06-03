@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.transition.ChangeBounds
 import androidx.transition.TransitionInflater
 import com.esp.localjobs.R
 import com.esp.localjobs.databinding.FragmentJobDetailsBinding
@@ -39,16 +40,21 @@ class JobDetailsFragment : Fragment() {
             job = args.job
         }.root
     }
+    ) = inflater.inflate(R.layout.fragment_job_details, container, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.explode)
-        sharedElementReturnTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.explode)
+        val trans = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        sharedElementEnterTransition = ChangeBounds().apply {
+            enterTransition = trans
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Picasso.get().load("https://picsum.photos/200").into(view.imageView)
+        view.title.text = args.job.title
+        view.description.text = args.job.description
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

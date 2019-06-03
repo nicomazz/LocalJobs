@@ -23,7 +23,6 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mapbox.mapboxsdk.Mapbox
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -66,15 +65,6 @@ class MainActivity : AppCompatActivity() {
         )
 
         setupToolbar(navController, appBarConfiguration)
-        setupBottomNavigationMenu(navController)
-    }
-
-    private fun setupBottomNavigationMenu(navController: NavController) {
-        findViewById<BottomNavigationView>(R.id.bottom_nav_view)
-            .setupWithNavController(navController)
-        fabAdd.setOnClickListener {
-            navController.navigate(R.id.destination_add)
-        }
     }
 
     private fun setupToolbar(navController: NavController, appBarConfiguration: AppBarConfiguration) {
@@ -89,14 +79,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onDestinationChangeListener(destination: NavDestination) {
         // bottom bar
-        bottom_nav_view.visibility = when (destination.id) {
-            R.id.destination_jobs, R.id.destination_proposals -> View.VISIBLE
-            else -> View.GONE
-        }
-        fabAdd.visibility = when (destination.id) {
-            R.id.destination_jobs, R.id.destination_proposals -> View.VISIBLE
-            else -> View.GONE
-        }
+
         if (destination.id == R.id.destination_add) {
             val viewRoot = findViewById<View>(android.R.id.content)
             val cx = (viewRoot.left + viewRoot.right) / 2

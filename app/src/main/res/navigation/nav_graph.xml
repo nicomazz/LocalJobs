@@ -48,6 +48,9 @@
         <action
                 android:id="@+id/action_destination_add_to_destination_login"
                 app:destination="@id/destination_login"/>
+        <action
+                android:id="@+id/action_destination_add_to_destination_map"
+                app:destination="@id/destination_map"/>
     </fragment>
     <fragment
             android:id="@+id/destination_job_details"
@@ -81,39 +84,16 @@
                 android:name="filteringJobs"
                 app:argType="boolean"/>
     </fragment>
+
     <fragment
-            android:id="@+id/destination_proposals"
-            android:name="com.esp.localjobs.fragments.ProposalsFragment"
-            android:label="LocalJobs"
-            tools:layout="@layout/fragment_proposals">
-        <action
-                android:id="@+id/action_destination_proposals_to_destination_filter"
-                app:destination="@id/destination_filter"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right">
-            <argument
-                    android:defaultValue="false"
-                    android:name="filteringJobs"/>
-        </action>
-        <action
-                android:id="@+id/action_destination_proposals_to_destination_proposal_details"
-                app:destination="@id/destination_proposal_details"/>
+            android:id="@+id/destination_map"
+            android:name="com.esp.localjobs.fragments.map.JobsMapFragment"
+            android:label="Map"
+            tools:layout="@layout/fragment_map">
+
     </fragment>
-    <fragment
-            android:id="@+id/destination_proposal_details"
-            android:name="com.esp.localjobs.fragments.ProposalDetailsFragment"
-            android:label="Proposal details"
-            tools:layout="@layout/fragment_proposal_details"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right">
-        <argument
-                android:name="proposalID"
-                app:argType="string"/>
-    </fragment>
+
+
     <action
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"

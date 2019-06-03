@@ -1,5 +1,6 @@
 package com.esp.localjobs.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -38,15 +39,25 @@ class JobsFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_jobs, container, false)
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        loadJobs()
+        observeChangesInJobList()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setupJobList(view)
-        jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
-            Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
-            adapter.update(jobs?.map { JobItem(it) } ?: listOf())
-        })
+        setupAddFab(view)
+    }
 
+    private fun setupAddFab(view: View) {
+        view.fabAdd.setOnClickListener {
+            findNavController().navigate(R.id.destination_add)
+        }
+    }
+
+    private fun loadJobs() {
         // Listen for jobs near user selected location or his last known position.
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
         filterViewModel.getLocation(context!!)?.let {
@@ -57,8 +68,15 @@ class JobsFragment : Fragment() {
         } ?: jobsViewModel.loadJobs()
     }
 
-    private fun setupJobList(view: View) {
-        view.jobList.adapter = adapter
+    private fun setupJobList(view: View) = with(view.jobList) {
+        adapter = this@JobsFragment.adapter
+    }
+
+    private fun observeChangesInJobList() {
+        jobsViewModel.jobs.observe(this, Observer { jobs ->
+            Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
+            adapter.update(jobs?.map { JobItem(it) } ?: listOf())
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
