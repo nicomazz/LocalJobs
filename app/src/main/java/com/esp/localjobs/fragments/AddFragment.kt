@@ -1,7 +1,6 @@
 package com.esp.localjobs.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -125,20 +124,24 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         if (!validateForm())
             return
 
-        // retrieve content of the form
-        val selectedTypeId = type_radio_group.checkedRadioButtonId
-        val type = view?.findViewById<RadioButton>(selectedTypeId)
-            ?.tag // the tag is how we identify the type inside data object
-        val title = title_edit_text.text.toString()
-        // val location = selectedLocation?.latitude.toString() + ' ' + selectedLocation?.longitude.toString()
+        val userSelectedJob = type_radio_group.checkedRadioButtonId == R.id.radio_job
 
-        val location = selectedLocation
-        val city = location_edit_text.text.toString()
-        val range = range_seekbar.progress.toString()
-        val salary = salary_edit_text.text.toString()
-        val description = description_edit_text.text.toString()
+        val job = Job()
+        // set shared fields
+        with(job) {
+            title = title_edit_text.text.toString()
+            description = description_edit_text.text.toString()
+            l = selectedLocation?.latLng()?.toList() ?: return
+            city = location_edit_text.text.toString()
+            salary = salary_edit_text.text.toString()
+            active = true
+            isJob = userSelectedJob
+            uid = loginViewModel.getUserId()
+        }
 
-        Log.d(TAG, "$type, $title, $location, $range, $salary, $description")
+        if (!userSelectedJob) { // if it's a proposal set range
+            job.range = range_seekbar.progress
+        }
 
         // called after completion of add task
         val onItemPushSuccess: () -> Unit = {
@@ -158,27 +161,8 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
                 Snackbar.LENGTH_SHORT
             ).show()
         }
-
-        when (type) {
-            "job" -> {
-                viewDialog.showDialog()
-                val job = Job(
-                    title = title,
-                    description = description,
-                    l = location!!.latLng().toList(),
-                    city = city,
-                    salary = salary,
-                    active = true,
-                    uid = loginViewModel.getUserId()
-                )
-
-                addViewModel.addJobToRepository(job, onSuccess = onItemPushSuccess, onFailure = onItemPushFailure)
-            }
-            "proposal" -> {
-                // Proposal(title, description, location, city, salary, range, true, "uid")
-            }
-            else -> TODO()
-        }
+        viewDialog.showDialog()
+        addViewModel.addJobToRepository(job, onSuccess = onItemPushSuccess, onFailure = onItemPushFailure)
     }
 
     /**

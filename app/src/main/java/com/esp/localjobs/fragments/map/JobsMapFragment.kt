@@ -182,7 +182,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     private fun generateCoordinatesFeatureList(jobs: List<Job>): List<Feature> =
         jobs.map { job ->
             Feature.fromGeometry(
-                Point.fromLngLat(job.getLongitude(), job.getLatitude())
+                Point.fromLngLat(job.longitude(), job.latitude())
             ).apply {
                 addStringProperty(PROPERTY_JOB_ID, job.id)
                 addStringProperty(PROPERTY_NAME, job.title)
