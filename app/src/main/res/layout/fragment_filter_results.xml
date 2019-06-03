@@ -14,10 +14,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+            <RadioGroup android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        android:id="@+id/type_radio_group"
+                        android:checkedButton="@id/radio_job">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/add_type"/>
+                <RadioButton android:id="@+id/radio_job"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:text="@string/radio_job"
+                             android:tag="@string/type_tag_job"/>
+                <RadioButton android:id="@+id/radio_proposal"
+                             android:layout_width="wrap_content"
+                             android:layout_height="wrap_content"
+                             android:text="@string/radio_proposal"
+                             android:tag="@string/type_tag_proposal"/>
+            </RadioGroup>
+
             <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/type_radio_group"
                     android:id="@+id/range_div"
                     android:layout_marginTop="20dp"
                     android:layout_marginStart="10dp"
