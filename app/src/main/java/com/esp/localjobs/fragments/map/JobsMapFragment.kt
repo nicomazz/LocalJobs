@@ -33,9 +33,8 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.os.AsyncTask
 import android.widget.TextView
-import com.mapbox.mapboxsdk.annotations.BubbleLayout
+import com.daasuu.bl.BubbleLayout
 import java.lang.ref.WeakReference
-
 
 /**
  * A fragment to display a map showing the locations of the  loaded jobs.
@@ -57,7 +56,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         const val CALLOUT_LAYER_ID = "CALLOUT_LAYER_ID"
         const val PROPERTY_SELECTED = "PROPERTY_SELECTED"
         const val PROPERTY_NAME = "PROPERTY_NAME"
-        const val PROPERTY_DESCRIPTION = "PROPERTY_DESCRIPTION"
+        const val PROPERTY_SALARY = "PROPERTY_SALARY"
     }
 
     override fun onAttach(context: Context) {
@@ -163,7 +162,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
                     iconAllowOverlap(true),
 
                     /* offset the info window to be above the marker */
-                    iconOffset(arrayOf(-2f, -28f))
+                    iconOffset(arrayOf(-2f, -35f))
                 )
                 /* add a filter to show only when selected feature property is true */
                 .withFilter(eq(get(PROPERTY_SELECTED), literal(true)))
@@ -182,7 +181,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
             ).apply {
                 addStringProperty(JOB_ID_PROPERTY, job.id)
                 addStringProperty(PROPERTY_NAME, job.title)
-                addStringProperty(PROPERTY_DESCRIPTION, job.description)
+                addStringProperty(PROPERTY_SALARY, job.salary)
             }
         }
 
@@ -197,7 +196,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
                 MARKER_LAYER
             )
 
-            if (features.isNotEmpty()) features.first().let{ selectedFeature ->
+            if (features.isNotEmpty()) features.first().let { selectedFeature ->
                 featureCollection?.features()?.first {
                     selectedFeature.getStringProperty(JOB_ID_PROPERTY) == it.getStringProperty(JOB_ID_PROPERTY)
                 }?.let {
@@ -218,44 +217,24 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     }
 
     private class GenerateViewIconTask internal constructor(
-        activity: JobsMapFragment,
+        context: JobsMapFragment,
         private val refreshSource: Boolean = false
     ) : AsyncTask<FeatureCollection, Void, HashMap<String, Bitmap>>() {
 
-        private val viewMap = HashMap<String, View>()
-        private val activityRef: WeakReference<JobsMapFragment> = WeakReference(activity)
+        private val contextRef: WeakReference<JobsMapFragment> = WeakReference(context)
 
         override fun doInBackground(vararg params: FeatureCollection): HashMap<String, Bitmap>? {
-            val activity = activityRef.get()
+            val activity = contextRef.get()
             if (activity != null) {
                 val imagesMap = HashMap<String, Bitmap>()
-                val inflater = LayoutInflater.from(activity.context)
 
                 val featureCollection = params[0]
 
                 for (feature in featureCollection.features()!!) {
-
-                    val bubbleLayout =
-                        inflater.inflate(R.layout.map_info_bubble, null) as BubbleLayout
-
                     val name = feature.getStringProperty(PROPERTY_NAME)
-                    val titleTextView = bubbleLayout.findViewById(R.id.info_window_title) as TextView
-                    titleTextView.text = name
-
-                    val style = feature.getStringProperty(PROPERTY_DESCRIPTION)
-                    val descriptionTextView = bubbleLayout.findViewById(R.id.info_window_description) as TextView
-                    descriptionTextView.text = style
-
-                    val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-                    bubbleLayout.measure(measureSpec, measureSpec)
-
-                    val measuredWidth = bubbleLayout.measuredWidth
-
-                    bubbleLayout.arrowPosition = (measuredWidth / 2 - 5).toFloat()
-
-                    val bitmap = activity.generateSymbol(bubbleLayout)
+                    val salary = feature.getStringProperty(PROPERTY_SALARY)
+                    val bitmap = activity.generateBubbleBitmap(name, salary)
                     imagesMap[name] = bitmap
-                    viewMap[name] = bubbleLayout
                 }
 
                 return imagesMap
@@ -266,14 +245,37 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
 
         override fun onPostExecute(bitmapHashMap: HashMap<String, Bitmap>?) {
             super.onPostExecute(bitmapHashMap)
-            val activity = activityRef.get()
-            if (activity != null && bitmapHashMap != null) {
-                activity.setImageGenResults(bitmapHashMap)
+            val context = contextRef.get()
+            if (context != null && bitmapHashMap != null) {
+                context.setImageGenResults(bitmapHashMap)
                 if (refreshSource) {
-                    activity.updateSource()
+                    context.updateSource()
                 }
             }
         }
+    }
+
+    private fun generateBubbleBitmap(name: String, salary: String): Bitmap {
+        val inflater = LayoutInflater.from(context)
+        val bubbleLayout = inflater.inflate(R.layout.map_info_bubble, null) as BubbleLayout
+
+        val titleTextView = bubbleLayout.findViewById(R.id.info_window_title) as TextView
+        titleTextView.text = name
+
+        val descriptionTextView = bubbleLayout.findViewById(R.id.info_window_description) as TextView
+        if (salary.isNotEmpty())
+            descriptionTextView.text = getString(R.string.salary, salary)
+        else
+            descriptionTextView.visibility = View.GONE
+
+        val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+        bubbleLayout.measure(measureSpec, measureSpec)
+
+        val measuredWidth = bubbleLayout.measuredWidth
+
+        bubbleLayout.arrowPosition = (measuredWidth / 2 - 5).toFloat()
+
+        return viewToBitmap(bubbleLayout)
     }
 
     /**
@@ -282,7 +284,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
      * @param view the View to be drawn to a Bitmap
      * @return the generated bitmap
      */
-    private fun generateSymbol(view: View): Bitmap {
+    private fun viewToBitmap(view: View): Bitmap {
         val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
         view.measure(measureSpec, measureSpec)
 
