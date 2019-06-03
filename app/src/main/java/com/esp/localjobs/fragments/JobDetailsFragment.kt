@@ -45,6 +45,8 @@ class JobDetailsFragment : Fragment() {
         Picasso.get().load("https://picsum.photos/200").into(view.imageView)
         view.title.text = args.job.title
         view.description.text = args.job.description
+
+        setupFabButton()
     }
     //  TODO Se la persona ha già inviato la disponibilità, il testo dev'essere "contacted"
     // TODO check if, rather than hiding the button, the visibility can be set to "disabled" (like grey button)
@@ -64,7 +66,8 @@ class JobDetailsFragment : Fragment() {
             val document = mapOf(
                 "job_publisher_id" to jobOwner,
                 "name" to loginViewModel.getUserName(),
-                "interested_user_id" to currentUserId
+                "interested_user_id" to currentUserId,
+                "job_id" to args.job.id // used to retrieve job body
                 // todo aggiungere un breve messaggio
             )
             FirebaseFirestore.getInstance().collection("jobs")
