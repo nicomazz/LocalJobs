@@ -70,6 +70,12 @@ class JobsFragment : Fragment() {
 
     private fun setupJobList(view: View) = with(view.jobList) {
         adapter = this@JobsFragment.adapter
+        postponeEnterTransition()
+        viewTreeObserver
+            .addOnPreDrawListener {
+                startPostponedEnterTransition()
+                true
+            }
     }
 
     private fun observeChangesInJobList() {

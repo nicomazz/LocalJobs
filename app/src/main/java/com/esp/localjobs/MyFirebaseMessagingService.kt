@@ -2,9 +2,7 @@ package com.esp.localjobs
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
@@ -40,13 +38,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         // Check if message contains a data payload.
         remoteMessage?.data?.isNotEmpty()?.let {
-            Log.d(TAG, "Message data payload: " + remoteMessage.data)
+            Log.d(TAG, "Message data payload: " + remoteMessage)
         }
 
         // Check if message contains a notification payload.
         remoteMessage?.notification?.let {
             Log.d(TAG, "Message Notification Body: ${it.body}")
-            sendNotification(it.body)
+            sendNotification(
+                title = it.title,
+                messageBody = it.body,
+                jobId = it.tag)
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -74,7 +75,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      * On notification click: show job details.
      * @param messageBody FCM message body received.
      */
-    private fun sendNotification(messageBody: String?) {
+    private fun sendNotification(
+        title: String?,
+        messageBody: String?,
+        jobId: String?
+    ) {
 
         /*
         val intent = Intent(this, MainActivity::class.java)
@@ -88,15 +93,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val pendingIntent = NavDeepLinkBuilder(applicationContext)
             .setGraph(R.navigation.nav_graph)
             .setDestination(R.id.destination_job_details)
-            // .setArguments(jobId?) TODO add job id argument and handle it on jobdetails
+            // .setArguments(jobId) TODO get the job, and pass it here
             .createPendingIntent()
 
-        // todo customizzare qui
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_account_circle_white_24dp)
-            .setContentTitle(getString(R.string.fcm_message))
+            .setContentTitle(title)
             .setContentText(messageBody)
             .setAutoCancel(true)
             .setSound(defaultSoundUri)

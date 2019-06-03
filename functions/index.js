@@ -18,6 +18,8 @@ exports.sendNotification = functions.firestore.document("/jobs/{job_id}/requests
       console.log('notification',request,context.params.job_id, context.params.requester_id);
       const name = request.name;
       const job_publisher = request.job_publisher_id;
+      const interested_user_id = context.params.requester_id;
+      const job_id = context.params.job_id;
       const query = db.collection("user_messaging_tokens").doc(job_publisher);
       query.get().then( doc => {
          console.log("document: ",doc.data());
@@ -26,6 +28,7 @@ exports.sendNotification = functions.firestore.document("/jobs/{job_id}/requests
             notification: {
                title: "New interest from "+name,
                body: "Go to Localjob and find out how to contact him",
+               tag: job_id,
             }
          };
          admin.messaging().sendToDevice(fcm_id,payload)
@@ -39,5 +42,4 @@ exports.sendNotification = functions.firestore.document("/jobs/{job_id}/requests
       }).catch(err => {
          console.log("error getting document",err);
       });
-      //todo do send notification
    });

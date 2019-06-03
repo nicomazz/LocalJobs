@@ -38,6 +38,9 @@ class JobDetailsFragment : Fragment() {
         sharedElementEnterTransition = ChangeBounds().apply {
             enterTransition = trans
         }
+        sharedElementReturnTransition = ChangeBounds().apply {
+            enterTransition = trans
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,10 +60,15 @@ class JobDetailsFragment : Fragment() {
     private fun setupFabButton() {
         val currentUserId = loginViewModel.getUserId()
         val jobOwner = args.job.uid
-        if (currentUserId == null || jobOwner == currentUserId) {
-            contact_fab.visibility = View.GONE
+        if (currentUserId == null) {
             return
         }
+        /*
+         //commented for testing
+         if (currentUserId == null || jobOwner == currentUserId) {
+             contact_fab.visibility = View.GONE
+             return
+         }*/
 
         contact_fab.setOnClickListener {
             val document = mapOf(
