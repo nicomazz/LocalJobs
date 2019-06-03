@@ -9,6 +9,7 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -69,10 +70,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     /**
      * Create and show a simple notification containing the received FCM message.
-     *
+     * On notification click: show job details.
      * @param messageBody FCM message body received.
      */
     private fun sendNotification(messageBody: String?) {
+        // deep link: see https://developer.android.com/guide/navigation/navigation-deep-link
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(
@@ -106,8 +108,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     companion object {
-        fun getUserId(): String {
-            return "42"
+        fun getUserId(): String? {
+            return FirebaseAuth.getInstance().currentUser?.uid
         }
 
         /**
@@ -119,9 +121,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
          * @param token The new token.
          */
         fun sendRegistrationToServer(token: String?) {
+            val currentUserId = getUserId()
+            if (currentUserId == null) {
+                Log.d("messaging", "null user id")
+                return
+            }
             token?.let {
                 FirebaseFirestore.getInstance().collection("user_messaging_tokens")
-                    .document(getUserId()).set(
+                    .document(currentUserId).set(
                         mapOf(
                             "id" to token
                         // todo valutare se aggiungere anche il nome

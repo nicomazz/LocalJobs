@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:text="@string/contact"
             android:gravity="center"
-            android:id="@+id/contattaFab"
+            android:id="@+id/contact_fab"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
