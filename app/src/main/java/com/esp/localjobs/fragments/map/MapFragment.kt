@@ -24,11 +24,12 @@ import kotlinx.android.synthetic.main.fragment_map.*
  */
 open class MapFragment : Fragment(), OnMapReadyCallback {
 
-    private var lastCameraMovementPosition: Location? = null
     protected var mapboxMap: MapboxMap? = null
     protected var mapContainer: MapView? = null
 
     open var startLocation: Location? = null
+
+    private var lastCameraPosition: CameraPosition? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +56,7 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
             isTiltGesturesEnabled = false
         }
 
-        centerMap(startLocation)
+        lastCameraPosition?.let { map.cameraPosition = it } ?: centerMap(startLocation)
     }
 
     /**
@@ -89,14 +90,7 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
             )
             .zoom(12.0)
             .build()
-        lastCameraMovementPosition = location
-        mapboxMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 600)
-    }
-
-    fun navigateToLastPosition() {
-        lastCameraMovementPosition?.let {
-            navigateToPosition(it)
-        }
+        mapboxMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000)
     }
 
     override fun onResume() {
@@ -117,6 +111,7 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onPause() {
         super.onPause()
         mapContainer?.onPause()
+        lastCameraPosition = mapboxMap?.cameraPosition
     }
 
     override fun onLowMemory() {
