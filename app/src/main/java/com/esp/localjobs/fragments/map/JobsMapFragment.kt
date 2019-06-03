@@ -33,7 +33,9 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.os.AsyncTask
 import android.widget.TextView
+import androidx.navigation.Navigation
 import com.daasuu.bl.BubbleLayout
+import com.esp.localjobs.fragments.JobsFragmentDirections
 import java.lang.ref.WeakReference
 
 /**
@@ -52,7 +54,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         const val MARKER_SOURCE = "MARKER_SOURCE"
         const val MARKER_IMAGE = "MARKER_IMAGE"
         const val MARKER_LAYER = "MARKER_LAYER"
-        const val JOB_ID_PROPERTY = "JOB_ID_PROPERTY"
+        const val PROPERTY_JOB_ID = "PROPERTY_JOB_ID"
         const val CALLOUT_LAYER_ID = "CALLOUT_LAYER_ID"
         const val PROPERTY_SELECTED = "PROPERTY_SELECTED"
         const val PROPERTY_NAME = "PROPERTY_NAME"
@@ -152,8 +154,8 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         loadedStyle.addLayer(
             SymbolLayer(CALLOUT_LAYER_ID, MARKER_SOURCE)
                 .withProperties(
-                    /* show image with id title based on the value of the name feature property */
-                    iconImage("{PROPERTY_NAME}"),
+                    /* show image with id title based on the value of the id feature property */
+                    iconImage("{PROPERTY_JOB_ID}"),
 
                     /* set anchor of icon to bottom-left */
                     iconAnchor(ICON_ANCHOR_BOTTOM),
@@ -179,7 +181,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
             Feature.fromGeometry(
                 Point.fromLngLat(job.getLongitude(), job.getLatitude())
             ).apply {
-                addStringProperty(JOB_ID_PROPERTY, job.id)
+                addStringProperty(PROPERTY_JOB_ID, job.id)
                 addStringProperty(PROPERTY_NAME, job.title)
                 addStringProperty(PROPERTY_SALARY, job.salary)
             }
@@ -191,19 +193,41 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
     override fun onMapClick(point: LatLng): Boolean = mapboxMap?.run {
         style?.let { _ ->
             val pixel = projection.toScreenLocation(point)
-            val features = queryRenderedFeatures(
+            val markerFeatures = queryRenderedFeatures(
                 pixel,
                 MARKER_LAYER
             )
 
-            if (features.isNotEmpty()) features.first().let { selectedFeature ->
+            if (markerFeatures.isNotEmpty()) markerFeatures.first().let { selectedFeature ->
+                val jobIdSelected = selectedFeature.getStringProperty(PROPERTY_JOB_ID)
+
+                // search feature inside collection and toggle selection
                 featureCollection?.features()?.first {
-                    selectedFeature.getStringProperty(JOB_ID_PROPERTY) == it.getStringProperty(JOB_ID_PROPERTY)
+                    jobIdSelected == it.getStringProperty(PROPERTY_JOB_ID)
                 }?.let {
                     val isSelected = it.getBooleanProperty(PROPERTY_SELECTED)
                     it.properties()?.addProperty(PROPERTY_SELECTED, !isSelected)
                     updateSource()
                 }
+            }
+
+            val bubbleFeatures = queryRenderedFeatures(
+                pixel,
+                CALLOUT_LAYER_ID
+            )
+
+            if (bubbleFeatures.isNotEmpty()) bubbleFeatures.first().let { feature ->
+                val jobIdSelected = feature.getStringProperty(PROPERTY_JOB_ID)
+
+                // navigate to JodDetailsFragment
+                val selectedJob = jobs.first { it.id == jobIdSelected }
+                val action =
+                    JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(selectedJob)
+                Navigation.findNavController(view!!)
+                    .navigate(
+                        R.id.action_destination_map_to_destination_job_details,
+                        action.arguments
+                    )
             }
         }
         true
@@ -231,10 +255,11 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
                 val featureCollection = params[0]
 
                 for (feature in featureCollection.features()!!) {
+                    val id = feature.getStringProperty(PROPERTY_JOB_ID)
                     val name = feature.getStringProperty(PROPERTY_NAME)
                     val salary = feature.getStringProperty(PROPERTY_SALARY)
                     val bitmap = activity.generateBubbleBitmap(name, salary)
-                    imagesMap[name] = bitmap
+                    imagesMap[id] = bitmap
                 }
 
                 return imagesMap

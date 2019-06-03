@@ -27,7 +27,7 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
             )
             val action =
                 JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(this@JobItem.job)
-            findNavController(viewBinding.imageView)
+            findNavController(imageView)
                 .navigate(
                     R.id.action_destination_jobs_to_destination_job_details,
                     action.arguments, null, extras

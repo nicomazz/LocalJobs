@@ -40,5 +40,5 @@
     <string name="error_retrieving_location_name">Error retrieving location name.</string>
     <string name="no_price_info">No information about the price</string>
     <string name="menu_map">Map</string>
-    <string name="salary">%1$s £</string>
+    <string name="salary">%1$s £/h</string>
 </resources>
