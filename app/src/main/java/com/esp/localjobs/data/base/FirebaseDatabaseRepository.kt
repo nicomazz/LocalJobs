@@ -1,5 +1,6 @@
 package com.esp.localjobs.data.base
 
+import android.util.Log
 import com.esp.localjobs.data.models.Identifiable
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -70,11 +71,13 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
         // create an hash map that define which fields must be updated
         val updates = HashMap<String, Any?>()
         // update only different fields
+
         typeOfT.declaredFields.forEach {
-            // isAccessible check it field is private
-            if (it.isAccessible && it.get(oldItem) != it.get(newItem))
+            it.isAccessible = true // set private fields as accessible
+            if (it.get(oldItem) != it.get(newItem))
                 updates[it.name] = it.get(newItem)
         }
+        Log.d(TAG, "Updates: $updates")
 
         collection.document(id)
             .update(updates)
@@ -104,4 +107,8 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
     }
 
     interface FirebaseDatabaseRepositoryCallback<T> : BaseRepository.RepositoryCallback<T>
+
+    companion object {
+        const val TAG = "FirebaseDatabaseRepository"
+    }
 }
