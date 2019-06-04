@@ -27,7 +27,7 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
             )
             val action =
                 JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(this@JobItem.job)
-            findNavController(viewBinding.imageView)
+            findNavController(imageView)
                 .navigate(
                     R.id.action_destination_jobs_to_destination_job_details,
                     action.arguments, null, extras
@@ -52,8 +52,12 @@ fun TextView.setSalary(salary: String) {
 @BindingAdapter("salary")
 fun View.setSalary(salary: String) {
     val value = salary.toIntOrNull()
-    resources.getColor(if (value == null || value > 0) android.R.color.holo_green_dark else android.R.color.holo_red_dark)
-        .let {
-            setBackgroundColor(it)
-        }
+    setBackgroundColor(
+        context.getColor(
+            if (value == null || value > 0)
+                android.R.color.holo_green_dark
+            else
+                android.R.color.holo_red_dark
+        )
+    )
 }
