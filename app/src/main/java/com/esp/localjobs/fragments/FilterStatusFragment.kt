@@ -28,5 +28,9 @@ class FilterStatusFragment : Fragment() {
         val locationName = filterViewModel.getLocation(context!!)?.city ?: getString(R.string.unknown_location)
         val range = filterViewModel.range
         location_status.setText(getString(R.string.location_status, range, locationName))
+
+        filters_button.setOnClickListener {
+            FilterResultsFragment().show(fragmentManager!!, "filsters_fragment")
+        }
     }
 }
