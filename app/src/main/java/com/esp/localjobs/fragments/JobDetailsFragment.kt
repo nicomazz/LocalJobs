@@ -1,13 +1,11 @@
 package com.esp.localjobs.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SearchView
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -16,7 +14,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.transition.ChangeBounds
 import androidx.transition.TransitionInflater
 import com.esp.localjobs.R
-import com.esp.localjobs.databinding.FragmentJobDetailsBinding
 import com.esp.localjobs.viewModels.LoginViewModel
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_job_details.view.*
@@ -36,11 +33,8 @@ class JobDetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        return FragmentJobDetailsBinding.inflate(inflater, container, false).apply {
-            job = args.job
-        }.root
+        return inflater.inflate(R.layout.fragment_job_details, container, false)
     }
-    ) = inflater.inflate(R.layout.fragment_job_details, container, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

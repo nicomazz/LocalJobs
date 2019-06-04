@@ -19,6 +19,7 @@ import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.INVALID_A
 import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
+import com.esp.localjobs.data.models.Localizable
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.utils.LoadingViewDialog
@@ -121,27 +122,11 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
      * Called when submit button is pressed
      */
     private fun onSubmit() {
-        if (!validateForm())
+        val location = selectedLocation
+        if (!validateForm() || location == null)
             return
 
-        val userSelectedJob = type_radio_group.checkedRadioButtonId == R.id.radio_job
-
-        val job = Job()
-        // set shared fields
-        with(job) {
-            title = title_edit_text.text.toString()
-            description = description_edit_text.text.toString()
-            l = selectedLocation?.latLng()?.toList() ?: return
-            city = location_edit_text.text.toString()
-            salary = salary_edit_text.text.toString()
-            active = true
-            isJob = userSelectedJob
-            uid = loginViewModel.getUserId()
-        }
-
-        if (!userSelectedJob) { // if it's a proposal set range
-            job.range = range_seekbar.progress
-        }
+        val job = parseJobFromView(location)
 
         // called after completion of add task
         val onItemPushSuccess: () -> Unit = {
@@ -195,5 +180,32 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
             anyError = true
         }
         return !anyError
+    }
+
+    /**
+     * Create a Job from the view using class variable selectedLocation.
+     * @param location position of the job
+     * @return Job parsed from the view
+     */
+    private fun parseJobFromView(location: Localizable): Job {
+        val job = Job()
+
+        val userSelectedJob = type_radio_group.checkedRadioButtonId == R.id.radio_job
+        job.apply {
+            title = title_edit_text.text.toString()
+            description = description_edit_text.text.toString()
+            l = location.latLng().toList()
+            city = location_edit_text.text.toString()
+            salary = salary_edit_text.text.toString()
+            active = true
+            itIsJob = userSelectedJob
+            uid = loginViewModel.getUserId()
+        }
+
+        if (!userSelectedJob) { // if it's a proposal set range
+            job.range = range_seekbar.progress
+        }
+
+        return job
     }
 }
