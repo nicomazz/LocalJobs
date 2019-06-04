@@ -2,8 +2,6 @@ package com.esp.localjobs.fragments.map
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
@@ -14,7 +12,7 @@ import com.daasuu.bl.BubbleLayout
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.fragments.JobsFragmentDirections
-import com.esp.localjobs.utils.drawableToBitmap
+import com.esp.localjobs.utils.BitmapUtils
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.mapbox.geojson.Feature
@@ -118,7 +116,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
     }
 
     private fun setupMarkerImage(loadedStyle: Style) = with(loadedStyle) {
-        val image = drawableToBitmap(
+        val image = BitmapUtils.drawableToBitmap(
             ContextCompat.getDrawable(context!!, R.drawable.ic_location_on_blue_900_36dp)!!
         )
         addImage(MARKER_IMAGE, image)
@@ -211,7 +209,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
         mapboxMap.getStyle { it.addImages(imageMap) }
     }
 
-    fun generateViewIcon(featureCollection: FeatureCollection, refreshSource: Boolean) {
+    private fun generateViewIcon(featureCollection: FeatureCollection, refreshSource: Boolean) {
         val imagesMap = HashMap<String, Bitmap>()
 
         val inflater = LayoutInflater.from(context)
@@ -249,28 +247,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
 
         bubbleView.arrowPosition = (measuredWidth / 2 - 5).toFloat()
 
-        return viewToBitmap(bubbleView)
-    }
-
-    /**
-     * Generate a Bitmap from an Android SDK View.
-     *
-     * @param view the View to be drawn to a Bitmap
-     * @return the generated bitmap
-     */
-    private fun viewToBitmap(view: View): Bitmap {
-        val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        view.measure(measureSpec, measureSpec)
-
-        val measuredWidth = view.measuredWidth
-        val measuredHeight = view.measuredHeight
-
-        view.layout(0, 0, measuredWidth, measuredHeight)
-        val bitmap = Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_8888)
-        bitmap.eraseColor(Color.TRANSPARENT)
-        val canvas = Canvas(bitmap)
-        view.draw(canvas)
-        return bitmap
+        return BitmapUtils.viewToBitmap(bubbleView)
     }
 
     override fun onDestroy() {
