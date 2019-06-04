@@ -111,6 +111,8 @@
                 app:argType="com.esp.localjobs.data.models.Job"/>
         <action
                 android:id="@+id/action_destination_edit_to_destination_job_details"
-                app:destination="@id/destination_job_details"/>
+                app:destination="@id/destination_job_details"
+                app:popUpTo="@+id/destination_job_details"
+                app:popUpToInclusive="true"/>
     </fragment>
 </navigation>
