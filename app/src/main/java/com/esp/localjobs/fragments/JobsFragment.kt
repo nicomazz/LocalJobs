@@ -25,7 +25,7 @@ import kotlinx.android.synthetic.main.fragment_jobs.view.*
 /**
  * Fragment used to display a list of jobs
  */
-class JobsFragment : Fragment(), FilterResultsFragment.OnFiltersApplyListener {
+class JobsFragment : Fragment(), FiltersFragment.OnFiltersApplyListener {
 
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
@@ -53,7 +53,7 @@ class JobsFragment : Fragment(), FilterResultsFragment.OnFiltersApplyListener {
         setupAddFab(view)
 
         filters_button.setOnClickListener {
-            FilterResultsFragment(this).show(fragmentManager!!, "filters_fragment")
+            FiltersFragment(this).show(fragmentManager!!, "filters_fragment")
         }
         updateFilterStatus()
     }
@@ -100,8 +100,35 @@ class JobsFragment : Fragment(), FilterResultsFragment.OnFiltersApplyListener {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_search, menu)
         val searchView = menu.findItem(R.id.action_search_item).actionView as SearchView
-        searchView.setOnSearchClickListener {
-            findNavController().navigate(R.id.action_destination_jobs_to_destination_filter)
+        setupSearchView(searchView)
+    }
+
+    /**
+     * Setup search view icon.
+     * The search view is expanded by default and focused on fragment creation.
+     */
+    private fun setupSearchView(searchView: SearchView) {
+        searchView.apply {
+            requestFocus()
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    if (query != null) onSearchClick(query)
+                    return true
+                }
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    return true
+                }
+            })
         }
+    }
+
+    /**
+     * Update filter viewmodel and refresh jobs
+     * Set filterViewModel.userRequestedFilteredResults to true to notify the fragments that the user requested
+     * a filtered search.
+     */
+    private fun onSearchClick(query: String) {
+        filterViewModel.query = query
+        loadJobs()
     }
 }

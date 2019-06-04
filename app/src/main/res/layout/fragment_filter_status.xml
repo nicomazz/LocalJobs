@@ -20,12 +20,13 @@
             app:layout_constraintLeft_toLeftOf="parent"/>
 
     <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/location_status"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toRightOf="@id/location_icon"/>
+            app:layout_constraintLeft_toRightOf="@id/location_icon"
+            app:layout_constraintRight_toLeftOf="@id/filters_button"/>
 
     <Button
             android:id="@+id/filters_button"

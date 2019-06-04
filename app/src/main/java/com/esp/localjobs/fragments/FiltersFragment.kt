@@ -12,13 +12,13 @@ import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_add.range_value
-import kotlinx.android.synthetic.main.fragment_filter_results.*
-import kotlinx.android.synthetic.main.fragment_filter_results.type_radio_group
+import kotlinx.android.synthetic.main.fragment_filters.*
+import kotlinx.android.synthetic.main.fragment_filters.type_radio_group
 
 /**
  * Fragment used to set filter params (longitude, latitude, range, text)
  */
-class FilterResultsFragment(
+class FiltersFragment(
     private var filtersApplyCallback: OnFiltersApplyListener
 ) :
     BottomSheetDialogFragment(),
@@ -34,7 +34,7 @@ class FilterResultsFragment(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_filter_results, container, false)
+        return inflater.inflate(R.layout.fragment_filters, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
