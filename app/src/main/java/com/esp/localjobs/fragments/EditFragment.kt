@@ -22,7 +22,6 @@ import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.utils.LoadingViewDialog
 import com.esp.localjobs.viewModels.EditViewModel
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_add.*
 import kotlinx.android.synthetic.main.fragment_edit.*
 import kotlinx.android.synthetic.main.fragment_edit.description_edit_text
 import kotlinx.android.synthetic.main.fragment_edit.location_edit_text
