@@ -68,7 +68,7 @@ class JobsFragment : Fragment() {
         } ?: jobsViewModel.loadJobs()
     }
 
-    private fun setupJobList(view: View) = with(view.jobList) {
+    private fun setupJobList(view: View) = with(view.job_list) {
         adapter = this@JobsFragment.adapter
     }
 

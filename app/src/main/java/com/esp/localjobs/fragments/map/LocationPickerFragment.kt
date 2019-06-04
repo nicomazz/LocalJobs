@@ -1,20 +1,17 @@
 package com.esp.localjobs.fragments.map
 
 import android.annotation.SuppressLint
-import android.location.Geocoder
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.utils.Utils
 import com.esp.localjobs.viewModels.MapViewModel
 import kotlinx.android.synthetic.main.fragment_location_picker.*
-import java.io.IOException
-import java.util.Locale
 
 /**
  * A DialogFragment to pick a location displaying a map
@@ -75,27 +72,12 @@ class LocationPickerFragment(
         when (v?.id) {
             R.id.apply_button -> {
                 mapViewModel.location.value?.let {
-                    it.city = coordinatesToCity(it.latLng().first, it.latLng().second)
+                    it.city = Utils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
                     locationPickedCallback.onLocationPicked(it)
                     dismiss()
                 }
             }
             R.id.cancel_button -> dismiss()
         }
-    }
-
-    /**
-     * Convert coordinates into a city name
-     * @return null if could not retrieve any (i.e. in the middle of the ocean)
-     */
-    private fun coordinatesToCity(latitude: Double, longitude: Double): String? {
-        try { // Sometimes gcd.getFromLocation(..) throws IOException, causing crash
-            val gcd = Geocoder(context, Locale.getDefault())
-            val addresses = gcd.getFromLocation(latitude, longitude, 1)
-            return if (addresses.size > 0) addresses[0].locality else null
-        } catch (e: IOException) {
-            Toast.makeText(context!!, getString(R.string.error_retrieving_location_name), Toast.LENGTH_SHORT).show()
-        }
-        return null
     }
 }

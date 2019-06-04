@@ -40,4 +40,8 @@
     <string name="error_retrieving_location_name">Error retrieving location name.</string>
     <string name="no_price_info">No information about the price</string>
     <string name="menu_map">Map</string>
+    <string name="filters_button">Filters</string>
+    <string name="location_icon_description">location_icon</string>
+    <string name="unknown_location">Unknown location</string>
+    <string name="location_status">%1$d kilometers from %2$s</string>
 </resources>
