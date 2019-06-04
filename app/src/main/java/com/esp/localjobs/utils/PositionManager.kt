@@ -2,18 +2,9 @@ package com.esp.localjobs.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
-import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
-import android.widget.Toast
-import com.esp.localjobs.R
 import com.mapbox.android.core.permissions.PermissionsManager
-import java.io.IOException
-import java.util.Locale
 
 private const val TWO_MINUTES: Long = 1000 * 60 * 2
 
@@ -77,41 +68,5 @@ object PositionManager {
             isNewer && !isSignificantlyLessAccurate && isFromSameProvider -> true
             else -> false
         }
-    }
-}
-
-object Utils {
-    fun drawableToBitmap(drawable: Drawable): Bitmap {
-        if (drawable is BitmapDrawable) {
-            if (drawable.bitmap != null) {
-                return drawable.bitmap
-            }
-        }
-
-        val bitmap = if (drawable.intrinsicWidth <= 0 || drawable.intrinsicHeight <= 0) {
-            Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888) // Single color bitmap will be created of 1x1 pixel
-        } else {
-            Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        }
-
-        val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.width, canvas.height)
-        drawable.draw(canvas)
-        return bitmap
-    }
-
-    /**
-     * Convert coordinates into a city name
-     * @return null if could not retrieve any (i.e. in the middle of the ocean)
-     */
-    fun coordinatesToCity(context: Context, latitude: Double, longitude: Double): String? {
-        try { // Sometimes gcd.getFromLocation(..) throws IOException, causing crash
-            val gcd = Geocoder(context, Locale.getDefault())
-            val addresses = gcd.getFromLocation(latitude, longitude, 1)
-            return if (addresses.size > 0) addresses[0].locality else null
-        } catch (e: IOException) {
-            Toast.makeText(context, context.getString(R.string.error_retrieving_location_name), Toast.LENGTH_SHORT).show()
-        }
-        return null
     }
 }

@@ -3,8 +3,8 @@ package com.esp.localjobs.viewModels
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.utils.GeocodingUtils
 import com.esp.localjobs.utils.PositionManager
-import com.esp.localjobs.utils.Utils
 
 /**
  * Shared view model between filter, jobs and proposals fragment.
@@ -36,7 +36,7 @@ class FilterViewModel : ViewModel() {
     fun getLocation(context: Context): Location? {
         if (location == null) {
             PositionManager.getLastKnownPosition(context)?.let {
-                val city = Utils.coordinatesToCity(context, it.latitude, it.longitude)
+                val city = GeocodingUtils.coordinatesToCity(context, it.latitude, it.longitude)
                 location = Location(it.latitude, it.longitude, city)
             }
         }

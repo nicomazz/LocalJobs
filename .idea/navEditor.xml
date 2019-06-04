@@ -39,18 +39,6 @@
                       </LayoutPositions>
                     </value>
                   </entry>
-                  <entry key="destination_filter">
-                    <value>
-                      <LayoutPositions>
-                        <option name="myPosition">
-                          <Point>
-                            <option name="x" value="-1563" />
-                            <option name="y" value="531" />
-                          </Point>
-                        </option>
-                      </LayoutPositions>
-                    </value>
-                  </entry>
                   <entry key="destination_job_details">
                     <value>
                       <LayoutPositions>
@@ -74,11 +62,6 @@
                         </option>
                         <option name="myPositions">
                           <map>
-                            <entry key="action_destination_jobs_to_destination_filter">
-                              <value>
-                                <LayoutPositions />
-                              </value>
-                            </entry>
                             <entry key="action_destination_jobs_to_destination_job_details">
                               <value>
                                 <LayoutPositions />

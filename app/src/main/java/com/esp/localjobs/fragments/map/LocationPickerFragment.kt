@@ -9,7 +9,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.utils.Utils
+import com.esp.localjobs.utils.GeocodingUtils
 import com.esp.localjobs.viewModels.MapViewModel
 import kotlinx.android.synthetic.main.fragment_location_picker.*
 
@@ -72,7 +72,7 @@ class LocationPickerFragment(
         when (v?.id) {
             R.id.apply_button -> {
                 mapViewModel.location.value?.let {
-                    it.city = Utils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
+                    it.city = GeocodingUtils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
                     locationPickedCallback.onLocationPicked(it)
                     dismiss()
                 }
