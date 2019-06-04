@@ -1,13 +1,21 @@
 package com.esp.localjobs.fragments.map
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
+import com.daasuu.bl.BubbleLayout
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
+import com.esp.localjobs.fragments.JobsFragmentDirections
 import com.esp.localjobs.utils.drawableToBitmap
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
@@ -17,33 +25,30 @@ import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
 import com.mapbox.mapboxsdk.style.expressions.Expression.eq
 import com.mapbox.mapboxsdk.style.expressions.Expression.get
 import com.mapbox.mapboxsdk.style.expressions.Expression.literal
+import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAllowOverlap
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconAnchor
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconOffset
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Color
-import android.view.LayoutInflater
-import android.os.AsyncTask
-import android.widget.TextView
-import androidx.navigation.Navigation
-import com.daasuu.bl.BubbleLayout
-import com.esp.localjobs.fragments.JobsFragmentDirections
-import java.lang.ref.WeakReference
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 /**
  * A fragment to display a map showing the locations of the  loaded jobs.
  * To make this I followed this example: https://docs.mapbox.com/android/maps/examples/icon-size-change-on-click/
  * @author Francesco Pham
  */
-class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
+class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineScope {
+    override val coroutineContext: CoroutineContext =
+        Dispatchers.Default
+
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
 
@@ -86,8 +91,11 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
 
     private fun setJobsInMap() {
         if (jobsPresentInMap()) {
-            featureCollection = generateJsonSourceFromJobs()
-            GenerateViewIconTask(this@JobsMapFragment, true).execute(featureCollection)
+            val collections = generateJsonSourceFromJobs()
+            featureCollection = collections
+            CoroutineScope(Dispatchers.Default).launch {
+                generateViewIcon(collections, true)
+            }
         } else {
             setupMap()
         }
@@ -110,7 +118,9 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
             setupMarkerLayer(style)
             setupInfoWindowLayer(style)
 
-            GenerateViewIconTask(this@JobsMapFragment).execute(featureCollection)
+            launch {
+                generateViewIcon(featureCollection!!, false)
+            }
 
             removeOnMapClickListener(this@JobsMapFragment)
             addOnMapClickListener(this@JobsMapFragment)
@@ -226,11 +236,10 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
                 val selectedJob = jobs.first { it.id == jobIdSelected }
                 val action =
                     JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(selectedJob)
-                Navigation.findNavController(view!!)
-                    .navigate(
-                        R.id.action_destination_map_to_destination_job_details,
-                        action.arguments
-                    )
+                findNavController().navigate(
+                    R.id.action_destination_map_to_destination_job_details,
+                    action.arguments
+                )
             }
         }
         true
@@ -243,42 +252,20 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener {
         mapboxMap?.getStyle { it.addImages(imageMap) }
     }
 
-    private class GenerateViewIconTask internal constructor(
-        context: JobsMapFragment,
-        private val refreshSource: Boolean = false
-    ) : AsyncTask<FeatureCollection, Void, HashMap<String, Bitmap>>() {
+    fun CoroutineScope.generateViewIcon(featureCollection: FeatureCollection, refreshSource: Boolean) {
+        val imagesMap = HashMap<String, Bitmap>()
 
-        private val contextRef: WeakReference<JobsMapFragment> = WeakReference(context)
-
-        override fun doInBackground(vararg params: FeatureCollection): HashMap<String, Bitmap>? {
-            val activity = contextRef.get()
-            if (activity != null) {
-                val imagesMap = HashMap<String, Bitmap>()
-
-                val featureCollection = params[0]
-
-                for (feature in featureCollection.features()!!) {
-                    val id = feature.getStringProperty(PROPERTY_JOB_ID)
-                    val name = feature.getStringProperty(PROPERTY_NAME)
-                    val salary = feature.getStringProperty(PROPERTY_SALARY)
-                    val bitmap = activity.generateBubbleBitmap(name, salary)
-                    imagesMap[id] = bitmap
-                }
-
-                return imagesMap
-            } else {
-                return null
-            }
+        for (feature in featureCollection.features()!!) {
+            val id = feature.getStringProperty(PROPERTY_JOB_ID)
+            val name = feature.getStringProperty(PROPERTY_NAME)
+            val salary = feature.getStringProperty(PROPERTY_SALARY)
+            val bitmap = generateBubbleBitmap(name, salary)
+            imagesMap[id] = bitmap
         }
-
-        override fun onPostExecute(bitmapHashMap: HashMap<String, Bitmap>?) {
-            super.onPostExecute(bitmapHashMap)
-            val context = contextRef.get()
-            if (context != null && bitmapHashMap != null) {
-                context.setImageGenResults(bitmapHashMap)
-                if (refreshSource) {
-                    context.updateSource()
-                }
+        CoroutineScope(Dispatchers.Main).launch {
+            setImageGenResults(imagesMap)
+            if (refreshSource) {
+                updateSource()
             }
         }
     }
