@@ -92,6 +92,15 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
         val newJob = parseJobFromView(location)
 
+        if (newJob == args.job) {
+            Snackbar.make(
+                activity!!.findViewById<View>(android.R.id.content),
+                getString(R.string.edit_no_changes_detected),
+                Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+
         // called after completion of add task
         val onItemEditSuccess: () -> Unit = {
             viewDialog.hideDialog()
@@ -191,7 +200,9 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         selectedLocation = location
     }
 
-    // TODO fix location not valid if not modified
+    /**
+     * Check inserted data and show errors messages if any
+     */
     private fun validateForm(): Boolean {
         var anyError = false
         if (selectedLocation == null) {
