@@ -4,13 +4,11 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.daasuu.bl.BubbleLayout
 import com.esp.localjobs.R
@@ -42,7 +40,6 @@ import kotlin.coroutines.CoroutineContext
 
 /**
  * A fragment to display a map showing the locations of the  loaded jobs.
- * To make this I followed this example: https://docs.mapbox.com/android/maps/examples/icon-size-change-on-click/
  * @author Francesco Pham
  */
 class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineScope {
@@ -52,7 +49,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
 
-    private var jobs: List<Job> = listOf()
+    private lateinit var jobs: List<Job>
     private var featureCollection: FeatureCollection? = null
 
     private companion object Map {
@@ -69,48 +66,22 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
     override fun onAttach(context: Context) {
         super.onAttach(context)
         startLocation = filterViewModel.getLocation(context)
-        observeJobs()
-    }
-
-    private fun observeJobs() {
-        jobsViewModel.jobs.observe(this, Observer { jobs ->
-            this.jobs = jobs ?: listOf()
-            setJobsInMap()
-        })
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        mapContainer?.getMapAsync(this)
+        jobs = jobsViewModel.jobs.value ?: listOf()
     }
 
     override fun onMapReady(map: MapboxMap) {
         super.onMapReady(map)
-        setJobsInMap()
+        setupMap()
     }
-
-    private fun setJobsInMap() {
-        if (jobsPresentInMap()) {
-            val collections = generateJsonSourceFromJobs()
-            featureCollection = collections
-            CoroutineScope(Dispatchers.Default).launch {
-                generateViewIcon(collections, true)
-            }
-        } else {
-            setupMap()
-        }
-    }
-
-    private fun jobsPresentInMap() = mapboxMap?.style != null
 
     private fun updateSource() {
-        mapboxMap?.style?.getSource(MARKER_SOURCE)?.let { source ->
+        mapboxMap.style?.getSource(MARKER_SOURCE)?.let { source ->
             if (source is GeoJsonSource)
                 source.setGeoJson(featureCollection)
         }
     }
 
-    private fun setupMap() = mapboxMap?.run {
+    private fun setupMap() = mapboxMap.run {
         setStyle(Style.MAPBOX_STREETS) { style ->
 
             setupSource(style)
@@ -128,10 +99,22 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
     }
 
     private fun setupSource(loadedStyle: Style) = with(loadedStyle) {
-        if (getSource(MARKER_SOURCE) == null) {
-            featureCollection = generateJsonSourceFromJobs()
-            addSource(GeoJsonSource(MARKER_SOURCE, featureCollection))
+        featureCollection = generateJsonSourceFromJobs()
+        addSource(GeoJsonSource(MARKER_SOURCE, featureCollection))
+    }
+
+    private fun generateJsonSourceFromJobs(): FeatureCollection {
+        val featureList = jobs.map { job ->
+            Feature.fromGeometry(
+                Point.fromLngLat(job.longitude(), job.latitude())
+            ).apply {
+                addStringProperty(PROPERTY_JOB_ID, job.id)
+                addStringProperty(PROPERTY_NAME, job.title)
+                addStringProperty(PROPERTY_SALARY, job.salary)
+                addBooleanProperty(PROPERTY_SELECTED, false)
+            }
         }
+        return FeatureCollection.fromFeatures(featureList)
     }
 
     private fun setupMarkerImage(loadedStyle: Style) = with(loadedStyle) {
@@ -144,17 +127,15 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
     private fun setupMarkerLayer(loadedStyle: Style) = with(loadedStyle) {
         // Adding an offset so that the bottom of the blue icon gets fixed to the coordinate, rather than the
         // middle of the icon being fixed to the coordinate point.
-        if (getLayer(MARKER_LAYER) == null) {
-            addLayer(
-                SymbolLayer(
-                    MARKER_LAYER,
-                    MARKER_SOURCE
-                ).withProperties(
-                    iconImage(MARKER_IMAGE),
-                    iconOffset(arrayOf(0f, -9f))
-                )
+        addLayer(
+            SymbolLayer(
+                MARKER_LAYER,
+                MARKER_SOURCE
+            ).withProperties(
+                iconImage(MARKER_IMAGE),
+                iconOffset(arrayOf(0f, -9f))
             )
-        }
+        )
     }
 
     private fun setupInfoWindowLayer(loadedStyle: Style) {
@@ -178,32 +159,10 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
         )
     }
 
-    private fun generateJsonSourceFromJobs(): FeatureCollection {
-        val features = FeatureCollection.fromFeatures(generateCoordinatesFeatureList(jobs))
-        features.features()?.forEach {
-            it.addBooleanProperty(PROPERTY_SELECTED, false)
-        }
-        return features
-    }
-
-    /**
-     * Generate coordinates feature collection given a list of jobs
-     */
-    private fun generateCoordinatesFeatureList(jobs: List<Job>): List<Feature> =
-        jobs.map { job ->
-            Feature.fromGeometry(
-                Point.fromLngLat(job.longitude(), job.latitude())
-            ).apply {
-                addStringProperty(PROPERTY_JOB_ID, job.id)
-                addStringProperty(PROPERTY_NAME, job.title)
-                addStringProperty(PROPERTY_SALARY, job.salary)
-            }
-        }
-
     /**
      * When a marker is clicked select it
      */
-    override fun onMapClick(point: LatLng): Boolean = mapboxMap?.run {
+    override fun onMapClick(point: LatLng): Boolean = mapboxMap.run {
         style?.let { _ ->
             val pixel = projection.toScreenLocation(point)
             val markerFeatures = queryRenderedFeatures(
@@ -242,17 +201,17 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
                 )
             }
         }
-        true
-    } ?: false
+        false
+    }
 
     /**
      * Invoked when the bitmaps have been generated from a view.
      */
     private fun setImageGenResults(imageMap: HashMap<String, Bitmap>) {
-        mapboxMap?.getStyle { it.addImages(imageMap) }
+        mapboxMap.getStyle { it.addImages(imageMap) }
     }
 
-    fun CoroutineScope.generateViewIcon(featureCollection: FeatureCollection, refreshSource: Boolean) {
+    fun generateViewIcon(featureCollection: FeatureCollection, refreshSource: Boolean) {
         val imagesMap = HashMap<String, Bitmap>()
 
         for (feature in featureCollection.features()!!) {
@@ -316,6 +275,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
 
     override fun onDestroy() {
         super.onDestroy()
-        mapboxMap?.removeOnMapClickListener(this)
+        mapboxMap.removeOnMapClickListener(this)
     }
 }

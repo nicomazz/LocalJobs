@@ -24,8 +24,8 @@ import kotlinx.android.synthetic.main.fragment_map.*
  */
 open class MapFragment : Fragment(), OnMapReadyCallback {
 
-    protected var mapboxMap: MapboxMap? = null
-    protected var mapContainer: MapView? = null
+    protected lateinit var mapboxMap: MapboxMap
+    protected lateinit var mapContainer: MapView
 
     open var startLocation: Location? = null
 
@@ -45,6 +45,7 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
         center_user_position_button.setOnClickListener {
             centerMap()
         }
+        mapContainer.getMapAsync(this)
     }
 
     override fun onMapReady(map: MapboxMap) = with(map) {
@@ -90,42 +91,42 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
             )
             .zoom(12.0)
             .build()
-        mapboxMap?.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000)
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000)
     }
 
     override fun onResume() {
         super.onResume()
-        mapContainer?.onResume()
+        mapContainer.onResume()
     }
 
     override fun onStart() {
         super.onStart()
-        mapContainer?.onStart()
+        mapContainer.onStart()
     }
 
     override fun onStop() {
         super.onStop()
-        mapContainer?.onStop()
+        mapContainer.onStop()
     }
 
     override fun onPause() {
         super.onPause()
-        mapContainer?.onPause()
-        lastCameraPosition = mapboxMap?.cameraPosition
+        mapContainer.onPause()
+        lastCameraPosition = mapboxMap.cameraPosition
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
-        mapContainer?.onLowMemory()
+        mapContainer.onLowMemory()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        mapContainer?.onDestroy()
+        mapContainer.onDestroy()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        mapContainer?.onSaveInstanceState(outState)
+        mapContainer.onSaveInstanceState(outState)
     }
 }
