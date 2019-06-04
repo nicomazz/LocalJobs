@@ -13,7 +13,7 @@ import android.widget.Toast
 import com.esp.localjobs.R
 import com.mapbox.android.core.permissions.PermissionsManager
 import java.io.IOException
-import java.util.*
+import java.util.Locale
 
 private const val TWO_MINUTES: Long = 1000 * 60 * 2
 

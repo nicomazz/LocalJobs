@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
@@ -19,10 +18,15 @@ import kotlinx.android.synthetic.main.fragment_filter_results.type_radio_group
 /**
  * Fragment used to set filter params (longitude, latitude, range, text)
  */
-class FilterResultsFragment : BottomSheetDialogFragment(), View.OnClickListener, LocationPickerFragment.OnLocationPickedListener {
+class FilterResultsFragment(
+    private var filtersApplyCallback: OnFiltersApplyListener
+) :
+    BottomSheetDialogFragment(),
+    View.OnClickListener,
+    LocationPickerFragment.OnLocationPickedListener {
+
     // private val args: FilterResultsFragmentArgs by navArgs()
     private val filterViewModel: FilterViewModel by activityViewModels()
-
     private var userSelectedLocation: Location? = null
 
     override fun onCreateView(
@@ -66,6 +70,10 @@ class FilterResultsFragment : BottomSheetDialogFragment(), View.OnClickListener,
         }
     }
 
+    interface OnFiltersApplyListener {
+        fun onFiltersApply()
+    }
+
     private fun updateViewModel() {
         // check selected radio type
         val userSelectedJob = type_radio_group.checkedRadioButtonId == R.id.radio_job
@@ -87,6 +95,7 @@ class FilterResultsFragment : BottomSheetDialogFragment(), View.OnClickListener,
      */
     private fun onSearchClick() {
         updateViewModel()
+        filtersApplyCallback.onFiltersApply()
         dismiss()
     }
 

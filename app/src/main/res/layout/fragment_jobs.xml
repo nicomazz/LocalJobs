@@ -13,7 +13,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <fragment android:name="com.esp.localjobs.fragments.FilterStatusFragment"
+        <include layout="@layout/fragment_filter_status"
                   android:layout_width="match_parent"
                   android:layout_height="50dp"
                   android:id="@+id/active_filters"/>

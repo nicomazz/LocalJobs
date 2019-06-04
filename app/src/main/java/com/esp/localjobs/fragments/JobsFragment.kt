@@ -19,12 +19,14 @@ import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.fragment_filter_status.*
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
 
 /**
  * Fragment used to display a list of jobs
  */
-class JobsFragment : Fragment() {
+class JobsFragment : Fragment(), FilterResultsFragment.OnFiltersApplyListener {
+
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
 
@@ -49,6 +51,16 @@ class JobsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupJobList(view)
         setupAddFab(view)
+
+        filters_button.setOnClickListener {
+            FilterResultsFragment(this).show(fragmentManager!!, "filters_fragment")
+        }
+        updateFilterStatus()
+    }
+
+    override fun onFiltersApply() {
+        loadJobs()
+        updateFilterStatus()
     }
 
     private fun setupAddFab(view: View) {
@@ -70,6 +82,12 @@ class JobsFragment : Fragment() {
 
     private fun setupJobList(view: View) = with(view.job_list) {
         adapter = this@JobsFragment.adapter
+    }
+
+    private fun updateFilterStatus() {
+        val locationName = filterViewModel.getLocation(context!!)?.city ?: getString(R.string.unknown_location)
+        val range = filterViewModel.range
+        location_status.text = getString(R.string.location_status, range, locationName)
     }
 
     private fun observeChangesInJobList() {
