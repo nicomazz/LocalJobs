@@ -10,7 +10,7 @@
                 tools:context=".fragments.AddFragment"
                 android:id="@+id/scroll_container"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/submit_button">
+                app:layout_constraintBottom_toTopOf="@id/delete_button">
 
         <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
