@@ -74,13 +74,6 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
         setupMap()
     }
 
-    private fun updateSource() {
-        mapboxMap.style?.getSource(MARKER_SOURCE)?.let { source ->
-            if (source is GeoJsonSource)
-                source.setGeoJson(featureCollection)
-        }
-    }
-
     private fun setupMap() = mapboxMap.run {
         setStyle(Style.MAPBOX_STREETS) { style ->
 
@@ -101,6 +94,13 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
     private fun setupSource(loadedStyle: Style) = with(loadedStyle) {
         featureCollection = generateJsonSourceFromJobs()
         addSource(GeoJsonSource(MARKER_SOURCE, featureCollection))
+    }
+
+    private fun updateSource() {
+        mapboxMap.style?.getSource(MARKER_SOURCE)?.let { source ->
+            if (source is GeoJsonSource)
+                source.setGeoJson(featureCollection)
+        }
     }
 
     private fun generateJsonSourceFromJobs(): FeatureCollection {
@@ -152,7 +152,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
                     iconAllowOverlap(true),
 
                     /* offset the info window to be above the marker */
-                    iconOffset(arrayOf(-2f, -35f))
+                    iconOffset(arrayOf(-2f, -32f))
                 )
                 /* add a filter to show only when selected feature property is true */
                 .withFilter(eq(get(PROPERTY_SELECTED), literal(true)))
@@ -214,11 +214,14 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
     fun generateViewIcon(featureCollection: FeatureCollection, refreshSource: Boolean) {
         val imagesMap = HashMap<String, Bitmap>()
 
+        val inflater = LayoutInflater.from(context)
+        val bubbleView = inflater.inflate(R.layout.map_info_bubble, null) as BubbleLayout
+
         for (feature in featureCollection.features()!!) {
             val id = feature.getStringProperty(PROPERTY_JOB_ID)
             val name = feature.getStringProperty(PROPERTY_NAME)
             val salary = feature.getStringProperty(PROPERTY_SALARY)
-            val bitmap = generateBubbleBitmap(name, salary)
+            val bitmap = generateBubbleBitmap(bubbleView, name, salary)
             imagesMap[id] = bitmap
         }
         CoroutineScope(Dispatchers.Main).launch {
@@ -229,27 +232,24 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
         }
     }
 
-    private fun generateBubbleBitmap(name: String, salary: String): Bitmap {
-        val inflater = LayoutInflater.from(context)
-        val bubbleLayout = inflater.inflate(R.layout.map_info_bubble, null) as BubbleLayout
-
-        val titleTextView = bubbleLayout.findViewById(R.id.info_window_title) as TextView
+    private fun generateBubbleBitmap(bubbleView: BubbleLayout, name: String, salary: String): Bitmap {
+        val titleTextView = bubbleView.findViewById(R.id.info_window_title) as TextView
         titleTextView.text = name
 
-        val descriptionTextView = bubbleLayout.findViewById(R.id.info_window_description) as TextView
+        val descriptionTextView = bubbleView.findViewById(R.id.info_window_description) as TextView
         if (salary.isNotEmpty())
             descriptionTextView.text = getString(R.string.salary, salary)
         else
             descriptionTextView.visibility = View.GONE
 
         val measureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
-        bubbleLayout.measure(measureSpec, measureSpec)
+        bubbleView.measure(measureSpec, measureSpec)
 
-        val measuredWidth = bubbleLayout.measuredWidth
+        val measuredWidth = bubbleView.measuredWidth
 
-        bubbleLayout.arrowPosition = (measuredWidth / 2 - 5).toFloat()
+        bubbleView.arrowPosition = (measuredWidth / 2 - 5).toFloat()
 
-        return viewToBitmap(bubbleLayout)
+        return viewToBitmap(bubbleView)
     }
 
     /**
