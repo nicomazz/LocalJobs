@@ -21,17 +21,42 @@ import kotlin.coroutines.CoroutineContext
  * A DialogFragment to pick a location displaying a map
  * @author Francesco Pham
  */
-class LocationPickerFragment(
-    private val locationPickedCallback: OnLocationPickedListener,
-    private val startLocation: Location? = null
-) : DialogFragment(), View.OnClickListener, CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Default
+class LocationPickerFragment : DialogFragment(), View.OnClickListener, CoroutineScope {
 
     companion object {
         const val TAG = "LocationPickerFragment"
+        const val ARG_START_LATITUDE = "start-location-latitude"
+        const val ARG_START_LONGITUDE = "start-location-longitude"
+
+        @JvmStatic
+        fun newInstance(startLocation: Location? = null) =
+            LocationPickerFragment().apply {
+                arguments = Bundle().apply {
+                    if (startLocation != null) {
+                        putDouble(ARG_START_LATITUDE, startLocation.l[0])
+                        putDouble(ARG_START_LONGITUDE, startLocation.l[1])
+                    }
+                }
+            }
     }
 
+    private lateinit var locationPickedCallback: OnLocationPickedListener
+    override val coroutineContext: CoroutineContext = Dispatchers.Default
     private val mapViewModel: MapViewModel by activityViewModels()
+    private var startLocation: Location? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.apply {
+            if (containsKey(ARG_START_LATITUDE) && containsKey(ARG_START_LONGITUDE)) {
+                val lat = getDouble(ARG_START_LATITUDE)
+                val lon = getDouble(ARG_START_LONGITUDE)
+                startLocation = Location(lat, lon)
+            }
+        }
+
+        locationPickedCallback = targetFragment as OnLocationPickedListener
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
