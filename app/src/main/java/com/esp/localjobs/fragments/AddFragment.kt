@@ -19,14 +19,13 @@ import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.INVALID_A
 import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
+import com.esp.localjobs.data.models.Localizable
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.utils.LoadingViewDialog
 import com.esp.localjobs.viewModels.AddViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_add.*
-
-private const val TAG = "AddFragment"
 
 /**
  * Fragment used to push a job/proposal to remote db
@@ -87,8 +86,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
     private fun setupLocationEditTextUI() {
         location_edit_text.setOnClickListener {
             fragmentManager?.let { fm ->
-                val locationPickerFragment = LocationPickerFragment(this)
-                locationPickerFragment.show(fm, LocationPickerFragment.TAG)
+                LocationPickerFragment(this).show(fm, LocationPickerFragment.TAG)
             }
         }
     }
@@ -110,8 +108,8 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         type_radio_group.setOnCheckedChangeListener { _, checkedId ->
             val type = view?.findViewById<RadioButton>(checkedId)?.tag
             when (type) {
-                "job" -> range_div.visibility = View.GONE
-                "proposal" -> range_div.visibility = View.VISIBLE
+                JOB -> range_div.visibility = View.GONE
+                PROPOSAL -> range_div.visibility = View.VISIBLE
                 else -> TODO()
             }
         }
@@ -121,27 +119,11 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
      * Called when submit button is pressed
      */
     private fun onSubmit() {
-        if (!validateForm())
+        val location = selectedLocation
+        if (!validateForm() || location == null)
             return
 
-        val userSelectedJob = type_radio_group.checkedRadioButtonId == R.id.radio_job
-
-        val job = Job()
-        // set shared fields
-        with(job) {
-            title = title_edit_text.text.toString()
-            description = description_edit_text.text.toString()
-            l = selectedLocation?.latLng()?.toList() ?: return
-            city = location_edit_text.text.toString()
-            salary = salary_edit_text.text.toString()
-            active = true
-            isJob = userSelectedJob
-            uid = loginViewModel.getUserId()
-        }
-
-        if (!userSelectedJob) { // if it's a proposal set range
-            job.range = range_seekbar.progress
-        }
+        val job = parseJobFromView(location)
 
         // called after completion of add task
         val onItemPushSuccess: () -> Unit = {
@@ -195,5 +177,34 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
             anyError = true
         }
         return !anyError
+    }
+
+    /**
+     * Create a Job from the view using class variable selectedLocation.
+     * @param location position of the job
+     * @return Job parsed from the view
+     */
+    private fun parseJobFromView(location: Localizable): Job = Job().apply {
+        val userSelectedJob = type_radio_group.checkedRadioButtonId == R.id.radio_job
+
+        title = title_edit_text.text.toString()
+        description = description_edit_text.text.toString()
+        l = location.latLng().toList()
+        city = location_edit_text.text.toString()
+        salary = salary_edit_text.text.toString()
+        active = true
+        itIsJob = userSelectedJob
+        uid = loginViewModel.getUserId()
+        if (!userSelectedJob) { // if it's a proposal set range
+            range = range_seekbar.progress
+        }
+
+        return this
+    }
+
+    companion object {
+        const val TAG = "AddFragment"
+        private const val JOB = "job"
+        private const val PROPOSAL = "proposal"
     }
 }

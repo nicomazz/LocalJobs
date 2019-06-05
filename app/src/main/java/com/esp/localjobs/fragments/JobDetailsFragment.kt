@@ -2,9 +2,14 @@ package com.esp.localjobs.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.transition.ChangeBounds
@@ -30,7 +35,10 @@ class JobDetailsFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = inflater.inflate(R.layout.fragment_job_details, container, false)
+    ): View {
+        setHasOptionsMenu(true)
+        return inflater.inflate(R.layout.fragment_job_details, container, false)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,6 +91,22 @@ class JobDetailsFragment : Fragment() {
             FirebaseFirestore.getInstance().collection("jobs")
                 .document(args.job.id).collection("requests")
                 .document(currentUserId).set(document)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        // hide other icons (like current user profile
+        menu.forEach { it.isVisible = false }
+        // if the user owns the job allow him to edit it
+        if (args.job.uid != loginViewModel.getUserId())
+            return
+        inflater.inflate(R.menu.menu_edit, menu)
+        val editMenu = menu.findItem(R.id.menu_edit_item)
+        editMenu.setOnMenuItemClickListener {
+            val action =
+                JobDetailsFragmentDirections.actionDestinationJobDetailsToDestinationEdit(args.job)
+            findNavController().navigate(action.actionId, action.arguments)
+            true
         }
     }
 }

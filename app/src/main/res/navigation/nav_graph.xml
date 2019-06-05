@@ -44,10 +44,18 @@
             tools:layout="@layout/fragment_add">
         <action
                 android:id="@+id/action_destination_add_to_destination_login"
-                app:destination="@id/destination_login"/>
+                app:destination="@id/destination_login"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
         <action
                 android:id="@+id/action_destination_add_to_destination_map"
-                app:destination="@id/destination_map"/>
+                app:destination="@id/destination_map"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
             android:id="@+id/destination_job_details"
@@ -57,6 +65,13 @@
         <argument
                 android:name="job"
                 app:argType="com.esp.localjobs.data.models.Job"/>
+        <action
+                android:id="@+id/action_destination_job_details_to_destination_edit"
+                app:destination="@id/destination_edit"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
             android:id="@+id/destination_user_profile"
@@ -102,4 +117,22 @@
             app:popExitAnim="@anim/slide_out_right"
             android:id="@+id/action_destination_add"
             app:destination="@id/destination_add"/>
+    <fragment
+            android:id="@+id/destination_edit"
+            android:name="com.esp.localjobs.fragments.EditFragment"
+            android:label="Edit"
+            >
+        <argument
+                android:name="job"
+                app:argType="com.esp.localjobs.data.models.Job"/>
+        <action
+                android:id="@+id/action_destination_edit_to_destination_job_details"
+                app:destination="@id/destination_job_details"
+                app:popUpTo="@+id/destination_job_details"
+                app:popUpToInclusive="true"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
+    </fragment>
 </navigation>

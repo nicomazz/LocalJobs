@@ -20,7 +20,8 @@ data class Job(
     var range: Int? = null,
     var salary: String? = "",
     var active: Boolean? = false,
-    var isJob: Boolean? = true,
+    // can't name it isJob, as firebase would push an attribute with name "job" rather than "isJob"
+    var itIsJob: Boolean? = true,
     var uid: String? = ""
 ) : Parcelable, Identifiable, Localizable {
     override fun latLng(): Pair<Double, Double> {

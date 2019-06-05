@@ -18,22 +18,6 @@ interface BaseRepository<T> where T : Identifiable {
     )
 
     /**
-     * Update document fields of a document in the collection with the given ID, without fully overwriting it.
-     * This function is recommended as consume less data traffic.
-     * @param id document id
-     * @param oldItem
-     * @param newItem
-     * @param onSuccess called on update succeeded
-     * @param onFailure called on update failure
-     */
-    fun patch(
-        id: String,
-        oldItem: T,
-        newItem: T,
-        callback: EventCallback? = null
-    )
-
-    /**
      * Overwrite a document in the collection with an ID.
      * @param id document id
      * @param newItem will replace the old item
