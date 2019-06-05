@@ -57,31 +57,6 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
             .addOnFailureListener { e -> callback?.onFailure(e) }
     }
 
-    override fun patch(
-        id: String,
-        oldItem: Model,
-        newItem: Model,
-        callback: BaseRepository.EventCallback?
-    ) {
-
-        if (oldItem == newItem)
-            return
-
-        // create an hash map that define which fields must be updated
-        val updates = HashMap<String, Any?>()
-        // update only different fields
-        typeOfT.declaredFields.forEach {
-            // isAccessible check it field is private
-            if (it.isAccessible && it.get(oldItem) != it.get(newItem))
-                updates[it.name] = it.get(newItem)
-        }
-
-        collection.document(id)
-            .update(updates)
-            .addOnSuccessListener { callback?.onSuccess() }
-            .addOnFailureListener { e -> callback?.onFailure(e) }
-    }
-
     override fun update(
         id: String,
         newItem: Model,
@@ -104,4 +79,8 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
     }
 
     interface FirebaseDatabaseRepositoryCallback<T> : BaseRepository.RepositoryCallback<T>
+
+    companion object {
+        const val TAG = "FirebaseDatabaseRepository"
+    }
 }
