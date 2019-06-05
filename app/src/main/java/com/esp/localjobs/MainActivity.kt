@@ -5,10 +5,12 @@ import android.animation.Animator
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewAnimationUtils
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.animation.doOnEnd
@@ -23,6 +25,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
 import com.mapbox.mapboxsdk.Mapbox
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -52,6 +56,7 @@ class MainActivity : AppCompatActivity() {
 
         requestLocationPermissions()
         Mapbox.getInstance(applicationContext, getString(R.string.mabBoxToken))
+        setupNotificationToken()
 
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ -> onDestinationChangeListener(destination) }
@@ -65,6 +70,25 @@ class MainActivity : AppCompatActivity() {
         )
 
         setupToolbar(navController, appBarConfiguration)
+    }
+
+    private fun setupNotificationToken() {
+        FirebaseInstanceId.getInstance().instanceId
+            .addOnCompleteListener(OnCompleteListener { task ->
+                if (!task.isSuccessful) {
+                    Log.w(TAG, "getInstanceId failed", task.exception)
+                    return@OnCompleteListener
+                }
+
+                // Get new Instance ID token
+                val token = task.result?.token
+
+                // Log and toast
+
+                Log.d(TAG, token)
+                Toast.makeText(baseContext, "Token: " + token, Toast.LENGTH_SHORT).show()
+                MyFirebaseMessagingService.sendRegistrationToServer(token)
+            })
     }
 
     private fun setupToolbar(navController: NavController, appBarConfiguration: AppBarConfiguration) {
@@ -148,5 +172,9 @@ class MainActivity : AppCompatActivity() {
                     finish()
             }
         }
+    }
+
+    private companion object {
+        const val TAG = "MainActivity"
     }
 }
