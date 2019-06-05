@@ -50,8 +50,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     // private var positionServiceJob: Job? = null
 
-    companion object {
+    private companion object {
         private const val REQUEST_LOCATION_PERMISSION_CODE = 100
+        const val TAG = "MainActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -176,9 +177,5 @@ class MainActivity : AppCompatActivity() {
                     finish()
             }
         }
-    }
-
-    private companion object {
-        const val TAG = "MainActivity"
     }
 }
