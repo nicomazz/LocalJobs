@@ -38,9 +38,10 @@
     <string name="coordinates">%1$s, %2$s</string>
     <string name="position_unknown_toast">Last position unknown</string>
     <string name="error_retrieving_location_name">Error retrieving location name.</string>
-    <string name="menu_map">Map</string>
     <string name="no_price_info">No information about the price</string>
+    <string name="menu_map">Map</string>
     <string name="contact">Contact</string>
     <string name="default_notification_channel_id">localjobs_channel_id</string>
     <string name="fcm_message">New request</string>
+    <string name="salary">%1$s £/h</string>
 </resources>

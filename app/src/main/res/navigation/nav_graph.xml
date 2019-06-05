@@ -85,6 +85,13 @@
             android:label="Map"
             tools:layout="@layout/fragment_map">
 
+        <action
+                android:id="@+id/action_destination_map_to_destination_job_details"
+                app:destination="@id/destination_job_details"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
 
