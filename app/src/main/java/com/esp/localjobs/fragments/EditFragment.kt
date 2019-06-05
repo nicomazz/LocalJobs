@@ -64,7 +64,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
             description_edit_text.setText(description)
 
             val isJob = itIsJob
-            if (isJob != false)
+            if (isJob == false)
                 edit_type_radio_group.check(R.id.radio_proposal)
             range?.let {
                 range_seekbar.progress = it

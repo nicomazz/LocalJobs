@@ -63,6 +63,7 @@ dependencies {
     //implementation 'com.firebaseui:firebase-ui-database:4.3.2'
     implementation 'com.google.firebase:firebase-firestore:19.0.0'
     implementation 'com.google.firebase:firebase-auth:17.0.0'
+    implementation 'com.google.firebase:firebase-messaging:18.0.0'
 
     ktlint "com.pinterest:ktlint:0.32.0"
     testImplementation 'junit:junit:4.12'
@@ -82,9 +83,11 @@ dependencies {
     implementation 'com.xwray:groupie-databinding:2.3.0'
     implementation 'com.xwray:groupie-kotlin-android-extensions:2.3.0'
 
+    // map
     implementation('com.mapbox.mapboxsdk:mapbox-android-sdk:7.3.2') {
         exclude group: 'group_name', module: 'module_name'
     }
+    implementation 'com.daasuu:BubbleLayout:1.2.0'
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'

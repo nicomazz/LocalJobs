@@ -32,14 +32,6 @@ class MapFragmentForPicker : MapFragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        center_user_position_button.setOnClickListener {
-            centerMap()
-        }
-        mapContainer?.getMapAsync(this)
-    }
-
     override fun onMapReady(map: MapboxMap) {
         super.onMapReady(map)
         map.setStyle(Style.MAPBOX_STREETS)
@@ -62,7 +54,7 @@ class MapFragmentForPicker : MapFragment() {
      */
     private fun getCenterLocation(): Location {
         // get location coordinates of the center of the map-view
-        val latLng = mapboxMap?.cameraPosition?.target!!
+        val latLng = mapboxMap.cameraPosition.target!!
         return Location(latLng.latitude, latLng.longitude)
     }
 

@@ -31,4 +31,6 @@ class LoginViewModel : ViewModel() {
     }
 
     fun getUserId(): String? = FirebaseAuth.getInstance().currentUser?.uid
+
+    fun getUserName(): String? = FirebaseAuth.getInstance().currentUser?.displayName
 }

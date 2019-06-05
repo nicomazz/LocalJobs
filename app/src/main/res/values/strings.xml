@@ -46,4 +46,8 @@
     <string name="delete_job_failure">Failed to delete:</string>
     <string name="delete_job_success">Successfully deleted!</string>
     <string name="edit_no_changes_detected">You should change something!</string>
+    <string name="contact">Contact</string>
+    <string name="default_notification_channel_id">localjobs_channel_id</string>
+    <string name="fcm_message">New request</string>
+    <string name="salary">%1$s £/h</string>
 </resources>
