@@ -64,6 +64,13 @@ class JobsFragment : Fragment() {
         filters_button.setOnClickListener {
             FiltersFragment().show(fragmentManager!!, FILTER_FRAGMENT_TAG)
         }
+
+        postponeEnterTransition()
+        viewTreeObserver
+            .addOnPreDrawListener {
+                startPostponedEnterTransition()
+                true
+            }
     }
 
     private fun observeChangesInJobList() {

@@ -44,5 +44,8 @@
     <string name="location_icon_description">location_icon</string>
     <string name="unknown_location">Unknown location</string>
     <string name="location_status">%1$d kilometers from %2$s</string>
+    <string name="contact">Contact</string>
+    <string name="default_notification_channel_id">localjobs_channel_id</string>
+    <string name="fcm_message">New request</string>
     <string name="salary">%1$s £/h</string>
 </resources>
