@@ -63,7 +63,7 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        startLocation = filterViewModel.getLocation(context)
+        startLocation = filterViewModel.location
         jobs = jobsViewModel.jobs.value ?: listOf()
     }
 

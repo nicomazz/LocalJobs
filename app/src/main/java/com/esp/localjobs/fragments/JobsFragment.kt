@@ -84,7 +84,7 @@ class JobsFragment : Fragment() {
     private fun loadJobs() {
         // Listen for jobs near user selected location or his last known position.
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
-        filterViewModel.getLocation(context!!)?.let {
+        filterViewModel.location?.let {
             jobsViewModel.loadJobs(
                 it,
                 filterViewModel.range.toDouble()
@@ -93,7 +93,7 @@ class JobsFragment : Fragment() {
     }
 
     private fun updateFilterUI() {
-        val locationName = filterViewModel.getLocation(context!!)?.city ?: getString(R.string.unknown_location)
+        val locationName = filterViewModel.location?.city ?: getString(R.string.unknown_location)
         val range = filterViewModel.range
         location_status.text = getString(R.string.location_status, range, locationName)
     }

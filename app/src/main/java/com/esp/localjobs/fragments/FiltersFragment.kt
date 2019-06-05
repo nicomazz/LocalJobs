@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.fragment_filters.type_radio_group
 /**
  * Fragment used to set filter params (longitude, latitude, range, text)
  */
-class FiltersFragment() :
+class FiltersFragment :
     BottomSheetDialogFragment(),
     View.OnClickListener,
     LocationPickerFragment.OnLocationPickedListener {
@@ -76,10 +76,6 @@ class FiltersFragment() :
                 else getString(R.string.coordinates, it.l[0].toString(), it.l[1].toString())
             filter_location_edit_text.setText(locationText)
         }
-    }
-
-    interface OnFiltersApplyListener {
-        fun onFiltersApply()
     }
 
     private fun updateViewModel() {

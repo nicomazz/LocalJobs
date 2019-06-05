@@ -44,8 +44,12 @@ Resources:
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
-    private val REQUEST_LOCATION_PERMISSION_CODE = 100
     // private var positionServiceJob: Job? = null
+
+    companion object {
+        private const val REQUEST_LOCATION_PERMISSION_CODE = 100
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
