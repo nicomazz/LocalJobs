@@ -12,6 +12,10 @@ import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.utils.GeocodingUtils
 import com.esp.localjobs.viewModels.MapViewModel
 import kotlinx.android.synthetic.main.fragment_location_picker.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 /**
  * A DialogFragment to pick a location displaying a map
@@ -20,7 +24,8 @@ import kotlinx.android.synthetic.main.fragment_location_picker.*
 class LocationPickerFragment(
     private val locationPickedCallback: OnLocationPickedListener,
     private val startLocation: Location? = null
-) : DialogFragment(), View.OnClickListener {
+) : DialogFragment(), View.OnClickListener, CoroutineScope {
+    override val coroutineContext: CoroutineContext = Dispatchers.Default
 
     companion object {
         const val TAG = "LocationPickerFragment"
@@ -72,8 +77,12 @@ class LocationPickerFragment(
         when (v?.id) {
             R.id.apply_button -> {
                 mapViewModel.location.value?.let {
-                    it.city = GeocodingUtils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
-                    locationPickedCallback.onLocationPicked(it)
+                    launch {
+                        it.city = GeocodingUtils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            locationPickedCallback.onLocationPicked(it)
+                        }
+                    }
                     dismiss()
                 }
             }

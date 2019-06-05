@@ -12,7 +12,7 @@ class LocalJobsApplication : Application() {
     companion object {
         private var instance: LocalJobsApplication? = null
 
-        fun applicationContext() : Context {
+        fun applicationContext(): Context {
             return instance!!.applicationContext
         }
     }
