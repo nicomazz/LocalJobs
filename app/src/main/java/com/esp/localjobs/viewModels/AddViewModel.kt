@@ -16,11 +16,11 @@ class AddViewModel : ViewModel() {
             job,
             callback = object : BaseRepository.EventCallback {
                 override fun onSuccess() {
-                    onSuccess.invoke()
+                    onSuccess()
                 }
                 override fun onFailure(e: Exception) {
                     Log.e("AddViewModel", e.toString())
-                    onFailure.invoke()
+                    onFailure()
                 }
             }
         )

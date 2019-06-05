@@ -1,6 +1,5 @@
 package com.esp.localjobs.data.base
 
-import android.util.Log
 import com.esp.localjobs.data.models.Identifiable
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
@@ -54,33 +53,6 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
         item.id = collection.document().id
         collection.document(item.id)
             .set(item)
-            .addOnSuccessListener { callback?.onSuccess() }
-            .addOnFailureListener { e -> callback?.onFailure(e) }
-    }
-
-    override fun patch(
-        id: String,
-        oldItem: Model,
-        newItem: Model,
-        callback: BaseRepository.EventCallback?
-    ) {
-
-        if (oldItem == newItem)
-            return
-
-        // create an hash map that define which fields must be updated
-        val updates = HashMap<String, Any?>()
-        // update only different fields
-
-        typeOfT.declaredFields.forEach {
-            it.isAccessible = true // set private fields as accessible
-            if (it.get(oldItem) != it.get(newItem))
-                updates[it.name] = it.get(newItem)
-        }
-        Log.d(TAG, "Updates: $updates")
-
-        collection.document(id)
-            .update(updates)
             .addOnSuccessListener { callback?.onSuccess() }
             .addOnFailureListener { e -> callback?.onFailure(e) }
     }

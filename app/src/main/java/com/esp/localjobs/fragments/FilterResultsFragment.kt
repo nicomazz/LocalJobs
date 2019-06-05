@@ -106,9 +106,7 @@ class FilterResultsFragment : Fragment(), View.OnClickListener, LocationPickerFr
             R.id.filter_location_edit_text -> {
                 // show location picker dialog
                 activity?.supportFragmentManager?.let { fm ->
-                    val locationPickerFragment =
-                        LocationPickerFragment(this, filterViewModel.location)
-                    locationPickerFragment.show(fm, LocationPickerFragment.TAG)
+                    LocationPickerFragment(this).show(fm, LocationPickerFragment.TAG)
                 }
             }
         }

@@ -64,7 +64,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
             description_edit_text.setText(description)
 
             val isJob = itIsJob
-            if (isJob != null && !isJob)
+            if (isJob != false)
                 edit_type_radio_group.check(R.id.radio_proposal)
             range?.let {
                 range_seekbar.progress = it
@@ -128,8 +128,8 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
         viewDialog.showDialog()
 
-        editViewModel.patch(
-            oldJob = args.job,
+        editViewModel.update(
+            id = newJob.id,
             newJob = newJob,
             onSuccess = onItemEditSuccess,
             onFailure = onItemEditFailure
@@ -176,8 +176,8 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         edit_type_radio_group.setOnCheckedChangeListener { _, checkedId ->
             val type = view?.findViewById<RadioButton>(checkedId)?.tag
             when (type) {
-                "job" -> edit_range_div.visibility = View.GONE
-                "proposal" -> edit_range_div.visibility = View.VISIBLE
+                JOB -> edit_range_div.visibility = View.GONE
+                PROPOSAL -> edit_range_div.visibility = View.VISIBLE
                 else -> TODO()
             }
         }
@@ -186,8 +186,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     private fun setupLocationEditTextUI() {
         location_edit_text.setOnClickListener {
             fragmentManager?.let { fm ->
-                val locationPickerFragment = LocationPickerFragment(this)
-                locationPickerFragment.show(fm, LocationPickerFragment.TAG)
+                LocationPickerFragment(this).show(fm, LocationPickerFragment.TAG)
             }
         }
     }
@@ -221,30 +220,29 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
      * @param location position of the job
      * @return Job parsed from the view
      */
-    private fun parseJobFromView(location: Localizable): Job {
-        val job = Job()
-
+    private fun parseJobFromView(location: Localizable): Job = Job().apply {
         val userSelectedJob = edit_type_radio_group.checkedRadioButtonId == R.id.radio_job
-        job.apply {
-            id = args.job.id
-            title = title_edit_text.text.toString()
-            description = description_edit_text.text.toString()
-            l = location.latLng().toList()
-            city = location_edit_text.text.toString()
-            salary = salary_edit_text.text.toString()
-            active = true
-            itIsJob = userSelectedJob
-            uid = args.job.uid
-        }
+
+        id = args.job.id
+        title = title_edit_text.text.toString()
+        description = description_edit_text.text.toString()
+        l = location.latLng().toList()
+        city = location_edit_text.text.toString()
+        salary = salary_edit_text.text.toString()
+        active = true
+        itIsJob = userSelectedJob
+        uid = args.job.uid
 
         if (!userSelectedJob) { // if it's a proposal set range
-            job.range = range_seekbar.progress
+            range = range_seekbar.progress
         }
 
-        return job
+        return this
     }
 
     companion object {
         const val TAG = "EditFragment"
+        private const val JOB = "job"
+        private const val PROPOSAL = "proposal"
     }
 }

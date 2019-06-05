@@ -6,19 +6,19 @@ import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.repository.JobsRepository
 
 class EditViewModel : ViewModel() {
-    fun patch(
-        oldJob: Job,
+    fun update(
+        id: String,
         newJob: Job,
         onSuccess: (() -> Unit),
         onFailure: ((e: Exception) -> Unit)
     ) {
-        JobsRepository().patch(oldJob.id, oldJob, newJob, callback = object : BaseRepository.EventCallback {
+        JobsRepository().update(id, newJob, callback = object : BaseRepository.EventCallback {
             override fun onSuccess() {
-                onSuccess.invoke()
+                onSuccess()
             }
 
             override fun onFailure(e: Exception) {
-                onFailure.invoke(e)
+                onFailure(e)
             }
         })
     }
@@ -30,11 +30,11 @@ class EditViewModel : ViewModel() {
     ) {
         JobsRepository().delete(id, callback = object : BaseRepository.EventCallback {
             override fun onSuccess() {
-                onSuccess.invoke()
+                onSuccess()
             }
 
             override fun onFailure(e: Exception) {
-                onFailure.invoke(e)
+                onFailure(e)
             }
         })
     }
