@@ -64,13 +64,13 @@ class FiltersFragment :
         filter_location_edit_text.setText(locationText)
     }
 
-    private fun updateView(filters: Filters) {
-        val checkedId = if (filters.filteringJobs) R.id.radio_job else R.id.radio_proposal
+    private fun updateView(filters: Filters) = with(filters) {
+        val checkedId = if (filteringJobs) R.id.radio_job else R.id.radio_proposal
         type_radio_group.check(checkedId)
-        range_value.text = filters.range.toString()
-        range_seek_bar.progress = filters.range
-        min_salary_edit_text.setText(filters.minSalary.toString())
-        filters.location?.let {
+        range_value.text = range.toString()
+        range_seek_bar.progress = range
+        min_salary_edit_text.setText(minSalary.toString())
+        location?.let {
             val locationText =
                 if (it.city != null) it.city
                 else getString(R.string.coordinates, it.l[0].toString(), it.l[1].toString())
