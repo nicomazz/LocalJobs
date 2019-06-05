@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
+import com.esp.localjobs.fragments.FiltersFragment.Companion.FILTER_FRAGMENT_TAG
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.xwray.groupie.GroupAdapter
@@ -25,7 +26,7 @@ import kotlinx.android.synthetic.main.fragment_jobs.view.*
 /**
  * Fragment used to display a list of jobs
  */
-class JobsFragment : Fragment(), FiltersFragment.OnFiltersApplyListener {
+class JobsFragment : Fragment() {
 
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
@@ -44,29 +45,40 @@ class JobsFragment : Fragment(), FiltersFragment.OnFiltersApplyListener {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         loadJobs()
-        observeChangesInJobList()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupJobList(view)
-        setupAddFab(view)
 
-        filters_button.setOnClickListener {
-            FiltersFragment(this).show(fragmentManager!!, "filters_fragment")
-        }
-        updateFilterStatus()
+        setupUI(view)
+
+        observeChangesInJobList()
+        observeFilters()
     }
 
-    override fun onFiltersApply() {
-        loadJobs()
-        updateFilterStatus()
-    }
-
-    private fun setupAddFab(view: View) {
-        view.fabAdd.setOnClickListener {
+    private fun setupUI(view: View) = with(view) {
+        job_list.adapter = adapter
+        fabAdd.setOnClickListener {
             findNavController().navigate(R.id.destination_add)
         }
+        filters_button.setOnClickListener {
+            FiltersFragment().show(fragmentManager!!, FILTER_FRAGMENT_TAG)
+        }
+    }
+
+    private fun observeChangesInJobList() {
+        jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
+            Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
+            adapter.update(jobs?.map { JobItem(it) } ?: listOf())
+        })
+    }
+
+    private fun observeFilters() {
+        filterViewModel.activeFilters.observe(viewLifecycleOwner, Observer {
+            Log.d("JobFragment", "Filters changed!")
+            loadJobs()
+            updateFilterUI()
+        })
     }
 
     private fun loadJobs() {
@@ -80,21 +92,10 @@ class JobsFragment : Fragment(), FiltersFragment.OnFiltersApplyListener {
         } ?: jobsViewModel.loadJobs()
     }
 
-    private fun setupJobList(view: View) = with(view.job_list) {
-        adapter = this@JobsFragment.adapter
-    }
-
-    private fun updateFilterStatus() {
+    private fun updateFilterUI() {
         val locationName = filterViewModel.getLocation(context!!)?.city ?: getString(R.string.unknown_location)
         val range = filterViewModel.range
         location_status.text = getString(R.string.location_status, range, locationName)
-    }
-
-    private fun observeChangesInJobList() {
-        jobsViewModel.jobs.observe(this, Observer { jobs ->
-            Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
-            adapter.update(jobs?.map { JobItem(it) } ?: listOf())
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -115,6 +116,7 @@ class JobsFragment : Fragment(), FiltersFragment.OnFiltersApplyListener {
                     if (query != null) onSearchClick(query)
                     return true
                 }
+
                 override fun onQueryTextChange(newText: String?): Boolean {
                     return true
                 }
@@ -128,7 +130,7 @@ class JobsFragment : Fragment(), FiltersFragment.OnFiltersApplyListener {
      * a filtered search.
      */
     private fun onSearchClick(query: String) {
-        filterViewModel.query = query
-        loadJobs()
+        filterViewModel.setQuery(query)
+        // loadJobs() this is done automatically thanks to the filterLiveData
     }
 }

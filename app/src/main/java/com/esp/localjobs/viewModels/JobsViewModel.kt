@@ -17,34 +17,33 @@ class JobsViewModel : ViewModel() {
     val jobs: LiveData<List<Job>?>
         get() = _jobs
 
-    fun loadJobs() {
-        repository.addListener(object : FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job> {
-            override fun onSuccess(result: List<Job>) {
-                _jobs.postValue(result)
-            }
+    // todo put filters as unique paramenter
+    fun loadJobs(location: Location? = null, range: Double = 0.0) {
+        when (location) {
+            null ->
+                repository.addListener(object : FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job> {
+                    override fun onSuccess(result: List<Job>) {
+                        _jobs.postValue(result)
+                    }
 
-            override fun onError(e: Exception) {
-                _jobs.postValue(null)
-            }
-        }, filters = null) /* { collectionToFilter ->
-            // here we can do filtering
-            collectionToFilter
-        } */
-    }
+                    override fun onError(e: Exception) {
+                        _jobs.postValue(null)
+                    }
+                }, filters = null)
+            else ->
+                repository.addLocationListener(
+                    location,
+                    range,
+                    object : FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job> {
+                        override fun onSuccess(result: List<Job>) {
+                            _jobs.postValue(result)
+                        }
 
-    fun loadJobs(location: Location, range: Double) {
-        repository.addLocationListener(
-            location,
-            range,
-            object : FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Job> {
-                override fun onSuccess(result: List<Job>) {
-                    _jobs.postValue(result)
-                }
-
-                override fun onError(e: Exception) {
-                    _jobs.postValue(null)
-                }
-            }
-        )
+                        override fun onError(e: Exception) {
+                            _jobs.postValue(null)
+                        }
+                    }
+                )
+        }
     }
 }
