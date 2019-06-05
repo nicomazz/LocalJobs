@@ -13,8 +13,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
-// todo eliminare commenti inutili e rendere migliore la notifica. Quando si preme la notifica si deve entrare
-// in automatico nella pagina del job
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     /**
@@ -22,7 +20,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      *
      * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
      */
-    // [START receive_message]
     override fun onMessageReceived(remoteMessage: RemoteMessage?) {
         // [START_EXCLUDE]
         // There are two types of messages data messages and notification messages. Data messages are handled
@@ -80,15 +77,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         messageBody: String?,
         jobId: String?
     ) {
-
-        /*
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0 /* Request code */, intent,
-            PendingIntent.FLAG_ONE_SHOT
-        )
-        */
         // deep link: see https://developer.android.com/guide/navigation/navigation-deep-link
         val pendingIntent = NavDeepLinkBuilder(applicationContext)
             .setGraph(R.navigation.nav_graph)

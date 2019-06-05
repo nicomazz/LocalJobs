@@ -70,6 +70,7 @@ class JobDetailsFragment : Fragment() {
              return
          }*/
 
+        // todo create data object instead of map
         contact_fab.setOnClickListener {
             val document = mapOf(
                 "job_publisher_id" to jobOwner,
@@ -78,6 +79,7 @@ class JobDetailsFragment : Fragment() {
                 "job_id" to args.job.id // used to retrieve job body
                 // todo aggiungere un breve messaggio
             )
+            // todo put all firebase specific method somewhere
             FirebaseFirestore.getInstance().collection("jobs")
                 .document(args.job.id).collection("requests")
                 .document(currentUserId).set(document)

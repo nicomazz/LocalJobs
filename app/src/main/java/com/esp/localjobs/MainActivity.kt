@@ -72,7 +72,6 @@ class MainActivity : AppCompatActivity() {
         setupToolbar(navController, appBarConfiguration)
     }
 
-    // todo creare un oggetto esterno a questo file che faccia ciò che fa questa funzione
     private fun setupNotificationToken() {
         FirebaseInstanceId.getInstance().instanceId
             .addOnCompleteListener(OnCompleteListener { task ->
