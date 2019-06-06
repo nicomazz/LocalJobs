@@ -37,7 +37,7 @@
     <string name="auth_required">You must be authenticated to use this function</string>
     <string name="coordinates">%1$s, %2$s</string>
     <string name="position_unknown_toast">Last position unknown</string>
-    <string name="error_retrieving_location_name">Error retrieving location name.</string>
+    <string name="error_retrieving_location_name">Could not retrieve location name</string>
     <string name="no_price_info">No information about the price</string>
     <string name="menu_map">Map</string>
     <string name="filters_button">Filters</string>

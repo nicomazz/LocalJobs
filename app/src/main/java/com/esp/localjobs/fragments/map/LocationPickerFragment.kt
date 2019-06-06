@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.R
@@ -21,7 +22,7 @@ import kotlin.coroutines.CoroutineContext
  * A DialogFragment to pick a location displaying a map
  * @author Francesco Pham
  */
-class LocationPickerFragment : DialogFragment(), View.OnClickListener, CoroutineScope {
+class LocationPickerFragment : DialogFragment(), CoroutineScope {
 
     companion object {
         const val TAG = "LocationPickerFragment"
@@ -76,8 +77,8 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener, Coroutine
             commit()
         }
 
-        apply_button.setOnClickListener(this)
-        cancel_button.setOnClickListener(this)
+        apply_button.setOnClickListener { onApply() }
+        cancel_button.setOnClickListener { dismiss() }
     }
 
     override fun onResume() {
@@ -87,31 +88,28 @@ class LocationPickerFragment : DialogFragment(), View.OnClickListener, Coroutine
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     }
 
+    private fun onApply() {
+        mapViewModel.location.value?.let {
+            progress_bar.visibility = View.VISIBLE
+            launch {
+                it.city = GeocodingUtils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
+                CoroutineScope(Dispatchers.Main).launch {
+                    if (it.city == null)
+                        Toast.makeText(context, getString(R.string.error_retrieving_location_name), Toast.LENGTH_SHORT)
+                            .show()
+
+                    locationPickedCallback.onLocationPicked(it)
+                    dismiss()
+                }
+            }
+        }
+    }
+
     /**
      * This interface should be implemented when using this fragment.
      * onLocationPicked is called when the apply button is pressed
      */
     interface OnLocationPickedListener {
         fun onLocationPicked(location: Location)
-    }
-
-    /**
-     * Handle view items click
-     */
-    override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.apply_button -> {
-                mapViewModel.location.value?.let {
-                    launch {
-                        it.city = GeocodingUtils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
-                        CoroutineScope(Dispatchers.Main).launch {
-                            locationPickedCallback.onLocationPicked(it)
-                        }
-                    }
-                    dismiss()
-                }
-            }
-            R.id.cancel_button -> dismiss()
-        }
     }
 }
