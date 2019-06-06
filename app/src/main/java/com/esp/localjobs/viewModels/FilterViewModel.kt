@@ -46,6 +46,14 @@ class FilterViewModel : ViewModel() {
             }
         )
     }
+
+    fun setLocation(newLocation: Location) {
+        _activeFilters.postValue(
+            activeFilters.value!!.apply {
+                location = newLocation
+            }
+        )
+    }
 }
 
 const val MAX_RANGE_KM = 100

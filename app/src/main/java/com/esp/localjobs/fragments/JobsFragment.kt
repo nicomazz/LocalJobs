@@ -15,7 +15,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
+import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.FiltersFragment.Companion.FILTER_FRAGMENT_TAG
+import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.xwray.groupie.GroupAdapter
@@ -26,7 +28,7 @@ import kotlinx.android.synthetic.main.fragment_jobs.view.*
 /**
  * Fragment used to display a list of jobs
  */
-class JobsFragment : Fragment() {
+class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener {
 
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
@@ -58,12 +60,15 @@ class JobsFragment : Fragment() {
 
     private fun setupUI(view: View) = with(view) {
         job_list.adapter = adapter
+
         fabAdd.setOnClickListener {
             findNavController().navigate(R.id.destination_add)
         }
         filters_button.setOnClickListener {
             FiltersFragment().show(fragmentManager!!, FILTER_FRAGMENT_TAG)
         }
+        location_status.setOnClickListener { onLocationClick() }
+        location_icon.setOnClickListener { onLocationClick() }
 
         postponeEnterTransition()
         viewTreeObserver
@@ -139,5 +144,21 @@ class JobsFragment : Fragment() {
     private fun onSearchClick(query: String) {
         filterViewModel.setQuery(query)
         // loadJobs() this is done automatically thanks to the filterLiveData
+    }
+
+    /**
+     * On click of the top location filter status launch LocationPickerFragment
+     */
+    private fun onLocationClick() {
+        fragmentManager?.let { fm ->
+            with(LocationPickerFragment.newInstance(filterViewModel.location)) {
+                setTargetFragment(this@JobsFragment, 0)
+                show(fm, LocationPickerFragment.TAG)
+            }
+        }
+    }
+
+    override fun onLocationPicked(location: Location) {
+        filterViewModel.setLocation(location)
     }
 }

@@ -2,8 +2,6 @@ package com.esp.localjobs.utils
 
 import android.content.Context
 import android.location.Geocoder
-import android.widget.Toast
-import com.esp.localjobs.R
 import java.io.IOException
 import java.util.Locale
 
