@@ -27,10 +27,10 @@ import kotlin.coroutines.CoroutineContext
 class LocationPickerFragment : DialogFragment(), CoroutineScope {
 
     companion object {
-        const val TAG = "LocationPickerFragment"
         const val ARG_START_LATITUDE = "start-location-latitude"
         const val ARG_START_LONGITUDE = "start-location-longitude"
-        const val REQUEST_CODE = 0
+        private const val TAG = "LocationPickerFragment"
+        private const val REQUEST_CODE = 0
 
         fun newInstanceShow(
             targetFragment: Fragment,
