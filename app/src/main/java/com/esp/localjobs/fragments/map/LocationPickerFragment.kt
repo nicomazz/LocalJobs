@@ -1,35 +1,74 @@
 package com.esp.localjobs.fragments.map
 
 import android.annotation.SuppressLint
-import android.location.Geocoder
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.utils.GeocodingUtils
 import com.esp.localjobs.viewModels.MapViewModel
 import kotlinx.android.synthetic.main.fragment_location_picker.*
-import java.io.IOException
-import java.util.Locale
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 /**
  * A DialogFragment to pick a location displaying a map
  * @author Francesco Pham
  */
-class LocationPickerFragment(
-    private val locationPickedCallback: OnLocationPickedListener,
-    private val startLocation: Location? = null
-) : DialogFragment(), View.OnClickListener {
+class LocationPickerFragment : DialogFragment(), CoroutineScope {
 
     companion object {
-        const val TAG = "LocationPickerFragment"
+        const val ARG_START_LATITUDE = "start-location-latitude"
+        const val ARG_START_LONGITUDE = "start-location-longitude"
+        private const val TAG = "LocationPickerFragment"
+        private const val REQUEST_CODE = 0
+
+        fun newInstanceShow(
+            targetFragment: Fragment,
+            fragmentManager: FragmentManager,
+            startLocation: Location? = null
+        ) = with(newInstance(startLocation)) {
+                setTargetFragment(targetFragment, REQUEST_CODE)
+                show(fragmentManager, TAG)
+            }
+
+        private fun newInstance(startLocation: Location? = null) =
+            LocationPickerFragment().apply {
+                arguments = Bundle().apply {
+                    if (startLocation != null) {
+                        putDouble(ARG_START_LATITUDE, startLocation.l[0])
+                        putDouble(ARG_START_LONGITUDE, startLocation.l[1])
+                    }
+                }
+            }
     }
 
+    private lateinit var locationPickedCallback: OnLocationPickedListener
+    override val coroutineContext: CoroutineContext = Dispatchers.Default
     private val mapViewModel: MapViewModel by activityViewModels()
+    private var startLocation: Location? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        arguments?.apply {
+            if (containsKey(ARG_START_LATITUDE) && containsKey(ARG_START_LONGITUDE)) {
+                val lat = getDouble(ARG_START_LATITUDE)
+                val lon = getDouble(ARG_START_LONGITUDE)
+                startLocation = Location(lat, lon)
+            }
+        }
+
+        locationPickedCallback = targetFragment as OnLocationPickedListener
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,8 +88,8 @@ class LocationPickerFragment(
             commit()
         }
 
-        apply_button.setOnClickListener(this)
-        cancel_button.setOnClickListener(this)
+        apply_button.setOnClickListener { onApply() }
+        cancel_button.setOnClickListener { dismiss() }
     }
 
     override fun onResume() {
@@ -60,42 +99,30 @@ class LocationPickerFragment(
         dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     }
 
+    private fun onApply() {
+        mapViewModel.location.value?.let {
+            progress_bar.visibility = View.VISIBLE
+            launch {
+                it.city = GeocodingUtils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
+                apply(it)
+            }
+        }
+    }
+
+    private fun apply(location: Location) = CoroutineScope(Dispatchers.Main).launch {
+        if (location.city == null)
+            Toast.makeText(context, getString(R.string.error_retrieving_location_name), Toast.LENGTH_SHORT)
+                .show()
+
+        locationPickedCallback.onLocationPicked(location)
+        dismiss()
+    }
+
     /**
      * This interface should be implemented when using this fragment.
      * onLocationPicked is called when the apply button is pressed
      */
     interface OnLocationPickedListener {
         fun onLocationPicked(location: Location)
-    }
-
-    /**
-     * Handle view items click
-     */
-    override fun onClick(v: View?) {
-        when (v?.id) {
-            R.id.apply_button -> {
-                mapViewModel.location.value?.let {
-                    it.city = coordinatesToCity(it.latLng().first, it.latLng().second)
-                    locationPickedCallback.onLocationPicked(it)
-                    dismiss()
-                }
-            }
-            R.id.cancel_button -> dismiss()
-        }
-    }
-
-    /**
-     * Convert coordinates into a city name
-     * @return null if could not retrieve any (i.e. in the middle of the ocean)
-     */
-    private fun coordinatesToCity(latitude: Double, longitude: Double): String? {
-        try { // Sometimes gcd.getFromLocation(..) throws IOException, causing crash
-            val gcd = Geocoder(context, Locale.getDefault())
-            val addresses = gcd.getFromLocation(latitude, longitude, 1)
-            return if (addresses.size > 0) addresses[0].locality else null
-        } catch (e: IOException) {
-            Toast.makeText(context!!, getString(R.string.error_retrieving_location_name), Toast.LENGTH_SHORT).show()
-        }
-        return null
     }
 }

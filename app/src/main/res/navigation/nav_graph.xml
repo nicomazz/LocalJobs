@@ -25,17 +25,6 @@
                     android:name="job"
                     app:argType="com.esp.localjobs.data.models.Job"/>
         </action>
-        <action
-                android:id="@+id/action_destination_jobs_to_destination_filter"
-                app:destination="@id/destination_filter"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right">
-            <argument
-                    android:defaultValue="true"
-                    android:name="filteringJobs"/>
-        </action>
     </fragment>
     <fragment
             android:id="@+id/destination_add"
@@ -83,15 +72,6 @@
                 app:argType="string"
                 app:nullable="true"
                 android:defaultValue="@null"/>
-    </fragment>
-    <fragment
-            android:id="@+id/destination_filter"
-            android:name="com.esp.localjobs.fragments.FilterResultsFragment"
-            android:label="Filter"
-            tools:layout="@layout/fragment_filter_results">
-        <argument
-                android:name="filteringJobs"
-                app:argType="boolean"/>
     </fragment>
 
     <fragment

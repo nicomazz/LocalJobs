@@ -2,7 +2,10 @@ package com.esp.localjobs.fragments.map
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -63,8 +66,24 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        startLocation = filterViewModel.getLocation(context)
+        startLocation = filterViewModel.location
         jobs = jobsViewModel.jobs.value ?: listOf()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapboxMap.removeOnMapClickListener(this)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_navigation, menu)
+        for (i in 0.until(menu.size()))
+            menu.getItem(i).isVisible = false
     }
 
     override fun onMapReady(map: MapboxMap) {
@@ -248,10 +267,5 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
         bubbleView.arrowPosition = (measuredWidth / 2 - 5).toFloat()
 
         return BitmapUtils.viewToBitmap(bubbleView)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapboxMap.removeOnMapClickListener(this)
     }
 }

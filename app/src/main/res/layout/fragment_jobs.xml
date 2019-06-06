@@ -8,19 +8,18 @@
         tools:context=".fragments.JobsFragment">
 
     <LinearLayout
-            android:id="@+id/bottom_sheet"
+            android:id="@+id/jobs_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <View
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:id="@+id/active_filters"
-                android:background="@android:color/holo_green_dark"/>
+        <include layout="@layout/fragment_filter_status"
+                  android:layout_width="match_parent"
+                  android:layout_height="50dp"
+                  android:id="@+id/active_filters"/>
 
         <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/jobList"
+                android:id="@+id/job_list"
                 android:layout_width="match_parent"
                 tools:listitem="@layout/item_job"
                 android:background="@android:color/white"

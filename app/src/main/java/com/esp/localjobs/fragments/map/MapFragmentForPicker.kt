@@ -44,8 +44,14 @@ class MapFragmentForPicker : MapFragment() {
         }
     }
 
+    override fun onDetach() {
+        super.onDetach()
+        mapboxMap.removeOnCameraIdleListener(mapIdleListener)
+    }
+
     private val mapIdleListener = {
-        mapViewModel.setLocation(getCenterLocation())
+        if (isAdded) // checking if fragment is attached (otherwise it would throw IllegalStateException)
+            mapViewModel.setLocation(getCenterLocation())
     }
 
     /**
