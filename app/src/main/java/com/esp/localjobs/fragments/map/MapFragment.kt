@@ -24,11 +24,10 @@ import kotlinx.android.synthetic.main.fragment_map.*
  */
 open class MapFragment : Fragment(), OnMapReadyCallback {
 
+    protected open var startLocation: Location? = null
     protected lateinit var mapboxMap: MapboxMap
-    protected lateinit var mapContainer: MapView
 
-    open var startLocation: Location? = null
-
+    private lateinit var mapContainer: MapView
     private var lastCameraPosition: CameraPosition? = null
 
     override fun onCreateView(
@@ -107,12 +106,12 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onStop() {
         super.onStop()
         mapContainer.onStop()
+        lastCameraPosition = mapboxMap.cameraPosition
     }
 
     override fun onPause() {
         super.onPause()
         mapContainer.onPause()
-        lastCameraPosition = mapboxMap.cameraPosition
     }
 
     override fun onLowMemory() {
