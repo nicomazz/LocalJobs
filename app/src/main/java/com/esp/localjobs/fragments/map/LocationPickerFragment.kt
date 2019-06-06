@@ -41,7 +41,6 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
                 show(fragmentManager, TAG)
             }
 
-        @JvmStatic
         private fun newInstance(startLocation: Location? = null) =
             LocationPickerFragment().apply {
                 arguments = Bundle().apply {
@@ -105,16 +104,18 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
             progress_bar.visibility = View.VISIBLE
             launch {
                 it.city = GeocodingUtils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
-                CoroutineScope(Dispatchers.Main).launch {
-                    if (it.city == null)
-                        Toast.makeText(context, getString(R.string.error_retrieving_location_name), Toast.LENGTH_SHORT)
-                            .show()
-
-                    locationPickedCallback.onLocationPicked(it)
-                    dismiss()
-                }
+                apply(it)
             }
         }
+    }
+
+    private fun apply(location: Location) = CoroutineScope(Dispatchers.Main).launch {
+        if (location.city == null)
+            Toast.makeText(context, getString(R.string.error_retrieving_location_name), Toast.LENGTH_SHORT)
+                .show()
+
+        locationPickedCallback.onLocationPicked(location)
+        dismiss()
     }
 
     /**
