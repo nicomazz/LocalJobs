@@ -151,10 +151,7 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
      */
     private fun onLocationClick() {
         fragmentManager?.let { fm ->
-            with(LocationPickerFragment.newInstance(filterViewModel.location)) {
-                setTargetFragment(this@JobsFragment, 0)
-                show(fm, LocationPickerFragment.TAG)
-            }
+            LocationPickerFragment.newInstanceShow(this, fm, filterViewModel.location)
         }
     }
 

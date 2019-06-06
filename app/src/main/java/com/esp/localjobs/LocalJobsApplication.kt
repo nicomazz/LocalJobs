@@ -5,15 +5,12 @@ import android.content.Context
 
 class LocalJobsApplication : Application() {
 
-    init {
-        instance = this
-    }
-
     companion object {
-        private var instance: LocalJobsApplication? = null
+        lateinit var instance: LocalJobsApplication
+                private set
 
         fun applicationContext(): Context {
-            return instance!!.applicationContext
+            return instance.applicationContext
         }
     }
 

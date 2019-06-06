@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
@@ -28,9 +30,19 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         const val TAG = "LocationPickerFragment"
         const val ARG_START_LATITUDE = "start-location-latitude"
         const val ARG_START_LONGITUDE = "start-location-longitude"
+        const val REQUEST_CODE = 0
+
+        fun newInstanceShow(
+            targetFragment: Fragment,
+            fragmentManager: FragmentManager,
+            startLocation: Location? = null
+        ) = with(newInstance(startLocation)) {
+                setTargetFragment(targetFragment, REQUEST_CODE)
+                show(fragmentManager, TAG)
+            }
 
         @JvmStatic
-        fun newInstance(startLocation: Location? = null) =
+        private fun newInstance(startLocation: Location? = null) =
             LocationPickerFragment().apply {
                 arguments = Bundle().apply {
                     if (startLocation != null) {

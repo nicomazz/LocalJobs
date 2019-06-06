@@ -111,10 +111,7 @@ class FiltersFragment :
             R.id.cancel_button -> dismiss()
             R.id.filter_location_edit_text -> {
                 fragmentManager?.let { fm ->
-                    with(LocationPickerFragment.newInstance(filterViewModel.location)) {
-                        setTargetFragment(this@FiltersFragment, 0)
-                        show(fm, LocationPickerFragment.TAG)
-                    }
+                    LocationPickerFragment.newInstanceShow(this, fm, filterViewModel.location)
                 }
             }
         }

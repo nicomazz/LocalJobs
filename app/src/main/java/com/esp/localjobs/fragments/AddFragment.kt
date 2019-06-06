@@ -86,10 +86,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
     private fun setupLocationEditTextUI() {
         location_edit_text.setOnClickListener {
             fragmentManager?.let { fm ->
-                with(LocationPickerFragment.newInstance()) {
-                    setTargetFragment(this@AddFragment, 0)
-                    show(fm, LocationPickerFragment.TAG)
-                }
+                LocationPickerFragment.newInstanceShow(this, fm)
             }
         }
     }
