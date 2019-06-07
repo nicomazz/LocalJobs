@@ -44,8 +44,8 @@ class MapFragmentForPicker : MapFragment() {
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
+    override fun onDestroyView() {
+        super.onDestroyView()
         mapboxMap.removeOnCameraIdleListener(mapIdleListener)
     }
 

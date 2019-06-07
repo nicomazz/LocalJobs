@@ -81,8 +81,8 @@ open class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, Corout
         setHasOptionsMenu(true)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         mapboxMap.removeOnMapClickListener(this)
     }
 
@@ -92,12 +92,8 @@ open class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, Corout
             menu.getItem(i).isVisible = false
     }
 
-    override fun onMapReady(map: MapboxMap) {
-        super.onMapReady(map)
-        setupMap()
-    }
-
-    private fun setupMap() = mapboxMap.run {
+    override fun onMapReady(map: MapboxMap) = with(map){
+        super.onMapReady(this)
         setStyle(Style.MAPBOX_STREETS) { style ->
 
             setupSource(style)
@@ -194,6 +190,7 @@ open class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, Corout
             )
 
             if (markerFeatures.isNotEmpty()) markerFeatures.first().let { selectedFeature ->
+                // a marker is clicked
                 val jobIdSelected = selectedFeature.getStringProperty(PROPERTY_JOB_ID)
 
                 // search feature inside collection and toggle selection
@@ -212,6 +209,7 @@ open class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, Corout
             )
 
             if (bubbleFeatures.isNotEmpty()) bubbleFeatures.first().let { feature ->
+                // a bubble info view is clicked
                 val jobIdSelected = feature.getStringProperty(PROPERTY_JOB_ID)
 
                 // navigate to JodDetailsFragment
@@ -233,12 +231,8 @@ open class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, Corout
     }
 
     /**
-     * Invoked when the bitmaps have been generated from a view.
+     * Generate bubble info view for each job feature and set each to the corresponding marker
      */
-    private fun setImageGenResults(imageMap: HashMap<String, Bitmap>) {
-        mapboxMap.getStyle { it.addImages(imageMap) }
-    }
-
     private fun generateViewIcon(featureCollection: FeatureCollection, refreshSource: Boolean) {
         val imagesMap = HashMap<String, Bitmap>()
 
@@ -260,6 +254,9 @@ open class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, Corout
         }
     }
 
+    /**
+     * Generate a bitmap of a bubble view with the given content
+     */
     private fun generateBubbleBitmap(bubbleView: BubbleLayout, name: String, salary: String): Bitmap {
         val titleTextView = bubbleView.findViewById(R.id.info_window_title) as TextView
         titleTextView.text = name
@@ -278,5 +275,12 @@ open class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, Corout
         bubbleView.arrowPosition = (measuredWidth / 2 - 5).toFloat()
 
         return BitmapUtils.viewToBitmap(bubbleView)
+    }
+
+    /**
+     * Invoked when the bitmaps have been generated from a view.
+     */
+    private fun setImageGenResults(imageMap: HashMap<String, Bitmap>) {
+        mapboxMap.getStyle { it.addImages(imageMap) }
     }
 }
