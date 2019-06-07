@@ -48,7 +48,6 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
             centerMap()
         }
         mapContainer.getMapAsync(this)
-        Log.d(TAG, "OnViewCreated")
     }
 
     override fun onMapReady(map: MapboxMap) = with(map) {
@@ -96,43 +95,36 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
     override fun onResume() {
         super.onResume()
         mapContainer.onResume()
-        Log.d(TAG, "OnResume")
     }
 
     override fun onStart() {
         super.onStart()
         mapContainer.onStart()
-        Log.d(TAG, "OnStart")
     }
 
     override fun onStop() {
         super.onStop()
         mapContainer.onStop()
         lastCameraPosition = mapboxMap.cameraPosition
-        Log.d(TAG, "OnStop")
     }
 
     override fun onPause() {
         super.onPause()
         mapContainer.onPause()
-        Log.d(TAG, "OnPause")
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
         mapContainer.onLowMemory()
-        Log.d(TAG, "OnLowMemory")
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         mapContainer.onDestroy()
-        Log.d(TAG, "OnDestroyView")
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapContainer.onSaveInstanceState(outState)
-        Log.d(TAG, "OnSaveInstanceState")
     }
 }

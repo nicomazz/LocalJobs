@@ -92,7 +92,7 @@ open class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, Corout
             menu.getItem(i).isVisible = false
     }
 
-    override fun onMapReady(map: MapboxMap) = with(map){
+    override fun onMapReady(map: MapboxMap) = with(map) {
         super.onMapReady(this)
         setStyle(Style.MAPBOX_STREETS) { style ->
 
