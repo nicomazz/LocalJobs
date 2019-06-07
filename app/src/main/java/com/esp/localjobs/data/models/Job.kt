@@ -18,7 +18,7 @@ data class Job(
     var l: List<Double> = listOf(0.0, 0.0), // l[0] -> latitude, l[1] -> longitude
     var city: String? = "",
     var range: Int? = null,
-    var salary: String? = "",
+    var salary: Float? = null,
     var active: Boolean? = false,
     // can't name it isJob, as firebase would push an attribute with name "job" rather than "isJob"
     var itIsJob: Boolean? = true,

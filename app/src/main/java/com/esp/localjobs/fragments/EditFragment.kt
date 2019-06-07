@@ -60,7 +60,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         with(args.job) {
             title_edit_text.setText(title)
             location_edit_text.setText(city)
-            salary_edit_text.setText(salary)
+            salary_edit_text.setText(salary?.toString() ?: "")
             description_edit_text.setText(description)
 
             val isJob = itIsJob
@@ -228,7 +228,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         description = description_edit_text.text.toString()
         l = location.latLng().toList()
         city = location_edit_text.text.toString()
-        salary = salary_edit_text.text.toString()
+        salary = salary_edit_text.text.toString().toFloatOrNull()
         active = true
         itIsJob = userSelectedJob
         uid = args.job.uid

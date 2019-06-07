@@ -46,7 +46,7 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
 
             val filterSalary = salary?.toFloat()
             // TODO change salary property to float
-            val jobSalary: Float? = if(item.salary != null && item.salary != "") item.salary?.toFloat() else null
+            val jobSalary: Float? = item.salary
             if (filterSalary != null && jobSalary != null) {
                 if (filteringJobs && jobSalary < filterSalary) { // remove jobs that pay less than requested
                     return false

@@ -191,7 +191,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         description = description_edit_text.text.toString()
         l = location.latLng().toList()
         city = location_edit_text.text.toString()
-        salary = salary_edit_text.text.toString()
+        salary = salary_edit_text.text.toString().toFloatOrNull()
         active = true
         itIsJob = userSelectedJob
         uid = loginViewModel.getUserId()
