@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.data.repository.JobsRepository
 import com.esp.localjobs.fragments.FiltersFragment.Companion.FILTER_FRAGMENT_TAG
 import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.viewModels.FilterViewModel
@@ -96,12 +97,23 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     private fun loadJobs() {
         // Listen for jobs near user selected location or his last known position.
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
+
+        // todo unify filters and fix salary to float
+        val filter = filterViewModel.activeFilters.value?.let {
+            JobsRepository.JobFilter(
+                filteringJobs = it.filteringJobs,
+                salary = null //it.minSalary.toString()
+            )
+        }
+
         filterViewModel.location?.let {
             jobsViewModel.loadJobs(
                 it,
-                filterViewModel.range.toDouble()
+                filterViewModel.range.toDouble(),
+                filter
             )
-        } ?: jobsViewModel.loadJobs()
+        } ?: jobsViewModel.loadJobs(filter = filter)
+
     }
 
     private fun updateFilterUI() {

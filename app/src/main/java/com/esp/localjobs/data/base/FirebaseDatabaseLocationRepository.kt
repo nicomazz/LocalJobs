@@ -16,6 +16,13 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
 
     val geoFirestore = GeoFirestore(collection)
     var geoQuery: GeoQuery? = null
+
+    /**
+     * Override this function to filter: return false to exclude the item, true to include it.
+     * As we are using GeoFirestore, this function is called for each item  and computed on the local device (shiiet)
+     */
+    abstract fun locationFilter(item: Model): Boolean
+
     // todo substitute this with a better data structure
     val itemsList = ArrayList<Model>()
 
@@ -34,9 +41,8 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
         geoQuery?.addGeoQueryDataEventListener(object : GeoQueryDataEventListener {
             override fun onDocumentEntered(document: DocumentSnapshot?, position: GeoPoint?) {
                 try {
-
                     document?.toObject()?.let {
-                        if (!itemsList.contains(it))
+                        if (!itemsList.contains(it) && locationFilter(it))
                             itemsList.add(it)
                         callback.onSuccess(itemsList)
                     }
