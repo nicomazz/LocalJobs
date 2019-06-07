@@ -40,18 +40,25 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
         with(filter) {
             if (filteringJobs != item.itIsJob) return false
             uid?.let {
-                if (item.uid != it)
-                    return false
+                val jobHasUIDRequested = item.uid == it
+                if (!jobHasUIDRequested) return false
             }
 
             val filterSalary = salary
             val jobSalary: Float? = item.salary
 
+            val filterRequiresSalaryButIsNull = filterSalary != null && jobSalary == null
+            if (filterRequiresSalaryButIsNull) return false
+
+
             if (filterSalary != null && jobSalary != null) {
-                if (filteringJobs && jobSalary < filterSalary) { // remove jobs that pay less than requested
+                val filteringJobsAndSalaryIsNotEnough = filteringJobs && (jobSalary < filterSalary)
+                if (filteringJobsAndSalaryIsNotEnough) {
                     return false
                 }
-                if (!filteringJobs && jobSalary > filterSalary) // remove proposals that asks for more money that requested
+
+                val filteringProposalsAndSalaryIsTooBig = !filteringJobs && (jobSalary > filterSalary)
+                if (filteringProposalsAndSalaryIsTooBig)
                     return false
             }
         }
