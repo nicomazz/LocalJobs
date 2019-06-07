@@ -24,16 +24,16 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
             query = query.whereEqualTo("uid", it)
         }
         filter.salary?.let {
-            if (filter.filteringJobs)
-                query = query.whereGreaterThanOrEqualTo("salary", it)
+            query = if (filter.filteringJobs)
+                query.whereGreaterThanOrEqualTo("salary", it)
             else
-                query = query.whereLessThanOrEqualTo("salary", it)
+                query.whereLessThanOrEqualTo("salary", it)
         }
 
         return query
     }
 
-    override fun locationFilter(item: Job): Boolean {
+    override fun filter(item: Job): Boolean {
         // if filter is not set, don't filter the job
         val filter = jobFilter ?: return true
 
@@ -45,7 +45,7 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
             }
 
             val filterSalary = salary
-            val jobSalary: Float? = item.salary
+            val jobSalary: Float? = item.salary?.toFloatOrNull()
 
             val filterRequiresSalaryButIsNull = filterSalary != null && jobSalary == null
             if (filterRequiresSalaryButIsNull) return false

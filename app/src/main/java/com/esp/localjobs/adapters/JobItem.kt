@@ -39,20 +39,22 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
 }
 
 @BindingAdapter("salary")
-fun TextView.setSalary(salary: Float?) {
-    salary?.let {
+fun TextView.setSalary(salary: String) {
+    val value = salary.toIntOrNull()
+    text = value?.let {
         if (it > 0)
-            "You will earn $salary £"
+            "You will earn $value £"
         else
-            "You have to pay $salary £"
+            "You have to pay $value £"
     } ?: resources.getString(R.string.no_price_info)
 }
 
 @BindingAdapter("salary")
-fun View.setSalary(salary: Float?) {
+fun View.setSalary(salary: String) {
+    val value = salary.toIntOrNull()
     setBackgroundColor(
         context.getColor(
-            if (salary == null || salary > 0)
+            if (value == null || value > 0)
                 android.R.color.holo_green_dark
             else
                 android.R.color.holo_red_dark

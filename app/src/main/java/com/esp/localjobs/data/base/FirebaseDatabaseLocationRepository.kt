@@ -21,7 +21,7 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
      * Override this function to filter: return false to exclude the item, true to include it.
      * As we are using GeoFirestore, this function is called for each item  and computed on the local device (shiiet)
      */
-    abstract fun locationFilter(item: Model): Boolean
+    abstract fun filter(item: Model): Boolean
 
     // todo substitute this with a better data structure
     val itemsList = ArrayList<Model>()
@@ -42,7 +42,7 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
             override fun onDocumentEntered(document: DocumentSnapshot?, position: GeoPoint?) {
                 try {
                     document?.toObject()?.let {
-                        if (!itemsList.contains(it) && locationFilter(it))
+                        if (!itemsList.contains(it) && filter(it))
                             itemsList.add(it)
                         callback.onSuccess(itemsList)
                     }
