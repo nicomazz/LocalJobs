@@ -2,8 +2,11 @@ package com.esp.localjobs.data.repository
 
 import com.esp.localjobs.data.base.FirebaseDatabaseLocationRepository
 import com.esp.localjobs.data.models.Job
+import com.esp.localjobs.data.models.Location
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
+
+const val MAX_RANGE_KM = 100
 
 class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
     override fun getRootNode() = "jobs"
@@ -17,7 +20,6 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
         val filter = jobFilter ?: return null
 
         var query = collection.whereEqualTo("itIsJob", filter.filteringJobs)
-
         filter.uid?.let {
             query = query.whereEqualTo("uid", it)
         }
@@ -36,17 +38,15 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
         val filter = jobFilter ?: return true
 
         with(filter) {
-
             if (filteringJobs != item.itIsJob) return false
-
             uid?.let {
                 if (item.uid != it)
                     return false
             }
 
-            val filterSalary = salary?.toFloat()
-            // TODO change salary property to float
+            val filterSalary = salary
             val jobSalary: Float? = item.salary
+
             if (filterSalary != null && jobSalary != null) {
                 if (filteringJobs && jobSalary < filterSalary) { // remove jobs that pay less than requested
                     return false
@@ -65,7 +65,10 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
     // add filter properties here
     data class JobFilter(
         var uid: String? = null,
-        var filteringJobs: Boolean = true,
-        var salary: String? = null
+        var range: Int = MAX_RANGE_KM,
+        var query: String = "",
+        var location: Location? = null,
+        var filteringJobs: Boolean = true, // used to load jobs or proposal
+        var salary: Float? = null
     )
 }

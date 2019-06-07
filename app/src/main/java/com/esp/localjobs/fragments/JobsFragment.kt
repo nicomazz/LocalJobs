@@ -1,6 +1,5 @@
 package com.esp.localjobs.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -45,11 +44,6 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         return inflater.inflate(R.layout.fragment_jobs, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        loadJobs()
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -89,31 +83,17 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     private fun observeFilters() {
         filterViewModel.activeFilters.observe(viewLifecycleOwner, Observer {
             Log.d("JobFragment", "Filters changed!")
-            loadJobs()
+            loadJobs(it)
             updateFilterUI()
         })
     }
 
-    private fun loadJobs() {
+    private fun loadJobs(filter: JobsRepository.JobFilter) {
         // Listen for jobs near user selected location or his last known position.
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
+        Log.d("filter", filter.toString())
 
-        // todo unify filters and fix salary to float
-        val filter = filterViewModel.activeFilters.value?.let {
-            JobsRepository.JobFilter(
-                filteringJobs = it.filteringJobs,
-                salary = null //it.minSalary.toString()
-            )
-        }
-
-        filterViewModel.location?.let {
-            jobsViewModel.loadJobs(
-                it,
-                filterViewModel.range.toDouble(),
-                filter
-            )
-        } ?: jobsViewModel.loadJobs(filter = filter)
-
+        jobsViewModel.loadJobs(filter)
     }
 
     private fun updateFilterUI() {
@@ -168,6 +148,7 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     }
 
     override fun onLocationPicked(location: Location) {
+        Log.d("filter", "location: $location")
         filterViewModel.setLocation(location)
     }
 }
