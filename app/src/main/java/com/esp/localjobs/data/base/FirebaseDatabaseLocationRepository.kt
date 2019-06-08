@@ -48,7 +48,7 @@ abstract class FirebaseDatabaseLocationRepository<Model> :
                     }
                 } catch (e: RuntimeException) {
                     Log.d("JobsRepository", "Could not deserialize ${document?.data}")
-                    throw e
+                    // throw e
                 }
             }
             override fun onDocumentExited(document: DocumentSnapshot?) {
