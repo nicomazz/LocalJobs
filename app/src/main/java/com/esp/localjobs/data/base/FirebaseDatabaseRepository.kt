@@ -22,7 +22,7 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
     /**
      * Override this filter and use firestore query to include/exclude items
      */
-    abstract fun filter(collection: CollectionReference) : Query?
+    abstract fun filter(collection: CollectionReference): Query?
 
     @Suppress("UNCHECKED_CAST")
     val typeOfT = (javaClass

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioGroup
 import android.widget.SeekBar
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -67,6 +68,9 @@ class FiltersFragment :
     private fun updateView(filters: JobFilter) = with(filters) {
         val checkedId = if (filteringJobs) R.id.radio_job else R.id.radio_proposal
         type_radio_group.check(checkedId)
+        // set hint based on requested type
+        salary_view.hint = if (checkedId == R.id.radio_job) getString(R.string.minimum_salary_text)
+            else getString(R.string.maximum_salary_text)
         range_value.text = range.toString()
         range_seek_bar.progress = range
         min_salary_edit_text.setText(salary?.toString() ?: "")
@@ -136,5 +140,15 @@ class FiltersFragment :
         apply_button.setOnClickListener(this)
         cancel_button.setOnClickListener(this)
         filter_location_edit_text.setOnClickListener(this)
+        type_radio_group.setOnCheckedChangeListener(radioListener)
+    }
+
+    /**
+     * Set salary hint depending on radio checked type.
+     */
+    private val radioListener = RadioGroup.OnCheckedChangeListener { _, checkedId ->
+        val isRadioTypeJobChecked = checkedId == R.id.radio_job
+        salary_view.hint = if (isRadioTypeJobChecked) getString(R.string.minimum_salary_text)
+            else getString(R.string.maximum_salary_text)
     }
 }

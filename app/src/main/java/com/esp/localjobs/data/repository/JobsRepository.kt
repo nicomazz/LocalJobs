@@ -50,7 +50,6 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
             val filterRequiresSalaryButIsNull = filterSalary != null && jobSalary == null
             if (filterRequiresSalaryButIsNull) return false
 
-
             if (filterSalary != null && jobSalary != null) {
                 val filteringJobsAndSalaryIsNotEnough = filteringJobs && (jobSalary < filterSalary)
                 if (filteringJobsAndSalaryIsNotEnough) {
