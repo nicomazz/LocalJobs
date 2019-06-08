@@ -19,6 +19,7 @@
 
         <action
                 android:id="@+id/action_destination_jobs_to_destination_job_details"
+
                 app:destination="@id/destination_job_details"
                 >
             <argument
@@ -61,6 +62,14 @@
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
                 app:popExitAnim="@anim/slide_out_right"/>
+
+        <action
+                android:id="@+id/action_destination_map_to_destination_single_map"
+                app:destination="@id/destination_map_single"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
     <fragment
             android:id="@+id/destination_user_profile"
@@ -89,6 +98,12 @@
                 app:popExitAnim="@anim/slide_out_right"/>
     </fragment>
 
+
+    <fragment
+            android:id="@+id/destination_map_single"
+            android:name="com.esp.localjobs.fragments.map.SingleJobMap"
+            android:label="Map"
+            tools:layout="@layout/fragment_map"/>
 
     <action
             app:enterAnim="@anim/slide_in_right"

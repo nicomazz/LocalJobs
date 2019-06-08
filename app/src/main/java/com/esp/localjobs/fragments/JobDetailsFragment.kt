@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -15,7 +16,6 @@ import androidx.transition.TransitionInflater
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.UserItem
 import com.esp.localjobs.data.models.RequestToJob
-import com.esp.localjobs.fragments.map.SingleJobMap
 import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.viewModels.JobRequestViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
@@ -54,12 +54,32 @@ class JobDetailsFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupSharedElementsTransactions()
+        // This callback will only be called when MyFragment is at least Started.
+        setupBackAnimations()
+    }
+
+    private fun setupBackAnimations() {
+        requireActivity().onBackPressedDispatcher
+            .addCallback(this, OnBackPressedCallback {
+                // Handle the back button event
+                prepareUiToGoBack()
+                true
+            })
+    }
+
+    private fun prepareUiToGoBack() {
+        AnimationsUtils.popout(fabMap)
+        AnimationsUtils.popout(contact_fab) {
+            findNavController().popBackStack()
+        }
     }
 
     private fun setupSharedElementsTransactions() {
-        val trans = TransitionInflater.from(context).inflateTransition(R.transition.slide_and_changebounds_sequential)
+        val trans = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         sharedElementEnterTransition = trans
         sharedElementReturnTransition = trans
+        allowReturnTransitionOverlap = false
+        allowEnterTransitionOverlap = false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,14 +88,19 @@ class JobDetailsFragment : Fragment(), CoroutineScope by MainScope() {
         view.title.text = args.job.title
         view.description.text = args.job.description
 
-        childFragmentManager.beginTransaction().replace(R.id.singleMap, SingleJobMap().apply {
-            arguments = Bundle().apply { putParcelable("job", args.job) }
-        }).commit()
-        AnimationsUtils.popup(singleMap)
-
         setupFabButton()
+        setupMapFab()
         setupInterestedList()
-        AnimationsUtils.popup(contact_fab)
+        AnimationsUtils.popup(contact_fab, 400)
+        AnimationsUtils.popup(fabMap, 200)
+    }
+
+    fun setupMapFab() {
+        fabMap.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_destination_map_to_destination_single_map,
+                Bundle().apply { putParcelable("job", args.job) })
+        }
     }
 
     override fun onDestroyView() {

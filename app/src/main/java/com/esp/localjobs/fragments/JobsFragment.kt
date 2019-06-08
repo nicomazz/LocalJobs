@@ -61,6 +61,7 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
     private fun setupUI(view: View) = with(view) {
         job_list.adapter = adapter
+        job_list.itemAnimator = null
 
         fabAdd.setOnClickListener {
             val extras = FragmentNavigatorExtras(
