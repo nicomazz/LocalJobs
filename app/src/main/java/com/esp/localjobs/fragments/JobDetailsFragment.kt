@@ -15,6 +15,7 @@ import androidx.transition.TransitionInflater
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.UserItem
 import com.esp.localjobs.data.models.RequestToJob
+import com.esp.localjobs.fragments.map.SingleJobMap
 import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.viewModels.JobRequestViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
@@ -59,8 +60,6 @@ class JobDetailsFragment : Fragment(), CoroutineScope by MainScope() {
         val trans = TransitionInflater.from(context).inflateTransition(R.transition.slide_and_changebounds_sequential)
         sharedElementEnterTransition = trans
         sharedElementReturnTransition = trans
-        allowEnterTransitionOverlap = false
-        allowReturnTransitionOverlap = false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,6 +67,11 @@ class JobDetailsFragment : Fragment(), CoroutineScope by MainScope() {
         Picasso.get().load("https://picsum.photos/400").into(view.imageView)
         view.title.text = args.job.title
         view.description.text = args.job.description
+
+        childFragmentManager.beginTransaction().replace(R.id.singleMap, SingleJobMap().apply {
+            arguments = Bundle().apply { putParcelable("job", args.job) }
+        }).commit()
+        AnimationsUtils.popup(singleMap)
 
         setupFabButton()
         setupInterestedList()

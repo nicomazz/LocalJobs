@@ -12,11 +12,19 @@ object AnimationsUtils {
         view.scaleX = 0f
         view.scaleY = 0f
         view.animate()
-            .setStartDelay(500L)
+            .setStartDelay(400)
             .setInterpolator(OvershootInterpolator())
             .alpha(1f)
             .scaleX(1f)
             .scaleY(1f)
+    }
+
+    fun popout(view: View) {
+        view.animate()
+            .setInterpolator(OvershootInterpolator())
+            .alpha(10f)
+            .scaleX(0f)
+            .scaleY(0f)
     }
 
     fun animateToFinalColor(view: View, colorFrom: Int, colorTo: Int, onEnd: () -> Unit = {}) {
