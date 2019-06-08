@@ -75,14 +75,14 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
     private fun observeChangesInJobList() {
         jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
-            Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
+            Log.d(TAG, "reported ${jobs?.size ?: 0} jobs")
             adapter.update(jobs?.map { JobItem(it) } ?: listOf())
         })
     }
 
     private fun observeFilters() {
         filterViewModel.activeFilters.observe(viewLifecycleOwner, Observer {
-            Log.d("JobFragment", "Filters changed!")
+            Log.d(TAG, "Filters changed!")
             loadJobs(it)
             updateFilterUI()
         })
@@ -91,8 +91,8 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     private fun loadJobs(filter: JobsRepository.JobFilter) {
         // Listen for jobs near user selected location or his last known position.
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
-        Log.d("filter", filter.toString())
-
+        Log.d(TAG, filter.toString() + "City:  ${filter.location?.city}, LatLng: ${filter.location?.l}")
+        adapter.clear() // remove cached items (necessary)
         jobsViewModel.loadJobs(filter)
     }
 
@@ -148,7 +148,11 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     }
 
     override fun onLocationPicked(location: Location) {
-        Log.d("filter", "location: $location")
+        Log.d(TAG, "location: $location")
         filterViewModel.setLocation(location)
+    }
+
+    companion object {
+        const val TAG = "JobsFragment"
     }
 }
