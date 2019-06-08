@@ -9,6 +9,11 @@
         <item name="textInputStyle" parent="com.google.android.material.textfield.TextInputLayout">
             @style/Widget.MaterialComponents.TextInputLayout.OutlinedBox
         </item>
+
+        <!-- specify enter and exit transitions -->
+        <item name="android:windowEnterTransition">@android:transition/explode</item>
+        <item name="android:windowExitTransition">@android:transition/explode</item>
+
         <item name="android:windowContentTransitions">true</item>
     </style>
 </resources>

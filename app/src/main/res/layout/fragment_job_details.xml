@@ -6,57 +6,80 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp">
+        android:animateLayoutChanges="true">
 
     <TextView
             android:text="@{job.title}"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/title"
-            style="@style/TextAppearance.AppCompat.Title"
+            style="@style/TextAppearance.AppCompat.Headline"
             android:transitionName="title"
             app:layout_collapseMode="parallax"
             tools:text="this is a title test"
             app:layout_constraintTop_toBottomOf="@+id/imageView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="30dp"/>
+            android:layout_marginTop="15dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"/>
 
     <TextView
             android:text="@{job.description}"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:id="@+id/description"
             android:transitionName="@string/description"
             app:layout_collapseMode="parallax"
             app:layout_constraintTop_toBottomOf="@+id/title"
             tools:text="this is a description test"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/title"
+            app:layout_constraintStart_toStartOf="@+id/title"
             />
 
     <ImageView
-            android:layout_width="200dp"
-            android:layout_height="200dp"
-            tools:srcCompat="@tools:sample/avatars[1]"
+            android:layout_width="0dp"
+            android:layout_height="300dp"
+            tools:srcCompat="@tools:sample/backgrounds/scenic[1]"
             android:id="@+id/imageView"
             android:transitionName="image"
             app:layout_collapseMode="parallax"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            android:scaleType="centerCrop"/>
 
     <!--todo centrare il testo-->
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/contact"
+            android:textColor="@android:color/white"
+            android:textAlignment="center"
+            android:foregroundGravity="center_horizontal"
             android:gravity="center"
             android:id="@+id/contact_fab"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="16dp"/>
 
-    </com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton>
+    <TextView
+            android:id="@+id/interestedTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Interested people:"
+            style="@style/TextAppearance.AppCompat.Body2"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/description"
+            app:layout_constraintEnd_toEndOf="@+id/description"
+            app:layout_constraintStart_toStartOf="@+id/description"/>
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/interestedList"
+            android:layout_width="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/interestedTitle"
+            tools:listitem="@layout/item_user"
+            tools:itemCount="3"
+            android:layout_height="wrap_content"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

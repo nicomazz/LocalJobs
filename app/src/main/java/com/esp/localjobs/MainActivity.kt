@@ -5,12 +5,10 @@ import android.animation.Animator
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewAnimationUtils
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.animation.doOnEnd
@@ -25,8 +23,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.iid.FirebaseInstanceId
+import com.esp.localjobs.utils.AnimationsUtils
+import com.esp.localjobs.utils.FCMHandler
 import com.mapbox.mapboxsdk.Mapbox
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -61,7 +59,7 @@ class MainActivity : AppCompatActivity() {
 
         requestLocationPermissions()
         Mapbox.getInstance(applicationContext, getString(R.string.mabBoxToken))
-        setupNotificationToken()
+        FCMHandler.fetchAndSendFCMToken()
 
         val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
         navController.addOnDestinationChangedListener { _, destination, _ -> onDestinationChangeListener(destination) }
@@ -77,25 +75,6 @@ class MainActivity : AppCompatActivity() {
         setupToolbar(navController, appBarConfiguration)
     }
 
-    private fun setupNotificationToken() {
-        FirebaseInstanceId.getInstance().instanceId
-            .addOnCompleteListener(OnCompleteListener { task ->
-                if (!task.isSuccessful) {
-                    Log.w(TAG, "getInstanceId failed", task.exception)
-                    return@OnCompleteListener
-                }
-
-                // Get new Instance ID token
-                val token = task.result?.token
-
-                // Log and toast
-
-                Log.d(TAG, token)
-                Toast.makeText(baseContext, "Token: " + token, Toast.LENGTH_SHORT).show()
-                MyFirebaseMessagingService.sendRegistrationToServer(token)
-            })
-    }
-
     private fun setupToolbar(navController: NavController, appBarConfiguration: AppBarConfiguration) {
         setSupportActionBar(toolbar)
         findViewById<Toolbar>(R.id.toolbar)
@@ -107,11 +86,9 @@ class MainActivity : AppCompatActivity() {
      * Hide bottom navigation and menu nav items when not in jobs or proposals fragment
      */
     private fun onDestinationChangeListener(destination: NavDestination) {
-        // bottom bar
-
         if (destination.id == R.id.destination_add) {
             val viewRoot = findViewById<View>(android.R.id.content)
-            val cx = (viewRoot.left + viewRoot.right) / 2
+            val cx = viewRoot.right
             val cy = viewRoot.bottom
             animateRevealColorFromCoordinates(cx, cy)
         }
@@ -123,9 +100,16 @@ class MainActivity : AppCompatActivity() {
         val finalRadius = Math.hypot(viewRoot.width.toDouble(), viewRoot.height.toDouble()).toFloat()
 
         val anim = ViewAnimationUtils.createCircularReveal(viewRoot, x, y, 0f, finalRadius)
-        viewRoot.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+        anim.duration = 300
+        val initialColor = ContextCompat.getColor(this, R.color.colorPrimary)
+        viewRoot.setBackgroundColor(initialColor)
         anim.doOnEnd {
-            viewRoot.setBackgroundColor(Color.TRANSPARENT)
+            AnimationsUtils.animateToFinalColor(
+                viewRoot,
+                initialColor,
+                Color.TRANSPARENT
+            )
+
             foreground.visibility = View.VISIBLE
         }
         anim.doOnStart {
@@ -134,6 +118,9 @@ class MainActivity : AppCompatActivity() {
         anim.start()
 
         return anim
+    }
+
+    fun animateToFinalColor() {
     }
 
     /**

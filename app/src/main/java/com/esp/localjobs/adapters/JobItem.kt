@@ -18,7 +18,7 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
 
     override fun bind(viewBinding: ItemJobBinding, position: Int) = with(viewBinding) {
         job = this@JobItem.job
-        Picasso.get().load("https://picsum.photos/200").into(imageView)
+        Picasso.get().load("https://picsum.photos/400").into(imageView)
         cardView.setOnClickListener {
             val extras = FragmentNavigatorExtras(
                 imageView to "image",

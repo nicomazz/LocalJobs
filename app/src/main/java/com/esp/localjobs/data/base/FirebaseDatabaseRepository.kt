@@ -29,7 +29,7 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
         (callback as? FirebaseDatabaseRepositoryCallback<Model>)?.let {
             firebaseCallback = it
             listener = BaseValueEventListener(it, typeOfT)
-        } ?: throw Exception("Couldn't cast repository callback to firebase callback")
+        } ?: throw Exception("Couldn't cast repositoryUserRepository callback to firebase callback")
 
         registration?.remove()
         val dbCollection = collection
