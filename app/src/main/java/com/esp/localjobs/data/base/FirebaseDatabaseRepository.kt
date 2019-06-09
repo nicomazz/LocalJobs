@@ -1,11 +1,15 @@
 package com.esp.localjobs.data.base
 
+import android.util.Log
 import com.esp.localjobs.data.models.Identifiable
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import java.lang.RuntimeException
 import com.google.firebase.firestore.Query
 import java.lang.reflect.ParameterizedType
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository<Model> {
 
@@ -54,6 +58,23 @@ abstract class FirebaseDatabaseRepository<Model : Identifiable> : BaseRepository
             .set(item)
             .addOnSuccessListener { callback?.onSuccess() }
             .addOnFailureListener { e -> callback?.onFailure(e) }
+    }
+
+    override suspend fun get(id: String): Model? = suspendCoroutine { continuation ->
+        collection.document(id).get()
+            .addOnSuccessListener {
+                try {
+                    val item = it.toObject(typeOfT) // if cast fails, throws RuntimeException
+                    continuation.resume(item)
+                } catch (e: RuntimeException) {
+                    Log.e(TAG, "Couldn't convert document: ${e.message}")
+                    continuation.resume(null)
+                }
+            }
+            .addOnFailureListener {
+                Log.e(TAG, "Couldn't retrieve document: ${it.message}")
+                continuation.resume(null)
+            }
     }
 
     override fun update(
