@@ -1,6 +1,5 @@
 package com.esp.localjobs.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -17,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.data.repository.JobsRepository
 import com.esp.localjobs.fragments.FiltersFragment.Companion.FILTER_FRAGMENT_TAG
 import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.viewModels.FilterViewModel
@@ -43,11 +43,6 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     ): View? {
         setHasOptionsMenu(true)
         return inflater.inflate(R.layout.fragment_jobs, container, false)
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        loadJobs()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -85,28 +80,25 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
     private fun observeChangesInJobList() {
         jobsViewModel.jobs.observe(viewLifecycleOwner, Observer { jobs ->
-            Log.d("JobFragment", "reported ${jobs?.size ?: 0} jobs")
+            Log.d(TAG, "reported ${jobs?.size ?: 0} jobs")
             adapter.update(jobs?.map { JobItem(it) } ?: listOf())
         })
     }
 
     private fun observeFilters() {
         filterViewModel.activeFilters.observe(viewLifecycleOwner, Observer {
-            Log.d("JobFragment", "Filters changed!")
-            loadJobs()
+            Log.d(TAG, "Filters changed!")
+            loadJobs(it)
             updateFilterUI()
         })
     }
 
-    private fun loadJobs() {
+    private fun loadJobs(filter: JobsRepository.JobFilter) {
         // Listen for jobs near user selected location or his last known position.
         // If the location is null ( which is an edge case, like a factory reset ) then load all jobs
-        filterViewModel.location?.let {
-            jobsViewModel.loadJobs(
-                it,
-                filterViewModel.range.toDouble()
-            )
-        } ?: jobsViewModel.loadJobs()
+        Log.d(TAG, filter.toString() + "City:  ${filter.location?.city}, LatLng: ${filter.location?.l}")
+        adapter.clear() // remove cached items (necessary)
+        jobsViewModel.loadJobs(filter)
     }
 
     private fun updateFilterUI() {
@@ -161,6 +153,11 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     }
 
     override fun onLocationPicked(location: Location) {
+        Log.d(TAG, "location: $location")
         filterViewModel.setLocation(location)
+    }
+
+    companion object {
+        const val TAG = "JobsFragment"
     }
 }

@@ -42,8 +42,7 @@ interface BaseRepository<T> where T : Identifiable {
     )
 
     fun addListener(
-        callback: RepositoryCallback<T>,
-        filters: JobFilters?
+        callback: RepositoryCallback<T>
     )
 
     interface RepositoryCallback<T> {
@@ -56,5 +55,3 @@ interface BaseRepository<T> where T : Identifiable {
         fun onFailure(e: Exception)
     }
 }
-
-data class JobFilters(val todo: Int)

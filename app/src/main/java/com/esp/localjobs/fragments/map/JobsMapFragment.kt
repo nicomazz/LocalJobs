@@ -133,7 +133,7 @@ open class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, Corout
             ).apply {
                 addStringProperty(PROPERTY_JOB_ID, job.id)
                 addStringProperty(PROPERTY_NAME, job.title)
-                addStringProperty(PROPERTY_SALARY, job.salary)
+                addStringProperty(PROPERTY_SALARY, job.salary.toString())
                 addBooleanProperty(PROPERTY_SELECTED, false)
             }
         }

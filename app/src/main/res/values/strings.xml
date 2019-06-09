@@ -55,4 +55,5 @@
     <string name="fcm_message">New request</string>
     <string name="salary">%1$s £/h</string>
     <string name="contacted">Contacted</string>
+    <string name="maximum_salary_text">Maximum salary</string>
 </resources>
