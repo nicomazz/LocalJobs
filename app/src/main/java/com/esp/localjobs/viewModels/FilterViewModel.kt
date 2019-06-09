@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.esp.localjobs.LocalJobsApplication
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.data.repository.JobsRepository.JobFilter
+import com.esp.localjobs.data.repository.MAX_RANGE_KM
 import com.esp.localjobs.utils.GeocodingUtils
 import com.esp.localjobs.utils.PositionManager
 
@@ -16,8 +18,8 @@ import com.esp.localjobs.utils.PositionManager
  */
 class FilterViewModel : ViewModel() {
 
-    private val _activeFilters = MutableLiveData<Filters>()
-    val activeFilters: LiveData<Filters>
+    private val _activeFilters = MutableLiveData<JobFilter>()
+    val activeFilters: LiveData<JobFilter>
         get() = _activeFilters
 
     val range: Int
@@ -26,17 +28,26 @@ class FilterViewModel : ViewModel() {
     val location: Location?
         get() = activeFilters.value?.location
 
+    val salary: Float?
+        get() = activeFilters.value?.salary
+
     init {
         val context = LocalJobsApplication.applicationContext()
         PositionManager.getLastKnownPosition(context)?.let {
             val city = GeocodingUtils.coordinatesToCity(context, it.latitude, it.longitude)
             val location = Location(it.latitude, it.longitude, city)
-            setFilters(Filters(location = location))
-        } ?: setFilters(Filters())
+
+            setFilters(JobFilter(
+                location = location,
+                filteringJobs = true,
+                range = range,
+                salary = salary
+            ))
+        } ?: setFilters(JobFilter(filteringJobs = true, range = range, salary = salary))
     }
 
-    fun setFilters(newfilters: Filters) {
-        _activeFilters.postValue(newfilters)
+    fun setFilters(newFilters: JobFilter) {
+        _activeFilters.postValue(newFilters)
     }
 
     fun setQuery(newQuery: String) {
@@ -55,13 +66,3 @@ class FilterViewModel : ViewModel() {
         )
     }
 }
-
-const val MAX_RANGE_KM = 100
-
-data class Filters(
-    var range: Int = MAX_RANGE_KM,
-    var query: String = "",
-    var location: Location? = null,
-    var minSalary: Int = 0,
-    var filteringJobs: Boolean = true // used to load jobs or proposal
-)

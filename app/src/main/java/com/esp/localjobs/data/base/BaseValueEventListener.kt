@@ -6,11 +6,10 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.QuerySnapshot
 
 class BaseValueEventListener<Model>(
-    private val callback: FirebaseDatabaseRepository.FirebaseDatabaseRepositoryCallback<Model>,
+    private val callback: BaseRepository.RepositoryCallback<Model>,
     private val clazz: Class<Model>
 ) : EventListener<QuerySnapshot> {
     override fun onEvent(results: QuerySnapshot?, e: FirebaseFirestoreException?) {
-
         e?.let {
             callback.onError(it)
             return

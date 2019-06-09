@@ -4,15 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioGroup
 import android.widget.SeekBar
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.data.repository.JobsRepository.JobFilter
+import com.esp.localjobs.data.repository.MAX_RANGE_KM
 import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.viewModels.FilterViewModel
-import com.esp.localjobs.viewModels.Filters
-import com.esp.localjobs.viewModels.MAX_RANGE_KM
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.android.synthetic.main.fragment_add.range_value
 import kotlinx.android.synthetic.main.fragment_filters.*
@@ -64,12 +65,15 @@ class FiltersFragment :
         filter_location_edit_text.setText(locationText)
     }
 
-    private fun updateView(filters: Filters) = with(filters) {
+    private fun updateView(filters: JobFilter) = with(filters) {
         val checkedId = if (filteringJobs) R.id.radio_job else R.id.radio_proposal
         type_radio_group.check(checkedId)
+        // set hint based on requested type
+        salary_view.hint = if (checkedId == R.id.radio_job) getString(R.string.minimum_salary_text)
+            else getString(R.string.maximum_salary_text)
         range_value.text = range.toString()
         range_seek_bar.progress = range
-        min_salary_edit_text.setText(minSalary.toString())
+        min_salary_edit_text.setText(salary?.toString() ?: "")
         location?.let {
             val locationText =
                 if (it.city != null) it.city
@@ -83,10 +87,10 @@ class FiltersFragment :
         val userSelectedJob = type_radio_group.checkedRadioButtonId == R.id.radio_job
 
         filterViewModel.setFilters(
-            Filters(
+            JobFilter(
                 filteringJobs = userSelectedJob,
                 range = range_value.text.toString().toInt(),
-                minSalary = min_salary_edit_text.text.toString().toFloat().toInt(),
+                salary = min_salary_edit_text.text.toString().toFloatOrNull(),
                 location = userSelectedLocation ?: filterViewModel.location
             )
         )
@@ -136,5 +140,15 @@ class FiltersFragment :
         apply_button.setOnClickListener(this)
         cancel_button.setOnClickListener(this)
         filter_location_edit_text.setOnClickListener(this)
+        type_radio_group.setOnCheckedChangeListener(radioListener)
+    }
+
+    /**
+     * Set salary hint depending on radio checked type.
+     */
+    private val radioListener = RadioGroup.OnCheckedChangeListener { _, checkedId ->
+        val isRadioTypeJobChecked = checkedId == R.id.radio_job
+        salary_view.hint = if (isRadioTypeJobChecked) getString(R.string.minimum_salary_text)
+            else getString(R.string.maximum_salary_text)
     }
 }
