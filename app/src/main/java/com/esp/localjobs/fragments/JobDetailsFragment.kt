@@ -166,7 +166,6 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         }
     }
 
-
     private suspend fun hasAlreadySentInterest(userId: String) = withContext(Dispatchers.IO) {
         jobRequestViewModel.hasSentInterest(userId, jobId)
     }

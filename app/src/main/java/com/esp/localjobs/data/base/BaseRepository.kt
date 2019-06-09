@@ -17,7 +17,6 @@ interface BaseRepository<T> where T : Identifiable {
         callback: EventCallback? = null
     )
 
-
     suspend fun get(id: String): T?
 
     /**

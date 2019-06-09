@@ -11,10 +11,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
-import androidx.navigation.Navigation
 import com.esp.localjobs.data.models.Job
-import com.esp.localjobs.fragments.JobDetailsFragment
-import com.esp.localjobs.fragments.JobDetailsFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -139,7 +136,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         return PendingIntent.getActivity(
             applicationContext, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
-
     }
 
     companion object {
