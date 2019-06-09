@@ -7,7 +7,11 @@ import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
+import com.esp.localjobs.data.models.Job
+import com.esp.localjobs.fragments.JobDetailsFragment
+import com.esp.localjobs.fragments.JobDetailsFragmentDirections
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -78,11 +82,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         messageBody: String?,
         jobId: String?
     ) {
+        val intentArgs = bundleOf(
+            "job" to Job(id = jobId!!),
+            "mustBeFetched" to true
+        )
+
         // deep link: see https://developer.android.com/guide/navigation/navigation-deep-link
         val pendingIntent = NavDeepLinkBuilder(applicationContext)
             .setGraph(R.navigation.nav_graph)
             .setDestination(R.id.destination_job_details)
-            // .setArguments(jobId) TODO get the job, and pass it here
+            .setArguments(intentArgs)
             .createPendingIntent()
 
         val channelId = getString(R.string.default_notification_channel_id)

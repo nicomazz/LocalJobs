@@ -97,8 +97,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Picasso.get().load("https://picsum.photos/400").into(view.imageView)
-        view.title.text = args.job.title
-        view.description.text = args.job.description
+        showJob(view)
         setupTransitionName(view)
         setupFabButton(view)
         setupMapFab(view)
@@ -164,6 +163,17 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
                 request
             )
         }
+    }
+
+    private fun showJob(view: View) = launch {
+        // TODO fetch job as soon as possible
+        // replace true with a safe arg
+        val job = if (args.mustBeFetched) jobRequestViewModel.getJob(jobId) else args.job
+        if (!isActive)
+            return@launch
+
+        view.title.text = job?.title ?: ""
+        view.description.text = job?.description ?: ""
     }
 
     // todo only for the person who created the job
