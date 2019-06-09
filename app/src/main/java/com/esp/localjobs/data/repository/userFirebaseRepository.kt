@@ -5,7 +5,6 @@ import com.esp.localjobs.data.base.IUserRepository
 import com.esp.localjobs.data.models.User
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
@@ -35,15 +34,13 @@ object userFirebaseRepository : IUserRepository {
                 }
         }
 
-    override suspend fun addUser(u: User): Unit =
-        suspendCancellableCoroutine { continuation ->
-            getUserDocument(u.uid).set(u)
-                .addOnSuccessListener {
-                    Log.d(TAG, "User information set")
-                    continuation.completeResume(1)
-                }
-                .addOnFailureListener {
-                    continuation.cancel(it)
-                }
-        }
+    override fun addUser(u: User) {
+        getUserDocument(u.uid).set(u)
+            .addOnSuccessListener {
+                Log.d(TAG, "User information set")
+            }
+            .addOnFailureListener {
+                it.printStackTrace()
+            }
+    }
 }

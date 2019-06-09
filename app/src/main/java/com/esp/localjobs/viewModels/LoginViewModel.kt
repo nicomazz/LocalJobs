@@ -13,7 +13,6 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 
 @UseExperimental(InternalCoroutinesApi::class)
 class LoginViewModel : ViewModel(), CoroutineScope by MainScope() {
@@ -85,9 +84,7 @@ class LoginViewModel : ViewModel(), CoroutineScope by MainScope() {
 
     private fun storeNameAndImage() {
         FirebaseAuth.getInstance().currentUser?.toUser()?.let {
-            launch {
-                userFirebaseRepository.addUser(it)
-            }
+            userFirebaseRepository.addUser(it)
         }
     }
 }
