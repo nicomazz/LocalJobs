@@ -20,12 +20,14 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
         job = this@JobItem.job
         Picasso.get().load("https://picsum.photos/400").into(imageView)
         cardView.clipToOutline = false // without this, shared elements are cropped
-
+        imageView.transitionName = "image_${this@JobItem.job.uid}"
+        title.transitionName = "title_${this@JobItem.job.uid}"
+        description.transitionName = "description_${this@JobItem.job.uid}"
         cardView.setOnClickListener {
             val extras = FragmentNavigatorExtras(
-                imageView to "image",
-                title to "title",
-                description to "description"
+                imageView to "image_${this@JobItem.job.uid}",
+                title to "title_${this@JobItem.job.uid}",
+                description to "description_${this@JobItem.job.uid}"
             )
             val action =
                 JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(this@JobItem.job)

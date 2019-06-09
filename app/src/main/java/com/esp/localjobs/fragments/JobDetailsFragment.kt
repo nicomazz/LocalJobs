@@ -25,9 +25,13 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_job_details.*
 import kotlinx.android.synthetic.main.fragment_job_details.view.*
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Fragment used to display the details of a job.
@@ -36,11 +40,16 @@ import kotlinx.coroutines.launch
  */
 
 @InternalCoroutinesApi
-class JobDetailsFragment : Fragment(), CoroutineScope by MainScope() {
+class JobDetailsFragment : Fragment(), CoroutineScope {
     private val args: JobDetailsFragmentArgs by navArgs()
     private val loginViewModel: LoginViewModel by activityViewModels()
     private val jobRequestViewModel: JobRequestViewModel by activityViewModels()
     private val jobId by lazy { args.job.id }
+    private val job by lazy { args.job }
+
+    private lateinit var mJob: Job
+    override val coroutineContext: CoroutineContext
+        get() = mJob + Dispatchers.Main
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,7 +62,10 @@ class JobDetailsFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        mJob = Job()
         setupSharedElementsTransactions()
+        postponeEnterTransition()
+
         // This callback will only be called when MyFragment is at least Started.
         setupBackAnimations()
     }
@@ -87,16 +99,23 @@ class JobDetailsFragment : Fragment(), CoroutineScope by MainScope() {
         Picasso.get().load("https://picsum.photos/400").into(view.imageView)
         view.title.text = args.job.title
         view.description.text = args.job.description
-
-        setupFabButton()
-        setupMapFab()
+        setupTransitionName(view)
+        setupFabButton(view)
+        setupMapFab(view)
         setupInterestedList()
         AnimationsUtils.popup(contact_fab, 400)
         AnimationsUtils.popup(fabMap, 200)
+        startPostponedEnterTransition()
     }
 
-    fun setupMapFab() {
-        fabMap.setOnClickListener {
+    private fun setupTransitionName(view: View) {
+        view.imageView.transitionName = "image_${job.uid}"
+        view.title.transitionName = "title_${job.uid}"
+        view.description.transitionName = "description_${job.uid}"
+    }
+
+    fun setupMapFab(view: View) {
+        view.fabMap.setOnClickListener {
             findNavController().navigate(
                 R.id.action_destination_map_to_destination_single_map,
                 Bundle().apply { putParcelable("job", args.job) })
@@ -113,16 +132,18 @@ class JobDetailsFragment : Fragment(), CoroutineScope by MainScope() {
      * Setup contact fab button.
      * If the user isn't logged or the user owns the job, the button is set to invisible.
      */
-    private fun setupFabButton() = launch {
+    private fun setupFabButton(view: View) = launch {
         val currentUserId = loginViewModel.getUserId()
         val jobOwner = args.job.uid
         if (currentUserId == null || args.job.uid == null) {
             return@launch
         }
 
-        if (jobRequestViewModel.hasSentInterest(currentUserId, jobId)) {
-            contact_fab.text = getString(R.string.contacted)
-            contact_fab.isEnabled = false
+        val hasSentInterest = jobRequestViewModel.hasSentInterest(currentUserId, jobId)
+        if (!isActive) return@launch
+        if (hasSentInterest) {
+            view.contact_fab.text = getString(R.string.contacted)
+            view.contact_fab.isEnabled = false
         }
         /*
          //commented for testing
@@ -137,7 +158,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope by MainScope() {
             interested_user_id = currentUserId,
             job_id = args.job.id
         )
-        contact_fab.setOnClickListener {
+        view.contact_fab.setOnClickListener {
             jobRequestViewModel.addRequest(
                 args.job.id,
                 request
@@ -175,5 +196,10 @@ class JobDetailsFragment : Fragment(), CoroutineScope by MainScope() {
             findNavController().navigate(action.actionId, action.arguments)
             true
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        coroutineContext.cancelChildren()
     }
 }
