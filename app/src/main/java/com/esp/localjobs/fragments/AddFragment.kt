@@ -13,10 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.esp.localjobs.viewModels.LoginViewModel
-import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.AUTHENTICATED
-import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
-import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Localizable
@@ -24,6 +20,10 @@ import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.utils.LoadingViewDialog
 import com.esp.localjobs.viewModels.AddViewModel
+import com.esp.localjobs.viewModels.LoginViewModel
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.AUTHENTICATED
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_add.*
 

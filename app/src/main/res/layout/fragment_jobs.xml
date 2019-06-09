@@ -13,15 +13,19 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <include layout="@layout/fragment_filter_status"
-                  android:layout_width="match_parent"
-                  android:layout_height="50dp"
-                  android:id="@+id/active_filters"/>
+        <include
+                layout="@layout/fragment_filter_status"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+
+                android:id="@+id/active_filters"/>
 
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/job_list"
                 android:layout_width="match_parent"
                 tools:listitem="@layout/item_job"
+                android:clipToPadding="false"
+                android:clipChildren="false"
                 android:background="@android:color/white"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 android:layout_height="match_parent"/>
@@ -37,6 +41,7 @@
             android:layout_margin="16dp"
             app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@android:drawable/ic_input_add"
+            android:transitionName="toolbar"
             android:layout_gravity="end|bottom"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

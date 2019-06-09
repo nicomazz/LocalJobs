@@ -11,6 +11,7 @@ import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
@@ -55,9 +56,13 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
     private fun setupUI(view: View) = with(view) {
         job_list.adapter = adapter
+        job_list.itemAnimator = null
 
         fabAdd.setOnClickListener {
-            findNavController().navigate(R.id.destination_add)
+            val extras = FragmentNavigatorExtras(
+                fabAdd to "toolbar"
+            )
+            findNavController().navigate(R.id.destination_add, null, null, extras)
         }
         filters_button.setOnClickListener {
             FiltersFragment().show(fragmentManager!!, FILTER_FRAGMENT_TAG)

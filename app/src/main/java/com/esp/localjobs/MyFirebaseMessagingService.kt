@@ -44,7 +44,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             sendNotification(
                 title = it.title,
                 messageBody = it.body,
-                jobId = it.tag)
+                jobId = it.tag
+            )
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -133,7 +134,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     .document(currentUserId).set(
                         mapOf(
                             "id" to token
-                        // todo valutare se aggiungere anche il nome
+                            // todo valutare se aggiungere anche il nome
                         )
                     ).addOnSuccessListener {
                         Log.d("messaging", "new token set with success! $token")

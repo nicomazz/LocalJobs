@@ -42,17 +42,23 @@ class UserProfileFragment : Fragment() {
 
         name.text = getString(R.string.not_logged_in)
         logout.visibility = View.GONE
+        login.visibility = View.VISIBLE
+
         FirebaseAuth.getInstance().currentUser?.run {
             name.text = displayName
             mail.text = email
             phone.text = phoneNumber
             logout.visibility = View.VISIBLE
+            login.visibility = View.GONE
             Picasso.get().load(photoUrl).transform(CropCircleTransformation()).into(profilePicture)
         }
 
         logout.setOnClickListener {
             viewModel.logOut()
             findNavController().popBackStack()
+        }
+        login.setOnClickListener {
+            findNavController().navigate(R.id.destination_login)
         }
     }
 

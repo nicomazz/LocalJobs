@@ -43,7 +43,7 @@ import kotlin.coroutines.CoroutineContext
  * A fragment to display a map showing the locations of the  loaded jobs.
  * @author Francesco Pham
  */
-class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineScope {
+open class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineScope {
     override val coroutineContext: CoroutineContext =
         Dispatchers.Default
 
@@ -66,8 +66,14 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        startLocation = filterViewModel.location
-        jobs = jobsViewModel.jobs.value ?: listOf()
+        startLocation = provideStartLocation()
+        jobs = getJobsToDisplay()
+    }
+
+    open fun provideStartLocation() = filterViewModel.location
+
+    open fun getJobsToDisplay(): List<Job> {
+        return jobsViewModel.jobs.value ?: listOf()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -212,10 +218,15 @@ class JobsMapFragment : MapFragment(), MapboxMap.OnMapClickListener, CoroutineSc
                 val selectedJob = jobs.first { it.id == jobIdSelected }
                 val action =
                     JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(selectedJob)
-                findNavController().navigate(
-                    R.id.action_destination_map_to_destination_job_details,
-                    action.arguments
-                )
+                try {
+                    findNavController().navigate(
+                        R.id.action_destination_map_to_destination_job_details,
+                        action.arguments
+                    )
+                } catch (e: IllegalArgumentException) {
+                    // it happens when called from singlejobmap
+                    e.printStackTrace()
+                }
             }
         }
         false
