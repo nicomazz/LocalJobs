@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.esp.localjobs.data.base.IJobRequestRepository
 import com.esp.localjobs.data.models.RequestToJob
+import com.esp.localjobs.data.repository.JobsRepository
 import com.esp.localjobs.data.repository.jobRequesFirebaseRepository
 import kotlinx.coroutines.InternalCoroutinesApi
 
@@ -28,6 +29,9 @@ class JobRequestViewModel : ViewModel() {
         )
 
     suspend fun hasSentInterest(userId: String, jobId: String) = requestRepository.hasSentInterest(userId, jobId)
+
+    // todo convert jobs rep to obj
+    suspend fun getJob(id: String) = JobsRepository().get(id)
 
     fun stopListeningForChanges(jobId: String) =
         requestRepository.stopListeningForJobId(jobId)

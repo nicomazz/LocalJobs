@@ -23,6 +23,9 @@ exports.sendNotification = functions.firestore.document("/jobs/{job_id}/requests
                title: "New interest from "+name,
                body: "Go to Localjob and find out how to contact him",
                tag: job_id,
+            },
+            data : {
+               job_id : job_id
             }
          };
          admin.messaging().sendToDevice(fcm_id,payload)

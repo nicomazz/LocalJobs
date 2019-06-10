@@ -23,6 +23,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
+import com.esp.localjobs.data.models.Job
+import com.esp.localjobs.fragments.JobsFragmentDirections
 import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.utils.FCMHandler
 import com.mapbox.mapboxsdk.Mapbox
@@ -72,6 +74,11 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
+        intent.extras?.getString("job_id")?.let {
+            val action =
+                JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(Job(id = it), mustBeFetched = true)
+            navController.navigate(R.id.action_destination_jobs_to_destination_job_details, action.arguments)
+        }
         setupToolbar(navController, appBarConfiguration)
     }
 

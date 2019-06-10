@@ -59,7 +59,7 @@
 
 
             <TextView
-                    android:text="@{job.title}"
+                    android:text="@string/loading"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/title"
@@ -73,7 +73,7 @@
                     app:layout_constraintStart_toStartOf="parent"/>
 
             <TextView
-                    android:text="@{job.description}"
+                    android:text="@string/loading"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/description"

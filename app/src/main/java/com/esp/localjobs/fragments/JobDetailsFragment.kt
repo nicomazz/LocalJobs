@@ -31,6 +31,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -97,8 +98,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         Picasso.get().load("https://picsum.photos/400").into(view.imageView)
-        view.title.text = args.job.title
-        view.description.text = args.job.description
+        showJob(view)
         setupTransitionName(view)
         setupFabButton(view)
         setupMapFab(view)
@@ -139,7 +139,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
             return@launch
         }
 
-        val hasSentInterest = jobRequestViewModel.hasSentInterest(currentUserId, jobId)
+        val hasSentInterest = hasAlreadySentInterest(currentUserId)
         if (!isActive) return@launch
         if (hasSentInterest) {
             view.contact_fab.text = getString(R.string.contacted)
@@ -152,18 +152,37 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
              return
          }*/
 
-        val request = RequestToJob(
-            job_publisher_id = jobOwner ?: "",
-            name = loginViewModel.getUserName() ?: "",
-            interested_user_id = currentUserId,
-            job_id = args.job.id
-        )
         view.contact_fab.setOnClickListener {
+            val request = RequestToJob(
+                job_publisher_id = jobOwner ?: "",
+                name = loginViewModel.getUserName() ?: "",
+                interested_user_id = currentUserId,
+                job_id = args.job.id
+            )
             jobRequestViewModel.addRequest(
                 args.job.id,
                 request
             )
         }
+    }
+
+    private suspend fun hasAlreadySentInterest(userId: String) = withContext(Dispatchers.IO) {
+        jobRequestViewModel.hasSentInterest(userId, jobId)
+    }
+
+    private fun showJob(view: View) = launch {
+        // TODO fetch job as soon as possible
+        // replace true with a safe arg
+        val job = getOrFetchJob()
+
+        if (!isActive) return@launch
+
+        view.title.text = job?.title ?: ""
+        view.description.text = job?.description ?: ""
+    }
+
+    private suspend fun getOrFetchJob() = withContext(Dispatchers.IO) {
+        if (args.mustBeFetched) jobRequestViewModel.getJob(jobId) else args.job
     }
 
     // todo only for the person who created the job

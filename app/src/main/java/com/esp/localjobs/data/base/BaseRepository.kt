@@ -17,6 +17,8 @@ interface BaseRepository<T> where T : Identifiable {
         callback: EventCallback? = null
     )
 
+    suspend fun get(id: String): T?
+
     /**
      * Overwrite a document in the collection with an ID.
      * @param id document id

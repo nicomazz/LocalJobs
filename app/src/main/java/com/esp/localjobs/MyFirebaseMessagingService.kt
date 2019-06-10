@@ -2,12 +2,16 @@ package com.esp.localjobs
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.os.bundleOf
 import androidx.navigation.NavDeepLinkBuilder
+import com.esp.localjobs.data.models.Job
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -78,12 +82,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         messageBody: String?,
         jobId: String?
     ) {
-        // deep link: see https://developer.android.com/guide/navigation/navigation-deep-link
-        val pendingIntent = NavDeepLinkBuilder(applicationContext)
-            .setGraph(R.navigation.nav_graph)
-            .setDestination(R.id.destination_job_details)
-            // .setArguments(jobId) TODO get the job, and pass it here
-            .createPendingIntent()
 
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
@@ -93,7 +91,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setContentText(messageBody)
             .setAutoCancel(true)
             .setSound(defaultSoundUri)
-            .setContentIntent(pendingIntent)
+            .apply {
+                if (jobId != null) {
+                    val jobDeepLink = createJobDeepLink(jobId)
+                    setContentIntent(jobDeepLink)
+                } else { // just start the app
+                    val applicationIntent = createApplicationIntent()
+                    setContentIntent(applicationIntent)
+                }
+            }
 
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -108,6 +114,28 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         }
 
         notificationManager.notify(1 /* ID of notification */, notificationBuilder.build())
+    }
+
+    private fun createJobDeepLink(jobId: String): PendingIntent {
+        val intentArgs = bundleOf(
+            "job" to Job(id = jobId),
+            "mustBeFetched" to true
+        )
+
+        return NavDeepLinkBuilder(applicationContext)
+            .setGraph(R.navigation.nav_graph)
+            .setDestination(R.id.destination_job_details)
+            .setArguments(intentArgs)
+            .createPendingIntent()
+    }
+
+    private fun createApplicationIntent(): PendingIntent {
+        val notifyIntent = Intent(applicationContext, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        return PendingIntent.getActivity(
+            applicationContext, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
 
     companion object {
