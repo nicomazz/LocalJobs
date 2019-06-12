@@ -17,12 +17,14 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
     var jobFilter: JobFilter? = null
 
     override fun filter(collection: CollectionReference): Query? {
+        // firebase doesn't allow to filter using a "contains", so filter by query is not implemented here
         val filter = jobFilter ?: return null
 
         var query = collection.whereEqualTo("itIsJob", filter.filteringJobs)
         filter.uid?.let {
             query = query.whereEqualTo("uid", it)
         }
+
         filter.salary?.let {
             query = if (filter.filteringJobs)
                 query.whereGreaterThanOrEqualTo("salary", it)
@@ -44,6 +46,7 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
                 if (!jobHasUIDRequested) return false
             }
 
+            // get jobs with minimum / maximum salary
             val filterSalary = salary
             val jobSalary: Float? = item.salary?.toFloatOrNull()
 
@@ -60,6 +63,13 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
                 if (filteringProposalsAndSalaryIsTooBig)
                     return false
             }
+
+            query?.let {
+                item.title?.run {
+                    if (!contains(it, ignoreCase = true))
+                        return false
+                }
+            }
         }
         return true
     }
@@ -72,7 +82,7 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
     data class JobFilter(
         var uid: String? = null,
         var range: Int = MAX_RANGE_KM,
-        var query: String = "",
+        var query: String? = null,
         var location: Location? = null,
         var filteringJobs: Boolean = true, // used to load jobs or proposal
         var salary: Float? = null

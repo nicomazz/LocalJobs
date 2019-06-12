@@ -122,25 +122,20 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
             requestFocus()
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
-                    if (query != null) onSearchClick(query)
+                    query?.let {
+                        filterViewModel.setQuery(it)
+                    }
                     return true
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
+                    newText?.let {
+                        filterViewModel.setQuery(it)
+                    }
                     return true
                 }
             })
         }
-    }
-
-    /**
-     * Update filter viewmodel and refresh jobs
-     * Set filterViewModel.userRequestedFilteredResults to true to notify the fragments that the user requested
-     * a filtered search.
-     */
-    private fun onSearchClick(query: String) {
-        filterViewModel.setQuery(query)
-        // loadJobs() this is done automatically thanks to the filterLiveData
     }
 
     /**
