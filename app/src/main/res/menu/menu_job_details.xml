@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+            android:id="@+id/menu_item_share"
+            android:title="Share"
+            app:showAsAction="ifRoom"
+            android:icon="@drawable/ic_share_white_24dp" />
+
+    <item
             android:id="@+id/menu_edit_item"
             android:title="edit_item"
             android:icon="@drawable/ic_edit_color_white_24dp"

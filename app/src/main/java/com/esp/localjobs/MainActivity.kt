@@ -5,6 +5,7 @@ import android.animation.Animator
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -29,6 +30,7 @@ import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.utils.FCMHandler
 import com.mapbox.mapboxsdk.Mapbox
 import kotlinx.android.synthetic.main.activity_main.*
+import android.content.Intent
 
 /*
 Resources:
@@ -74,11 +76,8 @@ class MainActivity : AppCompatActivity() {
             )
         )
 
-        intent.extras?.getString("job_id")?.let {
-            val action =
-                JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(Job(id = it), mustBeFetched = true)
-            navController.navigate(R.id.action_destination_jobs_to_destination_job_details, action.arguments)
-        }
+        handleIntent(intent)
+
         setupToolbar(navController, appBarConfiguration)
     }
 
@@ -169,6 +168,24 @@ class MainActivity : AppCompatActivity() {
             REQUEST_LOCATION_PERMISSION_CODE -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED)
                     finish()
+            }
+        }
+    }
+
+    private fun handleIntent(intent: Intent) {
+        val navController = Navigation.findNavController(this, R.id.nav_host_fragment)
+        intent.extras?.getString("job_id")?.let {
+            val action =
+                JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(Job(id = it), mustBeFetched = true)
+            navController.navigate(R.id.action_destination_jobs_to_destination_job_details, action.arguments)
+        }
+
+        intent.data?.let {
+            Log.d("intent", "$it - param:  ${it.getQueryParameter("job_id")}")
+            it.getQueryParameter("job_id")?.let { jobId ->
+                val action =
+                    JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(Job(id = jobId), mustBeFetched = true)
+                navController.navigate(R.id.action_destination_jobs_to_destination_job_details, action.arguments)
             }
         }
     }

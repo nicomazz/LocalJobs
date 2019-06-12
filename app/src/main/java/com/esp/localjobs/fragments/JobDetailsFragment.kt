@@ -1,5 +1,6 @@
 package com.esp.localjobs.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -204,16 +205,29 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         // hide other icons (like current user profile
         menu.forEach { it.isVisible = false }
-        // if the user owns the job allow him to edit it
-        if (args.job.uid != loginViewModel.getUserId())
-            return
-        inflater.inflate(R.menu.menu_edit, menu)
-        val editMenu = menu.findItem(R.id.menu_edit_item)
-        editMenu.setOnMenuItemClickListener {
-            val action =
-                JobDetailsFragmentDirections.actionDestinationJobDetailsToDestinationEdit(args.job)
-            findNavController().navigate(action.actionId, action.arguments)
-            true
+        inflater.inflate(R.menu.menu_job_details, menu)
+
+        menu.findItem(R.id.menu_edit_item).also {
+            it.setOnMenuItemClickListener {
+                val action =
+                    JobDetailsFragmentDirections.actionDestinationJobDetailsToDestinationEdit(args.job)
+                findNavController().navigate(action.actionId, action.arguments)
+                true
+            }
+            if (args.job.uid != loginViewModel.getUserId())
+                it.isVisible = false
+        }
+
+        menu.findItem(R.id.menu_item_share).also {
+            it.setOnMenuItemClickListener {
+                val sendIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, "http://esp.localjobs.app/job?job_id=${args.job.id}")
+                    type = "text/plain"
+                }
+                startActivity(Intent.createChooser(sendIntent, getString(R.string.share_job_title)))
+                true
+            }
         }
     }
 
