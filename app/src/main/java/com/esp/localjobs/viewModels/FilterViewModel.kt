@@ -31,6 +31,9 @@ class FilterViewModel : ViewModel() {
     val salary: Float?
         get() = activeFilters.value?.salary
 
+    val query: String?
+        get() = activeFilters.value?.query
+
     init {
         val context = LocalJobsApplication.applicationContext()
         PositionManager.getLastKnownPosition(context)?.let {

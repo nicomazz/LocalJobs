@@ -88,6 +88,7 @@ class FiltersFragment :
 
         filterViewModel.setFilters(
             JobFilter(
+                query = filterViewModel.query, // preserve query value
                 filteringJobs = userSelectedJob,
                 range = range_value.text.toString().toInt(),
                 salary = min_salary_edit_text.text.toString().toFloatOrNull(),
