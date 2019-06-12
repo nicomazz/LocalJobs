@@ -65,9 +65,10 @@ class JobsRepository : FirebaseDatabaseLocationRepository<Job>() {
             }
 
             query?.let {
-                val itemTitle = item.title
-                if (itemTitle != null && !itemTitle.contains(it, true))
-                    return false
+                item.title?.run {
+                    if (!contains(it, ignoreCase = true))
+                        return false
+                }
             }
         }
         return true

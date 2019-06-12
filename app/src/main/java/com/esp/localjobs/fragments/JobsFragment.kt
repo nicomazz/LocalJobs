@@ -130,7 +130,7 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
                 override fun onQueryTextChange(newText: String?): Boolean {
                     newText?.let {
-                        filterViewModel.setQuery(newText)
+                        filterViewModel.setQuery(it)
                     }
                     return true
                 }
