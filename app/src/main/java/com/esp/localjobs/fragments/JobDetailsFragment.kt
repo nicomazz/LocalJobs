@@ -8,6 +8,8 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat.postponeEnterTransition
+import androidx.core.app.ActivityCompat.startPostponedEnterTransition
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -29,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -173,7 +176,6 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
 
     private fun showJob(view: View) = launch {
         // TODO fetch job as soon as possible
-        // replace true with a safe arg
         val job = getOrFetchJob()
 
         if (!isActive) return@launch
@@ -220,15 +222,25 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
 
         menu.findItem(R.id.menu_item_share).also {
             it.setOnMenuItemClickListener {
-                val sendIntent: Intent = Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, "http://esp.localjobs.app/job?job_id=${args.job.id}")
-                    type = "text/plain"
-                }
-                startActivity(Intent.createChooser(sendIntent, getString(R.string.share_job_title)))
+                shareJob()
                 true
             }
         }
+    }
+
+    private fun shareJob() = launch {
+        // if it must be fetched then the job is already cached by firebase
+        val job = getOrFetchJob()
+
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            // todo use this when we will have dynamic link
+            // putExtra(Intent.EXTRA_TEXT, "http://esp.localjobs.app/job?job_id=${args.job.id}")
+            putExtra(Intent.EXTRA_TEXT, getString(R.string.share_job_text,
+                job?.title ?: "", job?.description ?: "", job?.city ?: ""))
+            type = "text/plain"
+        }
+        startActivity(Intent.createChooser(sendIntent, getString(R.string.share_job_title)))
     }
 
     override fun onDestroy() {
