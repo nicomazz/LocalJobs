@@ -231,7 +231,8 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     private fun shareJob() = launch {
         // if it must be fetched then the job is already cached by firebase
         val job = getOrFetchJob()
-
+        if (!isActive) return@launch
+        
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
             // todo use this when we will have dynamic link
