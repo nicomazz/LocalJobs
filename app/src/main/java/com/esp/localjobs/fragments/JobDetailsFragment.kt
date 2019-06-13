@@ -2,6 +2,7 @@ package com.esp.localjobs.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -35,6 +36,7 @@ import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
@@ -107,6 +109,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         setupFabButton(view)
         setupMapFab(view)
         setupInterestedList()
+        setupAuthorDetails()
         AnimationsUtils.popup(contact_fab, 400)
         AnimationsUtils.popup(fabMap, 200)
         startPostponedEnterTransition()
@@ -130,8 +133,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         super.onDestroyView()
         jobRequestViewModel.stopListeningForChanges(args.job.id)
     }
-    //  TODO Se la persona ha già inviato la disponibilità, il testo dev'essere "contacted"
-    // TODO check if, rather than hiding the button, the visibility can be set to "disabled" (like grey button)
+
     /**
      * Setup contact fab button.
      * If the user isn't logged or the user owns the job, the button is set to invisible.
@@ -167,6 +169,8 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
                 args.job.id,
                 request
             )
+            view.contact_fab.text = getString(R.string.contacted)
+            view.contact_fab.isEnabled = false
         }
     }
 
@@ -188,19 +192,41 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         if (args.mustBeFetched) jobRequestViewModel.getJob(jobId) else args.job
     }
 
-    // todo only for the person who created the job
-    private fun setupInterestedList() = with(jobRequestViewModel) {
-        startListeningForChanges(args.job.id)
-        getInterestedUserLiveData(args.job.id).observe(this@JobDetailsFragment,
-            androidx.lifecycle.Observer {
-                setUsersInList(it)
-            })
+    private fun setupInterestedList() = launch {
+        val job = getOrFetchJob()
+        if (!isActive || job?.uid != loginViewModel.getUserId())
+            return@launch
+
+        with(jobRequestViewModel) {
+            startListeningForChanges(args.job.id)
+            getInterestedUserLiveData(args.job.id).observe(this@JobDetailsFragment,
+                androidx.lifecycle.Observer {
+                    setUsersInList(it)
+                })
+        }
     }
 
     private fun setUsersInList(usersIds: List<String>) {
-        interestedTitle.visibility = if (usersIds.isEmpty()) View.INVISIBLE else View.VISIBLE
-        interestedList.adapter = GroupAdapter<ViewHolder>().apply {
+        usersListTitle.visibility = if (usersIds.isEmpty()) View.INVISIBLE else View.VISIBLE
+        usersListTitle.setText(R.string.interested_people)
+        usersList.adapter = GroupAdapter<ViewHolder>().apply {
             addAll(usersIds.map { UserItem(it) })
+        }
+    }
+
+    private fun setupAuthorDetails() = launch {
+        val job = getOrFetchJob()
+        if (!isActive || job?.uid == null || loginViewModel.getUserId() == job.uid)
+            return@launch
+
+        setAuthorUserInList(job.uid as String)
+    }
+
+    private fun setAuthorUserInList(uid: String) {
+        usersListTitle.visibility = View.VISIBLE
+        usersListTitle.setText(R.string.job_author)
+        usersList.adapter = GroupAdapter<ViewHolder>().apply {
+            add(UserItem(userId = uid, onClickAction = UserItem.UserClickListener.GOTOPROFILE))
         }
     }
 

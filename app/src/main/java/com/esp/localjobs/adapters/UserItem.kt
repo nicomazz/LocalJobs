@@ -19,7 +19,11 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
 
 @InternalCoroutinesApi
-class UserItem(val userId: String) : BindableItem<ItemUserBinding>() {
+class UserItem(val userId: String, val onClickAction: UserClickListener = UserClickListener.SENDMAIL) : BindableItem<ItemUserBinding>() {
+    enum class UserClickListener {
+        SENDMAIL,
+        GOTOPROFILE
+    }
 
     override fun getId() = userId.hashCode().toLong()
 
@@ -28,7 +32,15 @@ class UserItem(val userId: String) : BindableItem<ItemUserBinding>() {
             val user = userFirebaseRepository.getUserDetails(userId)
             viewBinding.user = user
             viewBinding.mainLayout.setOnClickListener {
-                user?.mail?.let { sendMail(it) } ?: Log.e("userItem", "No mail found")
+                when (onClickAction) {
+                    UserClickListener.SENDMAIL -> {
+                        user?.mail?.let { sendMail(it) } ?: Log.e("userItem", "No mail found")
+                    }
+                    UserClickListener.GOTOPROFILE -> {
+                        // TODO()
+                    }
+                }
+
             }
         }
     }

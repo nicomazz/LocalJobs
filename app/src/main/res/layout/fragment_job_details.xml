@@ -86,23 +86,23 @@
                     app:layout_constraintStart_toStartOf="@+id/title"
                     />
 
-
             <TextView
-                    android:id="@+id/interestedTitle"
+                    android:id="@+id/usersListTitle"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Interested people:"
+                    android:text="@string/interested_people"
                     style="@style/TextAppearance.AppCompat.Body2"
                     app:layout_constraintTop_toBottomOf="@+id/description"
                     app:layout_constraintEnd_toEndOf="@+id/description"
+                    android:visibility="gone"
                     android:layout_marginTop="15dp"
                     app:layout_constraintStart_toStartOf="@+id/description"/>
 
             <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/interestedList"
+                    android:id="@+id/usersList"
                     android:layout_width="match_parent"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintTop_toBottomOf="@+id/interestedTitle"
+                    app:layout_constraintTop_toBottomOf="@+id/usersListTitle"
                     tools:listitem="@layout/item_user"
                     tools:itemCount="3"
                     android:layout_marginBottom="200dp"
