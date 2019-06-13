@@ -61,5 +61,9 @@
     <string name="empty_view_description">We couldn\'t find any jobs in your search area. Try changing your location.</string>
     <string name="share_job_title">Share this job!</string>
     <string name="share_job_text">Title: %1$s\nDescription: %2$s\nCity: %3$s\nGo to LocalJobs app to apply for this job!</string>
+    <string name="intro_title">Welcome</string>
+    <string name="intro_description">Search for jobs in your area!</string>
+    <string name="permission_tab_title">Permissions</string>
+    <string name="permission_tab_description">We need your permissions</string>
     <string name="user_not_found">User not found</string>
 </resources>
