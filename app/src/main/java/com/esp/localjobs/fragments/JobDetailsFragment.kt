@@ -1,5 +1,6 @@
 package com.esp.localjobs.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -7,6 +8,8 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat.postponeEnterTransition
+import androidx.core.app.ActivityCompat.startPostponedEnterTransition
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -28,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -172,7 +176,6 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
 
     private fun showJob(view: View) = launch {
         // TODO fetch job as soon as possible
-        // replace true with a safe arg
         val job = getOrFetchJob()
 
         if (!isActive) return@launch
@@ -204,17 +207,41 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         // hide other icons (like current user profile
         menu.forEach { it.isVisible = false }
-        // if the user owns the job allow him to edit it
-        if (args.job.uid != loginViewModel.getUserId())
-            return
-        inflater.inflate(R.menu.menu_edit, menu)
-        val editMenu = menu.findItem(R.id.menu_edit_item)
-        editMenu.setOnMenuItemClickListener {
-            val action =
-                JobDetailsFragmentDirections.actionDestinationJobDetailsToDestinationEdit(args.job)
-            findNavController().navigate(action.actionId, action.arguments)
-            true
+        inflater.inflate(R.menu.menu_job_details, menu)
+
+        menu.findItem(R.id.menu_edit_item).also {
+            it.setOnMenuItemClickListener {
+                val action =
+                    JobDetailsFragmentDirections.actionDestinationJobDetailsToDestinationEdit(args.job)
+                findNavController().navigate(action.actionId, action.arguments)
+                true
+            }
+            if (args.job.uid != loginViewModel.getUserId())
+                it.isVisible = false
         }
+
+        menu.findItem(R.id.menu_item_share).also {
+            it.setOnMenuItemClickListener {
+                shareJob()
+                true
+            }
+        }
+    }
+
+    private fun shareJob() = launch {
+        // if it must be fetched then the job is already cached by firebase
+        val job = getOrFetchJob()
+        if (!isActive) return@launch
+
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            // todo use this when we will have dynamic link
+            // putExtra(Intent.EXTRA_TEXT, "http://esp.localjobs.app/job?job_id=${args.job.id}")
+            putExtra(Intent.EXTRA_TEXT, getString(R.string.share_job_text,
+                job?.title ?: "", job?.description ?: "", job?.city ?: ""))
+            type = "text/plain"
+        }
+        startActivity(Intent.createChooser(sendIntent, getString(R.string.share_job_title)))
     }
 
     override fun onDestroy() {
