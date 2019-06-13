@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
 import com.esp.localjobs.data.models.Location
@@ -24,6 +25,7 @@ import com.esp.localjobs.viewModels.JobsViewModel
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_filter_status.*
+import kotlinx.android.synthetic.main.fragment_jobs.*
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
 
 /**
@@ -49,6 +51,7 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         super.onViewCreated(view, savedInstanceState)
 
         setupUI(view)
+        setupAdapter()
 
         observeChangesInJobList()
         observeFilters()
@@ -76,6 +79,30 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
                 startPostponedEnterTransition()
                 true
             }
+    }
+
+    private fun setupAdapter() {
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            fun checkEmpty() {
+                empty_view.visibility = (if (adapter.itemCount == 0) View.VISIBLE else View.GONE)
+                job_list.visibility = (if (adapter.itemCount == 0) View.GONE else View.VISIBLE)
+            }
+
+            override fun onChanged() {
+                super.onChanged()
+                checkEmpty()
+            }
+
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                checkEmpty()
+            }
+
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                super.onItemRangeRemoved(positionStart, itemCount)
+                checkEmpty()
+            }
+        })
     }
 
     private fun observeChangesInJobList() {
