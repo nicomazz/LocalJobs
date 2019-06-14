@@ -17,6 +17,8 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import kotlinx.android.synthetic.main.fragment_map.*
 
+private const val TAG = "MapFragment"
+
 /**
  * A simple fragment showing a basic map providing some useful methods.
  * Extend this class to add more features.
@@ -72,10 +74,6 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    fun centerMap(pos: LatLng) {
-        centerMap(Location(latitude = pos.latitude, longitude = pos.longitude))
-    }
-
     /**
      * Center the map view on given location.
      */
@@ -119,8 +117,8 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
         mapContainer.onLowMemory()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         mapContainer.onDestroy()
     }
 

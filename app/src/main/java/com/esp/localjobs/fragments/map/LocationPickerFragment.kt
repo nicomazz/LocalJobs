@@ -32,6 +32,12 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         private const val TAG = "LocationPickerFragment"
         private const val REQUEST_CODE = 0
 
+        /**
+         * Create a new instance and show dialog fragment
+         * @param targetFragment The receiving fragment that implements OnLocationPickedListener
+         * @param fragmentManager The fragment manager responsible for showing the dialog fragment
+         * @param startLocation The initial location the map will be showing
+         */
         fun newInstanceShow(
             targetFragment: Fragment,
             fragmentManager: FragmentManager,
@@ -109,6 +115,9 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         }
     }
 
+    /**
+     * Return the picked location to the target fragment and dismiss this fragment
+     */
     private fun apply(location: Location) = CoroutineScope(Dispatchers.Main).launch {
         if (location.city == null)
             Toast.makeText(context, getString(R.string.error_retrieving_location_name), Toast.LENGTH_SHORT)

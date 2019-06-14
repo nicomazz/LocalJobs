@@ -57,6 +57,8 @@
     <string name="contacted">Contacted</string>
     <string name="maximum_salary_text">Maximum salary</string>
     <string name="loading">Loading..</string>
+    <string name="empty_view_title">No jobs nearby</string>
+    <string name="empty_view_description">We couldn\'t find any jobs in your search area. Try changing your location.</string>
     <string name="share_job_title">Share this job!</string>
     <string name="share_job_text">Title: %1$s\nDescription: %2$s\nCity: %3$s\nGo to LocalJobs app to apply for this job!</string>
 </resources>

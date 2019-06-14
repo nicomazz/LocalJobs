@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.esp.localjobs.LocalJobsApplication
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
@@ -11,6 +12,7 @@ import com.esp.localjobs.data.repository.JobsRepository.JobFilter
 import com.esp.localjobs.data.repository.MAX_RANGE_KM
 import com.esp.localjobs.utils.GeocodingUtils
 import com.esp.localjobs.utils.PositionManager
+import kotlinx.coroutines.launch
 
 /**
  * Shared view model between filter, jobs and proposals fragment.
@@ -39,15 +41,18 @@ class FilterViewModel : ViewModel() {
     init {
         val context = LocalJobsApplication.applicationContext()
         val filter = retrieveLastUsedFilter(context)
-
-        if (filter.location == null) {
-            PositionManager.getLastKnownPosition(context)?.let {
-                val city = GeocodingUtils.coordinatesToCity(context, it.latitude, it.longitude)
-                filter.location = Location(it.latitude, it.longitude, city)
-            }
-        }
-
         setFilters(filter)
+
+        if (filter.location == null)
+            initializeLocation(context)
+    }
+
+    private fun initializeLocation(context: Context) = viewModelScope.launch {
+        PositionManager.getLastKnownPosition(context)?.let {
+            val city = GeocodingUtils.coordinatesToCity(context, it.latitude, it.longitude)
+            val location = Location(it.latitude, it.longitude, city)
+            setLocation(location)
+        }
     }
 
     fun setFilters(newFilters: JobFilter) {
