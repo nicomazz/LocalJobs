@@ -202,6 +202,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     }
 
     private fun setUsersInList(usersIds: List<String>) {
+        usersListTitle.visibility = if (usersIds.isEmpty()) View.GONE else View.VISIBLE
         usersListTitle.setText(R.string.interested_people)
         usersList.adapter = GroupAdapter<ViewHolder>().apply {
             addAll(usersIds.map { UserItem(it) })
@@ -210,7 +211,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
 
     private fun setupAuthorDetails() = launch {
         val job = getOrFetchJob()
-        if (!isActive || job?.uid == null || loginViewModel.getUserId() == job.uid)
+        if (!isActive || job?.uid == null)
             return@launch
 
         setAuthorUserInList(job.uid as String)
