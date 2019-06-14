@@ -43,13 +43,13 @@ class IntroActivity : AppIntro() {
         page1.title = getString(R.string.intro_title)
         page1.description = getString(R.string.intro_description)
         page1.bgColor = ContextCompat.getColor(this, R.color.bgIntroPage1)
-        // page1.imageDrawable = image TODO add image
+        page1.imageDrawable = R.drawable.intro_search_job
 
         val page2 = SliderPage()
         page2.title = getString(R.string.permission_tab_title)
         page2.description = getString(R.string.permission_tab_description)
         page2.bgColor = ContextCompat.getColor(this, R.color.bgIntroPage2)
-        // page2.imageDrawable = image TODO add image
+        page2.imageDrawable = R.drawable.intro_location_image
 
         addSlide(AppIntroFragment.newInstance(page1))
         addSlide(AppIntroFragment.newInstance(page2))
