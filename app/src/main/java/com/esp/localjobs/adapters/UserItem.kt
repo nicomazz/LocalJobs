@@ -40,7 +40,6 @@ class UserItem(val userId: String, val onClickAction: UserClickListener = UserCl
                         // TODO()
                     }
                 }
-
             }
         }
     }

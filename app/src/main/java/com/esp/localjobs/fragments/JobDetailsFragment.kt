@@ -2,15 +2,12 @@ package com.esp.localjobs.fragments
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.app.ActivityCompat.postponeEnterTransition
-import androidx.core.app.ActivityCompat.startPostponedEnterTransition
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -32,11 +29,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
@@ -207,7 +202,6 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     }
 
     private fun setUsersInList(usersIds: List<String>) {
-        usersListTitle.visibility = if (usersIds.isEmpty()) View.INVISIBLE else View.VISIBLE
         usersListTitle.setText(R.string.interested_people)
         usersList.adapter = GroupAdapter<ViewHolder>().apply {
             addAll(usersIds.map { UserItem(it) })
@@ -223,9 +217,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     }
 
     private fun setAuthorUserInList(uid: String) {
-        usersListTitle.visibility = View.VISIBLE
-        usersListTitle.setText(R.string.job_author)
-        usersList.adapter = GroupAdapter<ViewHolder>().apply {
+        author.adapter = GroupAdapter<ViewHolder>().apply {
             add(UserItem(userId = uid, onClickAction = UserItem.UserClickListener.GOTOPROFILE))
         }
     }
