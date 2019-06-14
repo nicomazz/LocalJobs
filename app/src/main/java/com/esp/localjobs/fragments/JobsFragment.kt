@@ -84,8 +84,8 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     private fun setupAdapter() {
         adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             fun checkEmpty() {
-                empty_view.visibility = (if (adapter.itemCount == 0) View.VISIBLE else View.GONE)
-                job_list.visibility = (if (adapter.itemCount == 0) View.GONE else View.VISIBLE)
+                empty_view.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
+                job_list.visibility = if (adapter.itemCount == 0) View.GONE else View.VISIBLE
             }
 
             override fun onChanged() {
