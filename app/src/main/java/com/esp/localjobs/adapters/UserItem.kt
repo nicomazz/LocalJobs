@@ -66,5 +66,8 @@ fun navigateToUserProfile(view: View, userId: String?) {
 
 @BindingAdapter("avatar")
 fun ImageView.setAvatar(avatar: String?) {
-    Picasso.get().load(avatar).transform(CropCircleTransformation()).into(this)
+    if (avatar == null || avatar.isEmpty())
+        Picasso.get().load(R.drawable.default_profile).transform(CropCircleTransformation()).into(this)
+    else
+        Picasso.get().load(avatar).transform(CropCircleTransformation()).into(this)
 }
