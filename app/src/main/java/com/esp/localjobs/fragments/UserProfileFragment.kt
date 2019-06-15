@@ -6,6 +6,7 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.forEach
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -15,8 +16,6 @@ import com.esp.localjobs.R
 import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.FragmentUserProfileBinding
 import com.esp.localjobs.viewModels.LoginViewModel
-import com.squareup.picasso.Picasso
-import jp.wasabeef.picasso.transformations.CropCircleTransformation
 import kotlinx.android.synthetic.main.fragment_user_profile.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -78,7 +77,6 @@ class UserProfileFragment : Fragment(), CoroutineScope {
             binding.user = it
             logout.visibility = View.VISIBLE
             login.visibility = View.GONE
-            Picasso.get().load(it.photoUrl).transform(CropCircleTransformation()).into(profilePicture)
         }
 
         logout.setOnClickListener {
@@ -96,16 +94,10 @@ class UserProfileFragment : Fragment(), CoroutineScope {
             return@launch
 
         binding.user = user
-        // todo use binding
-        if (user == null || user.photoUrl.isEmpty())
-            Picasso.get().load(R.drawable.default_profile).transform(CropCircleTransformation()).into(profilePicture)
-        else
-            Picasso.get().load(user.photoUrl).transform(CropCircleTransformation()).into(profilePicture)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_navigation, menu)
-        for (i in 0.until(menu.size()))
-            menu.getItem(i).isVisible = false
+        menu.forEach { it.isVisible = false }
     }
 }
