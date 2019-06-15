@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.esp.localjobs.data.models.User
 import com.esp.localjobs.data.models.toUser
 import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.firebase.ui.auth.AuthUI
@@ -81,6 +82,8 @@ class LoginViewModel : ViewModel(), CoroutineScope by MainScope() {
             }
         }
     }
+
+    fun getCurrentUser(): User? = FirebaseAuth.getInstance().currentUser?.toUser()
 
     private fun storeNameAndImage() {
         FirebaseAuth.getInstance().currentUser?.toUser()?.let {
