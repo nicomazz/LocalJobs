@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.forEach
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -17,6 +18,9 @@ import androidx.transition.TransitionInflater
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.UserItem
 import com.esp.localjobs.data.models.RequestToJob
+import com.esp.localjobs.data.repository.userFirebaseRepository
+import com.esp.localjobs.databinding.FragmentJobDetailsBinding
+import com.esp.localjobs.databinding.ItemUserBinding
 import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.viewModels.JobRequestViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
@@ -48,6 +52,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     private val jobRequestViewModel: JobRequestViewModel by activityViewModels()
     private val jobId by lazy { args.job.id }
     private val job by lazy { args.job }
+    private lateinit var binding: FragmentJobDetailsBinding
 
     private lateinit var mJob: Job
     override val coroutineContext: CoroutineContext
@@ -59,7 +64,8 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         savedInstanceState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        return inflater.inflate(R.layout.fragment_job_details, container, false)
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_job_details, container, false)
+        return binding.root
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -214,13 +220,9 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         if (!isActive || job?.uid == null)
             return@launch
 
-        setAuthorUserInList(job.uid as String)
-    }
+        val author = userFirebaseRepository.getUserDetails(job.uid as String)
+        binding.setAuthor(author)
 
-    private fun setAuthorUserInList(uid: String) {
-        author.adapter = GroupAdapter<ViewHolder>().apply {
-            add(UserItem(userId = uid, onClickAction = UserItem.UserClickListener.GOTOPROFILE))
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
