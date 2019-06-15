@@ -76,6 +76,9 @@
                 android:name="mustBeFetched"
                 app:argType="boolean"
                 android:defaultValue="false"/>
+        <action
+                android:id="@+id/action_destination_job_details_to_destination_user_profile"
+                app:destination="@id/destination_user_profile"/>
     </fragment>
     <fragment
             android:id="@+id/destination_user_profile"

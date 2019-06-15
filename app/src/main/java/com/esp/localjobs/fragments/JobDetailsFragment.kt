@@ -17,10 +17,10 @@ import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.UserItem
+import com.esp.localjobs.adapters.navigateToUserProfile
 import com.esp.localjobs.data.models.RequestToJob
 import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.FragmentJobDetailsBinding
-import com.esp.localjobs.databinding.ItemUserBinding
 import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.viewModels.JobRequestViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
@@ -220,9 +220,9 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         if (!isActive || job?.uid == null)
             return@launch
 
-        val author = userFirebaseRepository.getUserDetails(job.uid as String)
-        binding.setAuthor(author)
-
+        val jobAuthor = userFirebaseRepository.getUserDetails(job.uid as String)
+        binding.setAuthor(jobAuthor)
+        author.setOnClickListener { navigateToUserProfile(it, jobAuthor?.uid) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
