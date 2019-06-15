@@ -3,6 +3,7 @@ package com.esp.localjobs.adapters
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.BindingAdapter
@@ -19,11 +20,7 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
 
 @InternalCoroutinesApi
-class UserItem(val userId: String, val onClickAction: UserClickListener = UserClickListener.SENDMAIL) : BindableItem<ItemUserBinding>() {
-    enum class UserClickListener {
-        SENDMAIL,
-        GOTOPROFILE
-    }
+class UserItem(val userId: String) : BindableItem<ItemUserBinding>() {
 
     override fun getId() = userId.hashCode().toLong()
 
@@ -31,15 +28,14 @@ class UserItem(val userId: String, val onClickAction: UserClickListener = UserCl
         GlobalScope.launch(Dispatchers.Main) {
             val user = userFirebaseRepository.getUserDetails(userId)
             viewBinding.user = user
+
+            user?.mail?.let { mail ->
+                viewBinding.mailIcon.visibility = View.VISIBLE
+                viewBinding.mailIcon.setOnClickListener { sendMail(mail) }
+            } ?: Log.e("userItem", "No mail found")
+
             viewBinding.mainLayout.setOnClickListener {
-                when (onClickAction) {
-                    UserClickListener.SENDMAIL -> {
-                        user?.mail?.let { sendMail(it) } ?: Log.e("userItem", "No mail found")
-                    }
-                    UserClickListener.GOTOPROFILE -> {
-                        // TODO()
-                    }
-                }
+                TODO()
             }
         }
     }
