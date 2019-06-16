@@ -2,6 +2,7 @@ package com.esp.localjobs
 
 import android.Manifest
 import android.animation.Animator
+import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
@@ -31,6 +32,7 @@ import com.esp.localjobs.utils.FCMHandler
 import com.mapbox.mapboxsdk.Mapbox
 import kotlinx.android.synthetic.main.activity_main.*
 import android.content.Intent
+import androidx.core.content.edit
 
 /*
 Resources:
@@ -50,18 +52,26 @@ Resources:
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
-    // private var positionServiceJob: Job? = null
 
     private companion object {
         private const val REQUEST_LOCATION_PERMISSION_CODE = 100
         const val TAG = "MainActivity"
+        const val APP_PREF = "appPreferences"
+        const val FIRST_START_PREF = "firstStart"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        requestLocationPermissions()
+        // launch intro if first time launching
+        val prefs = getSharedPreferences(APP_PREF, Context.MODE_PRIVATE)
+        val isFirstStart = prefs.getBoolean(FIRST_START_PREF, true)
+        if (isFirstStart) {
+            startActivity(Intent(this@MainActivity, IntroActivity::class.java))
+            prefs.edit { putBoolean(FIRST_START_PREF, false) }
+        }
+
         Mapbox.getInstance(applicationContext, getString(R.string.mabBoxToken))
         FCMHandler.fetchAndSendFCMToken()
 
@@ -124,9 +134,6 @@ class MainActivity : AppCompatActivity() {
         anim.start()
 
         return anim
-    }
-
-    fun animateToFinalColor() {
     }
 
     /**

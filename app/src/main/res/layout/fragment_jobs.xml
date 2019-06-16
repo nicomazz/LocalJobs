@@ -60,7 +60,7 @@
             android:id="@+id/fabAdd"
             app:tint="@android:color/white"
             android:layout_margin="16dp"
-            app:backgroundTint="@color/colorPrimary"
+            app:backgroundTint="@color/colorAccent"
             app:srcCompat="@android:drawable/ic_input_add"
             android:transitionName="toolbar"
             android:layout_gravity="end|bottom"/>
