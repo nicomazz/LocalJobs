@@ -232,7 +232,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         active = true
         itIsJob = userSelectedJob
         uid = args.job.uid
-
+        imagesUri = args.job.imagesUri
         if (!userSelectedJob) { // if it's a proposal set range
             range = range_seekbar.progress
         }
