@@ -172,13 +172,19 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
      */
     private fun onLocationClick() {
         fragmentManager?.let { fm ->
-            LocationPickerFragment.newInstanceShow(this, fm, filterViewModel.location)
+            LocationPickerFragment.newInstanceShow(
+                this,
+                fm,
+                filterViewModel.location,
+                filterViewModel.range
+            )
         }
     }
 
-    override fun onLocationPicked(location: Location) {
+    override fun onLocationPicked(location: Location, distance: Int?) {
         Log.d(TAG, "location: $location")
         filterViewModel.setLocation(location)
+        if (distance != null) filterViewModel.setRange(distance)
     }
 
     companion object {
