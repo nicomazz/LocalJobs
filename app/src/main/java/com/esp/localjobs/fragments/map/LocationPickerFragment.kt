@@ -87,7 +87,7 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
                 val lon = getDouble(ARG_START_LONGITUDE)
                 startLocation = Location(lat, lon)
             }
-            if(containsKey(ARG_START_DISTANCE))
+            if (containsKey(ARG_START_DISTANCE))
                 startDistance = getInt(ARG_START_DISTANCE)
         }
 
@@ -147,7 +147,7 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         dismiss()
     }
 
-    private fun setupDistanceSeekbarUI(initDistance: Int) = with(range_seek_bar){
+    private fun setupDistanceSeekbarUI(initDistance: Int) = with(range_seek_bar) {
         range_div.visibility = View.VISIBLE
         max = MAX_RANGE_KM
         progress = initDistance
