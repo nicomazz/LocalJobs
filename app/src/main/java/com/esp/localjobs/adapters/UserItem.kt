@@ -6,13 +6,13 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.databinding.BindingAdapter
+import com.bumptech.glide.Glide
 import com.esp.localjobs.LocalJobsApplication
 import com.esp.localjobs.R
 import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.ItemUserBinding
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.databinding.BindableItem
-import jp.wasabeef.picasso.transformations.CropCircleTransformation
+import jp.wasabeef.glide.transformations.CropCircleTransformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -49,7 +49,11 @@ fun sendMail(destination: String) {
 @BindingAdapter("avatar")
 fun ImageView.setAvatar(avatar: String?) {
     if (avatar == null || avatar.isEmpty())
-        Picasso.with(context).load(R.drawable.default_profile).placeholder(R.drawable.placeholder).transform(CropCircleTransformation()).into(this)
+        Glide.with(context).load(R.drawable.default_profile).placeholder(R.drawable.placeholder).transform(
+            CropCircleTransformation()
+        ).into(this)
     else
-        Picasso.with(context).load(avatar).placeholder(R.drawable.placeholder).transform(CropCircleTransformation()).into(this)
+        Glide.with(context).load(avatar).placeholder(R.drawable.placeholder).transform(CropCircleTransformation()).into(
+            this
+        )
 }

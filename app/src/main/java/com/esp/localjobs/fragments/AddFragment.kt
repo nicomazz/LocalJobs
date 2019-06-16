@@ -40,7 +40,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
-import com.zhihu.matisse.engine.impl.PicassoEngine
+import com.zhihu.matisse.engine.impl.GlideEngine
 import kotlinx.android.synthetic.main.fragment_add.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -48,7 +48,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-
 
 /**
  * Fragment used to push a job/proposal to remote db
@@ -106,10 +105,9 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
                 .countable(true)
                 .maxSelectable(1)
                 .thumbnailScale(0.85f)
-                .imageEngine(PicassoEngine())
+                .imageEngine(GlideEngine())
                 .forResult(IMAGE_REQUEST_CODE)
         }
-
     }
 
     private fun askStoragePermissions() {
@@ -126,14 +124,13 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
                 ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
-            val mSelected = Matisse.obtainResult(data);
+            val mSelected = Matisse.obtainResult(data)
             selectedImage = mSelected.firstOrNull()
             image_edit_text.setText(selectedImage?.toString() ?: "")
-            Log.d("Matisse", "mSelected: $mSelected");
+            Log.d("Matisse", "mSelected: $mSelected")
         }
     }
 
@@ -202,7 +199,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         viewDialog.showDialog()
 
         val imageUploadedUri = selectedImage?.let { uploadImageToFirestore(it) } ?: ""
-        if (!isActive) return@launch;
+        if (!isActive) return@launch
 
         val job = parseJobFromView(location = location, uploadedImageUri = imageUploadedUri)
 
@@ -231,7 +228,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
 
             // Create a storage reference from our app
             val storageRef = FirebaseStorage.getInstance().reference
-            //todo put images in a path with the tag of the job. Otherwise they can be replaced
+            // todo put images in a path with the tag of the job. Otherwise they can be replaced
             val imageRef = storageRef.child("images/${uri.lastPathSegment}")
             val bitmap = BitmapUtils.getCompressed(context!!, uri)
             val uploadTask = imageRef.putBytes(bitmap)
@@ -257,8 +254,6 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
                     // ...
                 }
             }
-
-
         }
 
     /**
@@ -314,7 +309,6 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         }
         if (uploadedImageUri.isNotBlank())
             imagesUri = listOf(uploadedImageUri)
-
 
         return this
     }

@@ -12,7 +12,6 @@ import android.provider.MediaStore
 import android.view.View
 import java.io.ByteArrayOutputStream
 
-
 object BitmapUtils {
     fun drawableToBitmap(drawable: Drawable): Bitmap {
         if (drawable is BitmapDrawable) {
@@ -54,7 +53,6 @@ object BitmapUtils {
         return bitmap
     }
 
-
     fun getCompressed(context: Context, uri: Uri): ByteArray {
         val bitmap = decodeImageFromFiles(context, uri, 300, 300)
         val byteArrayOutputStream = ByteArrayOutputStream()
@@ -67,7 +65,7 @@ object BitmapUtils {
         options.inPreferredConfig = Bitmap.Config.ARGB_8888
         val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
 
-        val scaleFactor = Math.min(bitmap.width / width, bitmap.height / height);
+        val scaleFactor = Math.min(bitmap.width / width, bitmap.height / height)
         val newh = bitmap.height * scaleFactor
         val neww = bitmap.width * scaleFactor
 

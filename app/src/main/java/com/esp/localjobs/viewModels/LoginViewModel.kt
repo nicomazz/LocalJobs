@@ -67,7 +67,7 @@ class LoginViewModel : ViewModel(), CoroutineScope by MainScope() {
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RC_SIGN_IN) {
-             val response = IdpResponse.fromResultIntent(data)
+            val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
