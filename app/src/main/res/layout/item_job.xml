@@ -18,16 +18,14 @@
     <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardElevation="8dp"
+            app:cardElevation="4dp"
             app:cardCornerRadius="5dp"
             android:layout_marginStart="3dp"
             android:layout_marginEnd="3dp"
-            android:layout_marginTop="2dp"
-            android:layout_marginLeft="1dp"
-            android:layout_marginRight="1dp"
+            android:layout_marginTop="4dp"
+            android:layout_margin="5dp"
             android:clipChildren="false"
             android:clipToPadding="false"
-            android:layout_marginBottom="2dp"
             android:id="@+id/cardView">
 
         <androidx.constraintlayout.widget.ConstraintLayout

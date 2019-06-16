@@ -28,6 +28,7 @@ import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.utils.BitmapUtils
 import com.esp.localjobs.utils.LoadingViewDialog
+import com.esp.localjobs.utils.MyGlideEngine
 import com.esp.localjobs.viewModels.AddViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
 import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.AUTHENTICATED
@@ -40,7 +41,6 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
-import com.zhihu.matisse.engine.impl.GlideEngine
 import kotlinx.android.synthetic.main.fragment_add.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -105,7 +105,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
                 .countable(true)
                 .maxSelectable(1)
                 .thumbnailScale(0.85f)
-                .imageEngine(GlideEngine())
+                .imageEngine(MyGlideEngine())
                 .forResult(IMAGE_REQUEST_CODE)
         }
     }
