@@ -38,6 +38,10 @@ android {
     lintOptions {
         warning 'InvalidPackage'
     }
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
+    }
 }
 repositories {
     jcenter()
@@ -100,14 +104,14 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'
 
-    // picasso image loader
-    // do not update this!
+
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     implementation 'jp.wasabeef:glide-transformations:4.0.0'
+    implementation 'id.zelory:compressor:2.1.0'
 
     // image picker
-    implementation 'com.zhihu.android:matisse:0.5.1'
+    implementation 'com.github.esafirm.android-image-picker:imagepicker:2.0.0'
 
     // location queries
     implementation 'com.github.imperiumlabs:GeoFirestore-Android:v1.2.1'
