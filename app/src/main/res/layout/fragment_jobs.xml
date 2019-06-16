@@ -11,7 +11,8 @@
             android:id="@+id/jobs_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:clipChildren="false">
 
         <include
                 layout="@layout/fragment_filter_status"
@@ -26,7 +27,6 @@
                 tools:listitem="@layout/item_job"
                 android:clipToPadding="false"
                 android:clipChildren="false"
-                android:background="@android:color/white"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
         <LinearLayout
@@ -36,12 +36,14 @@
                 android:visibility="gone"
                 android:orientation="vertical"
                 android:padding="50dp">
+
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/empty_view_title"
                     style="@style/TextAppearance.MaterialComponents.Headline5"/>
+
             <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

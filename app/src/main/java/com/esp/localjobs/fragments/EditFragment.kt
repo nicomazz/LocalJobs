@@ -85,10 +85,11 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
     private fun setupBackAnimations() {
         requireActivity().onBackPressedDispatcher
-            .addCallback(this, OnBackPressedCallback {
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    prepareUiToGoBack()
+                }
                 // Handle the back button event
-                prepareUiToGoBack()
-                true
             })
     }
 
@@ -217,7 +218,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         }
     }
 
-    override fun onLocationPicked(location: Location) {
+    override fun onLocationPicked(location: Location, distance: Int?) {
         val locationText =
             if (location.city != null) location.city
             else getString(R.string.coordinates, location.l[0].toString(), location.l[1].toString())
