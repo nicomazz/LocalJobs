@@ -34,7 +34,7 @@
                 android:gravity="center_vertical"
                 style="@style/TextAppearance.AppCompat"
                 android:layout_margin="10dp"
-                android:text="@{user.displayName}"
+                android:text="@{user.displayName != null ? user.displayName : @string/loading}"
                 tools:text="@tools:sample/full_names"
                 app:layout_constraintStart_toEndOf="@+id/profilePicture"
                 app:layout_constraintEnd_toStartOf="@id/mail_icon"
