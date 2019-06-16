@@ -33,10 +33,6 @@ import com.mapbox.mapboxsdk.Mapbox
 import kotlinx.android.synthetic.main.activity_main.*
 import android.content.Intent
 import androidx.core.content.edit
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 /*
 Resources:
@@ -54,10 +50,8 @@ Resources:
     https://developer.android.com/guide/navigation/navigation-pass-data#kotlin
 */
 
-class MainActivity : AppCompatActivity(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Dispatchers.Default
+class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
-    // private var positionServiceJob: Job? = null
 
     private companion object {
         private const val REQUEST_LOCATION_PERMISSION_CODE = 100
@@ -71,16 +65,13 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         setContentView(R.layout.activity_main)
 
         // launch intro if first time launching
-        launch {
-            val prefs = getSharedPreferences(APP_PREF, Context.MODE_PRIVATE)
-            val isFirstStart = prefs.getBoolean(FIRST_START_PREF, true)
-            if (isFirstStart) {
-                startIntroActivity()
-                prefs.edit { putBoolean(FIRST_START_PREF, false) }
-            }
+        val prefs = getSharedPreferences(APP_PREF, Context.MODE_PRIVATE)
+        val isFirstStart = prefs.getBoolean(FIRST_START_PREF, true)
+        if (isFirstStart) {
+            startActivity(Intent(this@MainActivity, IntroActivity::class.java))
+            prefs.edit { putBoolean(FIRST_START_PREF, false) }
         }
 
-        requestLocationPermissions()
         Mapbox.getInstance(applicationContext, getString(R.string.mabBoxToken))
         FCMHandler.fetchAndSendFCMToken()
 
@@ -98,10 +89,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         handleIntent(intent)
 
         setupToolbar(navController, appBarConfiguration)
-    }
-
-    private fun startIntroActivity() = CoroutineScope(Dispatchers.Main).launch {
-        startActivity(Intent(this@MainActivity, IntroActivity::class.java))
     }
 
     private fun setupToolbar(navController: NavController, appBarConfiguration: AppBarConfiguration) {
@@ -147,9 +134,6 @@ class MainActivity : AppCompatActivity(), CoroutineScope {
         anim.start()
 
         return anim
-    }
-
-    fun animateToFinalColor() {
     }
 
     /**

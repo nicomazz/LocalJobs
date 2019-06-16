@@ -3,6 +3,6 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="bgIntroPage1">#4eed2a</color>
-    <color name="bgIntroPage2">#29edd9</color>
+    <color name="bgIntroPage1">#388e3c</color>
+    <color name="bgIntroPage2">#303f9f</color>
 </resources>
