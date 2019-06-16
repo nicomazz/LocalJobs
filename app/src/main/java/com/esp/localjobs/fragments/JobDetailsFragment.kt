@@ -1,6 +1,7 @@
 package com.esp.localjobs.fragments
 
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -12,19 +13,27 @@ import androidx.core.view.forEach
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.FragmentNavigator
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.esp.localjobs.LocalJobsApplication
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.UserItem
 import com.esp.localjobs.adapters.navigateToUserProfile
+import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.RequestToJob
 import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.FragmentJobDetailsBinding
 import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.viewModels.JobRequestViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_job_details.*
@@ -32,7 +41,6 @@ import kotlinx.android.synthetic.main.fragment_job_details.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -54,7 +62,19 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     private val job by lazy { args.job }
     private lateinit var binding: FragmentJobDetailsBinding
 
-    private lateinit var mJob: Job
+    companion object {
+        fun setupTransitionName(imageView: View, title: View, job: Job): FragmentNavigator.Extras {
+            imageView.transitionName = "image_${job.uid}"
+            title.transitionName = "title_${job.uid}"
+
+            return FragmentNavigatorExtras(
+                imageView to imageView.transitionName,
+                title to title.transitionName
+            )
+        }
+    }
+
+    private lateinit var mJob: kotlinx.coroutines.Job
     override val coroutineContext: CoroutineContext
         get() = mJob + Dispatchers.Main
 
@@ -65,25 +85,26 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     ): View {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_job_details, container, false)
-        return binding.root
+        return binding.root.apply {
+            setupTransitionName(imageView, title, job)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mJob = Job()
+        mJob = kotlinx.coroutines.Job()
         setupSharedElementsTransactions()
-        postponeEnterTransition()
-
         // This callback will only be called when MyFragment is at least Started.
         setupBackAnimations()
     }
 
     private fun setupBackAnimations() {
         requireActivity().onBackPressedDispatcher
-            .addCallback(this, OnBackPressedCallback {
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    prepareUiToGoBack()
+                }
                 // Handle the back button event
-                prepareUiToGoBack()
-                true
             })
     }
 
@@ -95,31 +116,48 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     }
 
     private fun setupSharedElementsTransactions() {
-        val trans = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-        sharedElementEnterTransition = trans
-        sharedElementReturnTransition = trans
-        allowReturnTransitionOverlap = false
-        allowEnterTransitionOverlap = false
+        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Picasso.get().load("https://picsum.photos/400").into(view.imageView)
+        setupImage()
         showJob(view)
-        setupTransitionName(view)
         setupFabButton(view)
         setupMapFab(view)
         setupInterestedList()
         setupAuthorDetails()
         AnimationsUtils.popup(contact_fab, 400)
         AnimationsUtils.popup(fabMap, 200)
-        startPostponedEnterTransition()
     }
 
-    private fun setupTransitionName(view: View) {
-        view.imageView.transitionName = "image_${job.uid}"
-        view.title.transitionName = "title_${job.uid}"
-        view.description.transitionName = "description_${job.uid}"
+    private fun setupImage() = Glide.with(LocalJobsApplication.applicationContext()).run {
+        postponeEnterTransition()
+        (job.imagesUri.firstOrNull()?.let { load(it) } ?: load("https://picsum.photos/400"))
+            .placeholder(R.drawable.placeholder)
+            .addListener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    startPostponedEnterTransition()
+                    return false
+                }
+            })
+            .into(imageView)
     }
 
     fun setupMapFab(view: View) {

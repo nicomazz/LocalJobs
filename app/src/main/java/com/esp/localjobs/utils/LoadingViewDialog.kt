@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.view.Window
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.GlideDrawableImageViewTarget
 import com.esp.localjobs.R
 
 class LoadingViewDialog(private val activity: Activity) {
@@ -19,13 +18,12 @@ class LoadingViewDialog(private val activity: Activity) {
         }
 
         val gifImageView: ImageView = dialog.findViewById(R.id.loading_gif)
-        val imageViewTarget = GlideDrawableImageViewTarget(gifImageView)
         Glide.with(activity)
+            .asGif()
             .load(R.drawable.loading)
             .placeholder(R.drawable.loading)
             .centerCrop()
-            .crossFade()
-            .into(imageViewTarget)
+            .into(gifImageView)
         dialog.show()
     }
 

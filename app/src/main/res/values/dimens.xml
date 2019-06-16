@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="job_item_height">100dp</dimen>
-    <dimen name="default_margins">15dp</dimen>
+    <dimen name="default_margins">12dp</dimen>
+    <dimen name="job_image_dimention">250dp</dimen>
+    <dimen name="image_round_corners">10dp</dimen>
 </resources>

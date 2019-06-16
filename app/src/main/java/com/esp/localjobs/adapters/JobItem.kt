@@ -4,14 +4,14 @@ import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.navigation.Navigation.findNavController
-import androidx.navigation.fragment.FragmentNavigatorExtras
+import com.bumptech.glide.Glide
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.User
 import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.ItemJobBinding
+import com.esp.localjobs.fragments.JobDetailsFragment
 import com.esp.localjobs.fragments.JobsFragmentDirections
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.databinding.BindableItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -23,6 +23,7 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
 
     override fun getId() = job.uid.hashCode().toLong()
 
+    @InternalCoroutinesApi
     override fun bind(viewBinding: ItemJobBinding, position: Int) = with(viewBinding) {
         job = this@JobItem.job
 
@@ -33,22 +34,20 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
             setAuthor(author)
         }
 
-        Picasso.get().load("https://picsum.photos/400").into(imageView)
-
+        this@JobItem.job.imagesUri.firstOrNull()?.let {
+            Glide.with(cardView.context).load(it).placeholder(R.drawable.placeholder).into(imageView)
+        } ?: Glide.with(cardView.context).load("https://picsum.photos/400").placeholder(R.drawable.placeholder).into(
+            imageView
+        )
+        imageView.clipToOutline = true
         cardView.clipToOutline = false // without this, shared elements are cropped
-        imageView.transitionName = "image_${this@JobItem.job.uid}"
-        title.transitionName = "title_${this@JobItem.job.uid}"
-        // description.transitionName = "description_${this@JobItem.job.uid}"
-
         cardView.setOnClickListener {
-            val extras = FragmentNavigatorExtras(
-                imageView to "image_${this@JobItem.job.uid}",
-                title to "title_${this@JobItem.job.uid}"
-                // description to "description_${this@JobItem.job.uid}"
+            val extras = JobDetailsFragment.setupTransitionName(
+                imageView, title, this@JobItem.job
             )
             val action =
                 JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(this@JobItem.job)
-            findNavController(imageView)
+            findNavController(it)
                 .navigate(
                     R.id.action_destination_jobs_to_destination_job_details,
                     action.arguments, null, extras
