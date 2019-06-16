@@ -27,7 +27,7 @@
         <TextView
                 android:id="@+id/name"
                 style="@style/FirebaseUI.Text.Heading"
-                android:text="@{user.displayName != null ? user.displayName : @string/loading}"
+                android:text="@{user.displayName != null ? user.displayName : @string/user_not_found}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
