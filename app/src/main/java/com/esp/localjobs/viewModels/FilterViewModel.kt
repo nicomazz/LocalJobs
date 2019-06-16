@@ -77,6 +77,14 @@ class FilterViewModel : ViewModel() {
         )
     }
 
+    fun setRange(distanceRange: Int) {
+        _activeFilters.postValue(
+            activeFilters.value!!.apply {
+                range = distanceRange
+            }
+        )
+    }
+
     private fun retrieveLastUsedFilter(context: Context): JobFilter {
         val sharedPref = context.getSharedPreferences("filter", Context.MODE_PRIVATE)
         with(sharedPref) {
