@@ -77,6 +77,13 @@
                 android:name="mustBeFetched"
                 app:argType="boolean"
                 android:defaultValue="false"/>
+        <action
+                android:id="@+id/action_destination_job_details_to_destination_user_profile"
+                app:destination="@id/destination_user_profile"
+                app:enterAnim="@anim/fade_in"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/fade_out"/>
     </fragment>
     <fragment
             android:id="@+id/destination_user_profile"

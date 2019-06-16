@@ -27,10 +27,12 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_filter_status.*
 import kotlinx.android.synthetic.main.fragment_jobs.*
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
+import kotlinx.coroutines.InternalCoroutinesApi
 
 /**
  * Fragment used to display a list of jobs
  */
+@InternalCoroutinesApi
 class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener {
 
     private val jobsViewModel: JobsViewModel by activityViewModels()

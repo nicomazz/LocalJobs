@@ -13,6 +13,7 @@
             android:src="@drawable/ic_place_blue_24dp"
             android:contentDescription="@string/location_icon_description"
             app:layout_constraintTop_toTopOf="parent"
+            android:tint="@color/primaryDarkColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"/>
 
@@ -26,7 +27,7 @@
             app:layout_constraintRight_toLeftOf="@id/filters_button"
             android:textColor="@color/fui_linkColor"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
             android:id="@+id/filters_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

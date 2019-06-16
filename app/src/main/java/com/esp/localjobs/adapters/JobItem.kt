@@ -7,12 +7,18 @@ import androidx.navigation.Navigation.findNavController
 import com.bumptech.glide.Glide
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
+import com.esp.localjobs.data.models.User
+import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.ItemJobBinding
 import com.esp.localjobs.fragments.JobDetailsFragment
 import com.esp.localjobs.fragments.JobsFragmentDirections
 import com.xwray.groupie.databinding.BindableItem
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.launch
 
+@InternalCoroutinesApi
 class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
 
     override fun getId() = job.uid.hashCode().toLong()
@@ -20,9 +26,19 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
     @InternalCoroutinesApi
     override fun bind(viewBinding: ItemJobBinding, position: Int) = with(viewBinding) {
         job = this@JobItem.job
+
+        GlobalScope.launch(Dispatchers.Main) {
+            val author = this@JobItem.job.uid?.let {
+                userFirebaseRepository.getUserDetails(it)
+            } ?: User(displayName = "Unknown user")
+            setAuthor(author)
+        }
+
         this@JobItem.job.imagesUri.firstOrNull()?.let {
             Glide.with(cardView.context).load(it).placeholder(R.drawable.placeholder).into(imageView)
-        } ?: Glide.with(cardView.context).load("https://picsum.photos/400").placeholder(R.drawable.placeholder).into(imageView)
+        } ?: Glide.with(cardView.context).load("https://picsum.photos/400").placeholder(R.drawable.placeholder).into(
+            imageView
+        )
         cardView.clipToOutline = false // without this, shared elements are cropped
         cardView.setOnClickListener {
             val extras = JobDetailsFragment.setupTransitionName(

@@ -34,12 +34,26 @@
                 android:gravity="center_vertical"
                 style="@style/TextAppearance.AppCompat"
                 android:layout_margin="10dp"
-                android:text="@{user.displayName}"
+                android:text="@{user.displayName != null ? user.displayName : @string/loading}"
                 tools:text="@tools:sample/full_names"
                 app:layout_constraintStart_toEndOf="@+id/profilePicture"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/mail_icon"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
+
+        <ImageView
+                android:id="@+id/mail_icon"
+                android:visibility="gone"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/ic_email_24dp"
+                android:gravity="center_vertical"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toEndOf="@id/name"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:src="@drawable/ic_email_24dp"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
