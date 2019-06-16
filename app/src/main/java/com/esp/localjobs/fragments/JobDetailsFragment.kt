@@ -170,8 +170,10 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
                 args.job.id,
                 request
             )
-            view.contact_fab.text = getString(R.string.contacted)
-            view.contact_fab.isEnabled = false
+            view.contact_fab.apply {
+                text = getString(R.string.contacted)
+                isEnabled = false
+            }
         }
     }
 
@@ -208,8 +210,10 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     }
 
     private fun setUsersInList(usersIds: List<String>) {
-        usersListTitle.visibility = if (usersIds.isEmpty()) View.GONE else View.VISIBLE
-        usersListTitle.setText(R.string.interested_people)
+        usersListTitle.apply {
+            visibility = if (usersIds.isEmpty()) View.GONE else View.VISIBLE
+            setText(R.string.interested_people)
+        }
         usersList.adapter = GroupAdapter<ViewHolder>().apply {
             addAll(usersIds.map { UserItem(it) })
         }
@@ -258,8 +262,12 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
             action = Intent.ACTION_SEND
             // todo use this when we will have dynamic link
             // putExtra(Intent.EXTRA_TEXT, "http://esp.localjobs.app/job?job_id=${args.job.id}")
-            putExtra(Intent.EXTRA_TEXT, getString(R.string.share_job_text,
-                job?.title ?: "", job?.description ?: "", job?.city ?: ""))
+            putExtra(
+                Intent.EXTRA_TEXT, getString(
+                    R.string.share_job_text,
+                    job?.title ?: "", job?.description ?: "", job?.city ?: ""
+                )
+            )
             type = "text/plain"
         }
         startActivity(Intent.createChooser(sendIntent, getString(R.string.share_job_title)))

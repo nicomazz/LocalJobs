@@ -27,17 +27,18 @@ class UserItem(val userId: String) : BindableItem<ItemUserBinding>() {
     override fun getId() = userId.hashCode().toLong()
 
     override fun bind(viewBinding: ItemUserBinding, position: Int) {
+        with(viewBinding) {
+            GlobalScope.launch(Dispatchers.Main) {
+                val firebaseUser = userFirebaseRepository.getUserDetails(userId)
+                user = firebaseUser
 
-        GlobalScope.launch(Dispatchers.Main) {
-            val user = userFirebaseRepository.getUserDetails(userId)
-            viewBinding.user = user
+                firebaseUser?.mail?.let { mail ->
+                    mailIcon.visibility = View.VISIBLE
+                    mailIcon.setOnClickListener { sendMail(mail) }
+                } ?: Log.e("userItem", "No mail found")
 
-            user?.mail?.let { mail ->
-                viewBinding.mailIcon.visibility = View.VISIBLE
-                viewBinding.mailIcon.setOnClickListener { sendMail(mail) }
-            } ?: Log.e("userItem", "No mail found")
-
-            viewBinding.mainLayout.setOnClickListener { navigateToUserProfile(it, userId) }
+                mainLayout.setOnClickListener { navigateToUserProfile(it, userId) }
+            }
         }
     }
 
@@ -47,7 +48,7 @@ class UserItem(val userId: String) : BindableItem<ItemUserBinding>() {
 fun sendMail(destination: String) {
     val intent = Intent(Intent.ACTION_SENDTO) // it's not ACTION_SEND
     intent.type = "text/plain"
-    intent.putExtra(Intent.EXTRA_SUBJECT, "Subject of email")
+    intent.putExtra(Intent.EXTRA_SUBJECT, "Interest for your post")
     intent.putExtra(Intent.EXTRA_TEXT, "Body of email")
     intent.data = Uri.parse("mailto:$destination") // or just "mailto:" for blank
     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK) // this will make such that when user returns to your app, your app is displayed, instead of the email app.
