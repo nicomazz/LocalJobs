@@ -62,4 +62,5 @@
     <string name="share_job_title">Share this job!</string>
     <string name="share_job_text">Title: %1$s\nDescription: %2$s\nCity: %3$s\nGo to LocalJobs app to apply for this job!</string>
     <string name="user_not_found">User not found</string>
+    <string name="image">Image</string>
 </resources>

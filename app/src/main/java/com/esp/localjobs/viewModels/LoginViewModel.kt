@@ -10,6 +10,7 @@ import com.esp.localjobs.data.models.User
 import com.esp.localjobs.data.models.toUser
 import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -66,14 +67,14 @@ class LoginViewModel : ViewModel(), CoroutineScope by MainScope() {
 
     fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == RC_SIGN_IN) {
-            // val response = IdpResponse.fromResultIntent(data)
+             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 authenticationState.value = AuthenticationState.AUTHENTICATED
                 storeNameAndImage()
             } else {
-                Log.e(TAG, "Error in authentication")
+                Log.e(TAG, "Error in authentication: ${response?.error?.errorCode}")
                 authenticationState.value = AuthenticationState.INVALID_AUTHENTICATION
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check
