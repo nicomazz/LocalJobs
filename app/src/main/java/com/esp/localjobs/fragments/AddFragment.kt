@@ -14,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.SeekBar
+import androidx.activity.OnBackPressedCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
@@ -27,6 +28,7 @@ import com.esp.localjobs.data.models.Localizable
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.utils.BitmapUtils
+import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.utils.LoadingViewDialog
 import com.esp.localjobs.utils.MyGlideEngine
 import com.esp.localjobs.viewModels.AddViewModel
@@ -48,6 +50,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlinx.android.synthetic.main.fragment_job_details.*
 
 /**
  * Fragment used to push a job/proposal to remote db
@@ -74,6 +77,8 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mJob = kotlinx.coroutines.Job()
+        postponeEnterTransition()
+        setupBackAnimations()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -92,6 +97,24 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         setupRadioButton()
         setupImagePicker()
         viewDialog = LoadingViewDialog(activity!!)
+        AnimationsUtils.popup(submit_button, 400)
+        startPostponedEnterTransition()
+    }
+
+    private fun setupBackAnimations() {
+        requireActivity().onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    prepareUiToGoBack()
+                }
+                // Handle the back button event
+            })
+    }
+
+    private fun prepareUiToGoBack() {
+        AnimationsUtils.popout(submit_button) {
+            findNavController().popBackStack()
+        }
     }
 
     private fun setupImagePicker() {

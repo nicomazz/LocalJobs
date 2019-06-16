@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.SeekBar
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.forEach
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -19,6 +20,7 @@ import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Localizable
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
+import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.utils.LoadingViewDialog
 import com.esp.localjobs.viewModels.EditViewModel
 import com.google.android.material.snackbar.Snackbar
@@ -28,6 +30,7 @@ import kotlinx.android.synthetic.main.fragment_edit.location_edit_text
 import kotlinx.android.synthetic.main.fragment_edit.range_seekbar
 import kotlinx.android.synthetic.main.fragment_edit.salary_edit_text
 import kotlinx.android.synthetic.main.fragment_edit.title_edit_text
+import kotlinx.android.synthetic.main.fragment_job_details.*
 
 class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener {
     private val args: EditFragmentArgs by navArgs()
@@ -44,6 +47,12 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         return inflater.inflate(R.layout.fragment_edit, container, false)
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        postponeEnterTransition()
+        setupBackAnimations()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         with(args.job) {
             selectedLocation = Location(latitude(), longitude(), city)
@@ -54,6 +63,8 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         setupRadioButton()
         setView() // must be called after setups
         delete_button.setOnClickListener { onDeleteClick() }
+        AnimationsUtils.popup(delete_button, 400)
+        startPostponedEnterTransition()
     }
 
     private fun setView() {
@@ -69,6 +80,22 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
             range?.let {
                 range_seekbar.progress = it
             }
+        }
+    }
+
+    private fun setupBackAnimations() {
+        requireActivity().onBackPressedDispatcher
+            .addCallback(this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    prepareUiToGoBack()
+                }
+                // Handle the back button event
+            })
+    }
+
+    private fun prepareUiToGoBack() {
+        AnimationsUtils.popout(delete_button) {
+            findNavController().popBackStack()
         }
     }
 
@@ -144,7 +171,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
                 getString(R.string.delete_job_success),
                 Snackbar.LENGTH_SHORT
             ).show()
-            findNavController().popBackStack(R.id.destination_jobs, false)
+            findNavController().navigate(R.id.destination_jobs)
         }
 
         val onItemDeleteFailure = { e: Exception ->
