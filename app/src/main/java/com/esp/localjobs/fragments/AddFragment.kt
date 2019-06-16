@@ -124,7 +124,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
                 return@setOnClickListener
             }
             Matisse.from(this)
-                .choose(MimeType.ofImage())
+                .choose(MimeType.of(MimeType.JPEG, MimeType.PNG))
                 .countable(true)
                 .maxSelectable(1)
                 .thumbnailScale(0.85f)
@@ -327,6 +327,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         active = true
         itIsJob = userSelectedJob
         uid = loginViewModel.getUserId()
+        creationMillis = System.currentTimeMillis()
         if (!userSelectedJob) { // if it's a proposal set range
             range = range_seekbar.progress
         }

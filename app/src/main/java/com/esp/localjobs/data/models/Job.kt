@@ -23,7 +23,8 @@ data class Job(
     // can't name it isJob, as firebase would push an attribute with name "job" rather than "isJob"
     var itIsJob: Boolean? = true,
     var uid: String? = "",
-    var imagesUri: List<String> = emptyList()
+    var imagesUri: List<String> = emptyList(),
+    var creationMillis: Long = 0L
 ) : Parcelable, Identifiable, Localizable {
     override fun latLng(): Pair<Double, Double> {
         return Pair(l[0], l[1])

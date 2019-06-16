@@ -258,6 +258,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         salary = salary_edit_text.text.toString()
         active = true
         itIsJob = userSelectedJob
+        creationMillis = args.job.creationMillis
         uid = args.job.uid
         imagesUri = args.job.imagesUri
         if (!userSelectedJob) { // if it's a proposal set range
