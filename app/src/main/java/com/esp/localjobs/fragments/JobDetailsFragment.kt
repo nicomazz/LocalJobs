@@ -8,8 +8,9 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.app.ActivityCompat.postponeEnterTransition
+import androidx.core.app.ActivityCompat.startPostponedEnterTransition
 import androidx.core.view.forEach
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -17,10 +18,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.UserItem
-import com.esp.localjobs.adapters.navigateToUserProfile
 import com.esp.localjobs.data.models.RequestToJob
-import com.esp.localjobs.data.repository.userFirebaseRepository
-import com.esp.localjobs.databinding.FragmentJobDetailsBinding
 import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.viewModels.JobRequestViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
@@ -33,6 +31,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -52,7 +51,6 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     private val jobRequestViewModel: JobRequestViewModel by activityViewModels()
     private val jobId by lazy { args.job.id }
     private val job by lazy { args.job }
-    private lateinit var binding: FragmentJobDetailsBinding
 
     private lateinit var mJob: Job
     override val coroutineContext: CoroutineContext
@@ -64,8 +62,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         savedInstanceState: Bundle?
     ): View {
         setHasOptionsMenu(true)
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_job_details, container, false)
-        return binding.root
+        return inflater.inflate(R.layout.fragment_job_details, container, false)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,7 +107,6 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         setupFabButton(view)
         setupMapFab(view)
         setupInterestedList()
-        setupAuthorDetails()
         AnimationsUtils.popup(contact_fab, 400)
         AnimationsUtils.popup(fabMap, 200)
         startPostponedEnterTransition()
@@ -134,7 +130,8 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         super.onDestroyView()
         jobRequestViewModel.stopListeningForChanges(args.job.id)
     }
-
+    //  TODO Se la persona ha già inviato la disponibilità, il testo dev'essere "contacted"
+    // TODO check if, rather than hiding the button, the visibility can be set to "disabled" (like grey button)
     /**
      * Setup contact fab button.
      * If the user isn't logged or the user owns the job, the button is set to invisible.
@@ -170,8 +167,6 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
                 args.job.id,
                 request
             )
-            view.contact_fab.text = getString(R.string.contacted)
-            view.contact_fab.isEnabled = false
         }
     }
 
@@ -193,36 +188,20 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         if (args.mustBeFetched) jobRequestViewModel.getJob(jobId) else args.job
     }
 
-    private fun setupInterestedList() = launch {
-        val job = getOrFetchJob()
-        if (!isActive || job?.uid != loginViewModel.getUserId())
-            return@launch
-
-        with(jobRequestViewModel) {
-            startListeningForChanges(args.job.id)
-            getInterestedUserLiveData(args.job.id).observe(this@JobDetailsFragment,
-                androidx.lifecycle.Observer {
-                    setUsersInList(it)
-                })
-        }
+    // todo only for the person who created the job
+    private fun setupInterestedList() = with(jobRequestViewModel) {
+        startListeningForChanges(args.job.id)
+        getInterestedUserLiveData(args.job.id).observe(this@JobDetailsFragment,
+            androidx.lifecycle.Observer {
+                setUsersInList(it)
+            })
     }
 
     private fun setUsersInList(usersIds: List<String>) {
-        usersListTitle.visibility = if (usersIds.isEmpty()) View.GONE else View.VISIBLE
-        usersListTitle.setText(R.string.interested_people)
-        usersList.adapter = GroupAdapter<ViewHolder>().apply {
+        interestedTitle.visibility = if (usersIds.isEmpty()) View.INVISIBLE else View.VISIBLE
+        interestedList.adapter = GroupAdapter<ViewHolder>().apply {
             addAll(usersIds.map { UserItem(it) })
         }
-    }
-
-    private fun setupAuthorDetails() = launch {
-        val job = getOrFetchJob()
-        if (!isActive || job?.uid == null)
-            return@launch
-
-        val jobAuthor = userFirebaseRepository.getUserDetails(job.uid as String)
-        binding.setAuthor(jobAuthor)
-        author.setOnClickListener { navigateToUserProfile(it, jobAuthor?.uid) }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
