@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.SeekBar
+import androidx.activity.OnBackPressedCallback
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -18,6 +19,7 @@ import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Localizable
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
+import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.utils.LoadingViewDialog
 import com.esp.localjobs.viewModels.AddViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
@@ -26,6 +28,7 @@ import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.INVALID_A
 import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_add.*
+import kotlinx.android.synthetic.main.fragment_job_details.*
 
 /**
  * Fragment used to push a job/proposal to remote db
@@ -41,6 +44,12 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         inflater.inflate(R.layout.fragment_add, container, false).also {
             setHasOptionsMenu(true)
         }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        postponeEnterTransition()
+        setupBackAnimations()
+    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_navigation, menu)
@@ -58,6 +67,23 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener 
         setupRadioButton()
 
         viewDialog = LoadingViewDialog(activity!!)
+        AnimationsUtils.popup(submit_button, 400)
+        startPostponedEnterTransition()
+    }
+
+    private fun setupBackAnimations() {
+        requireActivity().onBackPressedDispatcher
+            .addCallback(this, OnBackPressedCallback {
+                // Handle the back button event
+                prepareUiToGoBack()
+                true
+            })
+    }
+
+    private fun prepareUiToGoBack() {
+        AnimationsUtils.popout(submit_button) {
+            findNavController().popBackStack()
+        }
     }
 
     private fun ensureLogin() {
