@@ -19,9 +19,11 @@
 
         <action
                 android:id="@+id/action_destination_jobs_to_destination_job_details"
-
                 app:destination="@id/destination_job_details"
-                >
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right">
             <argument
                     android:name="job"
                     app:argType="com.esp.localjobs.data.models.Job"/>
@@ -74,6 +76,13 @@
                 android:name="mustBeFetched"
                 app:argType="boolean"
                 android:defaultValue="false"/>
+        <action
+                android:id="@+id/action_destination_job_details_to_destination_user_profile"
+                app:destination="@id/destination_user_profile"
+                app:enterAnim="@anim/fade_in"
+                app:exitAnim="@anim/fade_out"
+                app:popEnterAnim="@anim/fade_in"
+                app:popExitAnim="@anim/fade_out"/>
     </fragment>
     <fragment
             android:id="@+id/destination_user_profile"
