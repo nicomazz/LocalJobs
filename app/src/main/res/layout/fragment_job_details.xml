@@ -92,7 +92,7 @@
                             android:id="@+id/author_by"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="By: "
+                            android:text="@string/caption_author"
                             style="@style/TextAppearance.AppCompat.Caption"
                             android:layout_marginStart="@dimen/default_margins"
                             android:layout_marginRight="5dp"

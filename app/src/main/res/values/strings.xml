@@ -68,4 +68,5 @@
     <string name="user_not_found">User not found</string>
     <string name="interested_people">Interested people:</string>
     <string name="job_author">Author:</string>
+    <string name="caption_author">Author:</string>
 </resources>

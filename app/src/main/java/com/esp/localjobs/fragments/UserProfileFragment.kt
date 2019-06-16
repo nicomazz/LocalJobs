@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.esp.localjobs.R
+import com.esp.localjobs.data.models.User
 import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.FragmentUserProfileBinding
 import com.esp.localjobs.viewModels.LoginViewModel
@@ -93,7 +94,7 @@ class UserProfileFragment : Fragment(), CoroutineScope {
         if (!isActive)
             return@launch
 
-        binding.user = user
+        binding.user = user ?: User(displayName = getString(R.string.user_not_found))
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
