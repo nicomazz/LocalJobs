@@ -49,7 +49,7 @@ fun sendMail(destination: String) {
 @BindingAdapter("avatar")
 fun ImageView.setAvatar(avatar: String?) {
     if (avatar == null || avatar.isEmpty())
-        Picasso.get().load(R.drawable.default_profile).transform(CropCircleTransformation()).into(this)
+        Picasso.with(context).load(R.drawable.default_profile).placeholder(R.drawable.placeholder).transform(CropCircleTransformation()).into(this)
     else
-        Picasso.get().load(avatar).transform(CropCircleTransformation()).into(this)
+        Picasso.with(context).load(avatar).placeholder(R.drawable.placeholder).transform(CropCircleTransformation()).into(this)
 }

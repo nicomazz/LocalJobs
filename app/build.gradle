@@ -101,7 +101,8 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.2.1'
 
     // picasso image loader
-    implementation 'com.squareup.picasso:picasso:2.71828'
+    // do not update this!
+    implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'jp.wasabeef:picasso-transformations:2.2.1'
 
     // image picker

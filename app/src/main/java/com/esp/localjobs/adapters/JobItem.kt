@@ -3,6 +3,7 @@ package com.esp.localjobs.adapters
 import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import com.esp.localjobs.R
@@ -18,7 +19,9 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
 
     override fun bind(viewBinding: ItemJobBinding, position: Int) = with(viewBinding) {
         job = this@JobItem.job
-        Picasso.get().load("https://picsum.photos/400").into(imageView)
+        this@JobItem.job.imagesUri.firstOrNull()?.let {
+            Picasso.with(cardView.context).load(it).placeholder(R.drawable.placeholder).into(imageView)
+        } ?: Picasso.with(cardView.context).load("https://picsum.photos/400").placeholder(R.drawable.placeholder).into(imageView)
         cardView.clipToOutline = false // without this, shared elements are cropped
         imageView.transitionName = "image_${this@JobItem.job.uid}"
         title.transitionName = "title_${this@JobItem.job.uid}"

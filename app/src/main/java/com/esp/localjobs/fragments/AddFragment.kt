@@ -1,26 +1,38 @@
 package com.esp.localjobs.fragments
 
+import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.SeekBar
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Localizable
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
+import com.esp.localjobs.utils.BitmapUtils
 import com.esp.localjobs.utils.LoadingViewDialog
 import com.esp.localjobs.viewModels.AddViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
-import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.*
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.AUTHENTICATED
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.INVALID_AUTHENTICATION
+import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.UNAUTHENTICATED
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
@@ -32,7 +44,9 @@ import com.zhihu.matisse.engine.impl.PicassoEngine
 import kotlinx.android.synthetic.main.fragment_add.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 
@@ -82,7 +96,11 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
     }
 
     private fun setupImagePicker() {
-        image_picker_view.setOnClickListener {
+        image_edit_text.setOnClickListener {
+            if (missingPermissions()) {
+                askStoragePermissions()
+                return@setOnClickListener
+            }
             Matisse.from(this)
                 .choose(MimeType.ofImage())
                 .countable(true)
@@ -93,6 +111,21 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         }
 
     }
+
+    private fun askStoragePermissions() {
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE),
+            0
+        )
+    }
+
+    private fun missingPermissions() =
+        ContextCompat.checkSelfPermission(context!!, Manifest.permission.READ_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) !=
+                PackageManager.PERMISSION_GRANTED
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -168,43 +201,45 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
             return@launch
         viewDialog.showDialog()
 
-        if (selectedImage != null) {
-            val imageUploadedUri = uploadImageToFirestore()
-        }
+        val imageUploadedUri = selectedImage?.let { uploadImageToFirestore(it) } ?: ""
+        if (!isActive) return@launch;
 
-        val job = parseJobFromView(location)
+        val job = parseJobFromView(location = location, uploadedImageUri = imageUploadedUri)
 
         // called after completion of add task
         val onItemPushSuccess: () -> Unit = {
-            viewDialog.hideDialog()
-            Snackbar.make(
-                activity!!.findViewById<View>(android.R.id.content),
-                getString(R.string.add_job_success),
-                Snackbar.LENGTH_SHORT
-            ).show()
+            hideProgressDialogAndShowSnackbar(getString(R.string.add_job_success))
             findNavController().popBackStack()
         }
         val onItemPushFailure = {
-            viewDialog.hideDialog()
-            Snackbar.make(
-                activity!!.findViewById<View>(android.R.id.content),
-                getString(R.string.add_job_failure),
-                Snackbar.LENGTH_SHORT
-            ).show()
+            hideProgressDialogAndShowSnackbar(getString(R.string.add_job_failure))
         }
         addViewModel.addJobToRepository(job, onSuccess = onItemPushSuccess, onFailure = onItemPushFailure)
+    }
+
+    private fun hideProgressDialogAndShowSnackbar(text: String) {
+        viewDialog.hideDialog()
+        Snackbar.make(
+            activity!!.findViewById<View>(android.R.id.content),
+            text,
+            Snackbar.LENGTH_SHORT
+        ).show()
     }
 
     private suspend fun uploadImageToFirestore(uri: Uri): String? =
         suspendCoroutine { continuation ->
 
             // Create a storage reference from our app
-            val storageRef = FirebaseStorage.getInstance().getReference()
+            val storageRef = FirebaseStorage.getInstance().reference
+            //todo put images in a path with the tag of the job. Otherwise they can be replaced
             val imageRef = storageRef.child("images/${uri.lastPathSegment}")
-            val uploadTask = imageRef.putFile(uri)
+            val bitmap = BitmapUtils.getCompressed(context!!, uri)
+            val uploadTask = imageRef.putBytes(bitmap)
+
+            if (!isActive) return@suspendCoroutine
 
             // Register observers to listen for when the download is done or if it fails
-            val urlTask = uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
+            uploadTask.continueWithTask(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
                 if (!task.isSuccessful) {
                     task.exception?.let {
                         throw it
@@ -214,10 +249,10 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
             }).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val downloadUri = task.result
-                    continuation.resumeWith(downloadUri?.toString())
+                    continuation.resume(downloadUri?.toString())
                 } else {
                     Log.e(TAG, "Error in getting the downlaod link")
-                    continuation.resumeWith(null)
+                    continuation.resume(null)
                     // Handle failures
                     // ...
                 }
@@ -263,7 +298,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
      * @param location position of the job
      * @return Job parsed from the view
      */
-    private fun parseJobFromView(location: Localizable): Job = Job().apply {
+    private fun parseJobFromView(location: Localizable, uploadedImageUri: String): Job = Job().apply {
         val userSelectedJob = type_radio_group.checkedRadioButtonId == R.id.radio_job
 
         title = title_edit_text.text.toString()
@@ -277,6 +312,9 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         if (!userSelectedJob) { // if it's a proposal set range
             range = range_seekbar.progress
         }
+        if (uploadedImageUri.isNotBlank())
+            imagesUri = listOf(uploadedImageUri)
+
 
         return this
     }

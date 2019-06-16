@@ -8,20 +8,20 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.core.app.ActivityCompat.postponeEnterTransition
-import androidx.core.app.ActivityCompat.startPostponedEnterTransition
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.transition.TransitionInflater
+import com.esp.localjobs.LocalJobsApplication
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.UserItem
 import com.esp.localjobs.data.models.RequestToJob
 import com.esp.localjobs.utils.AnimationsUtils
 import com.esp.localjobs.viewModels.JobRequestViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
+import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
@@ -31,7 +31,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.NonCancellable.isActive
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -69,8 +68,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         super.onCreate(savedInstanceState)
         mJob = Job()
         setupSharedElementsTransactions()
-        postponeEnterTransition()
-
+        // postponeEnterTransition()
         // This callback will only be called when MyFragment is at least Started.
         setupBackAnimations()
     }
@@ -95,13 +93,11 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         val trans = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         sharedElementEnterTransition = trans
         sharedElementReturnTransition = trans
-        allowReturnTransitionOverlap = false
-        allowEnterTransitionOverlap = false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Picasso.get().load("https://picsum.photos/400").into(view.imageView)
+        setupImage()
         showJob(view)
         setupTransitionName(view)
         setupFabButton(view)
@@ -109,7 +105,22 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         setupInterestedList()
         AnimationsUtils.popup(contact_fab, 400)
         AnimationsUtils.popup(fabMap, 200)
-        startPostponedEnterTransition()
+    }
+
+    private fun setupImage() = Picasso.with(LocalJobsApplication.applicationContext()).run {
+        (job.imagesUri.firstOrNull()?.let { load(it) } ?: load("https://picsum.photos/400"))
+            .placeholder(R.drawable.placeholder)
+            .into(imageView, object : Callback {
+                override fun onSuccess() {
+                    //todo understand why shared animationa are now working
+                    //  startPostponedEnterTransition()
+                }
+
+                override fun onError() {
+                    //  startPostponedEnterTransition()
+                }
+
+            })
     }
 
     private fun setupTransitionName(view: View) {
@@ -237,8 +248,12 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
             action = Intent.ACTION_SEND
             // todo use this when we will have dynamic link
             // putExtra(Intent.EXTRA_TEXT, "http://esp.localjobs.app/job?job_id=${args.job.id}")
-            putExtra(Intent.EXTRA_TEXT, getString(R.string.share_job_text,
-                job?.title ?: "", job?.description ?: "", job?.city ?: ""))
+            putExtra(
+                Intent.EXTRA_TEXT, getString(
+                    R.string.share_job_text,
+                    job?.title ?: "", job?.description ?: "", job?.city ?: ""
+                )
+            )
             type = "text/plain"
         }
         startActivity(Intent.createChooser(sendIntent, getString(R.string.share_job_title)))
