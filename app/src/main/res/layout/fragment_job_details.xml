@@ -16,31 +16,32 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/contact"
-                android:textColor="@android:color/white"
-                android:textAlignment="center"
-                android:foregroundGravity="center_horizontal"
-                android:gravity="center"
-                android:id="@+id/contact_fab"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:layout_marginBottom="16dp"/>
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/contact"
+            android:textColor="@android:color/white"
+            android:textAlignment="center"
+            android:foregroundGravity="center_horizontal"
+            android:gravity="center"
+            android:id="@+id/contact_fab"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="16dp"
+            app:backgroundTint="@color/colorAccent"
+            />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:id="@+id/fabMap"
-
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginTop="228dp"
-                android:layout_marginEnd="15dp"
-                android:src="@drawable/ic_map_24px"
-                android:tint="@android:color/white"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:id="@+id/fabMap"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="228dp"
+            android:layout_marginEnd="15dp"
+            android:src="@drawable/ic_map_24px"
+            app:backgroundTint="@color/colorAccent"/>
 
         <ImageView
                 android:layout_width="0dp"
