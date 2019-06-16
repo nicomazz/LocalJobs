@@ -125,16 +125,25 @@ class FiltersFragment :
     private fun setupSeekBar() {
         // todo check if a material seekbar is available
         with(range_seek_bar) {
+            setRangeTextView(progress)
             max = MAX_RANGE_KM
             setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                 override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                    range_value.text = progress.toString()
+                    setRangeTextView(progress)
                 }
 
                 override fun onStartTrackingTouch(seekBar: SeekBar?) {}
                 override fun onStopTrackingTouch(seekBar: SeekBar?) {}
             })
         }
+    }
+
+    /**
+     * For setting the value next to seek bar
+     * @param value The value corresponding to the seekbar position
+     */
+    private fun setRangeTextView(value: Int) {
+        range_value.text = getString(R.string.distance, value)
     }
 
     private fun setClickListeners() {
