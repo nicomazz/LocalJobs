@@ -39,10 +39,11 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
         } ?: Glide.with(cardView.context).load("https://picsum.photos/400").placeholder(R.drawable.placeholder).into(
             imageView
         )
+        imageView.clipToOutline = true
         cardView.clipToOutline = false // without this, shared elements are cropped
         cardView.setOnClickListener {
             val extras = JobDetailsFragment.setupTransitionName(
-                imageView, title, description, this@JobItem.job
+                imageView, title, this@JobItem.job
             )
             val action =
                 JobsFragmentDirections.actionDestinationJobsToDestinationJobDetails(this@JobItem.job)

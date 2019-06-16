@@ -26,6 +26,7 @@ import com.bumptech.glide.request.target.Target
 import com.esp.localjobs.LocalJobsApplication
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.UserItem
+import com.esp.localjobs.adapters.navigateToUserProfile
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.RequestToJob
 import com.esp.localjobs.data.repository.userFirebaseRepository
@@ -62,15 +63,13 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
     private lateinit var binding: FragmentJobDetailsBinding
 
     companion object {
-        fun setupTransitionName(imageView: View, title: View, description: View, job: Job): FragmentNavigator.Extras {
+        fun setupTransitionName(imageView: View, title: View, job: Job): FragmentNavigator.Extras {
             imageView.transitionName = "image_${job.uid}"
             title.transitionName = "title_${job.uid}"
-            description.transitionName = "description_${job.uid}"
 
             return FragmentNavigatorExtras(
                 imageView to imageView.transitionName,
-                title to title.transitionName,
-                description to description.transitionName
+                title to title.transitionName
             )
         }
     }
@@ -87,7 +86,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         setHasOptionsMenu(true)
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_job_details, container, false)
         return binding.root.apply {
-            setupTransitionName(imageView, title, description, job)
+            setupTransitionName(imageView, title, job)
         }
     }
 
