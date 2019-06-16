@@ -1,5 +1,6 @@
 package com.esp.localjobs.adapters
 
+import android.text.format.DateUtils
 import android.view.View
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -56,6 +57,15 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
     }
 
     override fun getLayout() = R.layout.item_job
+}
+
+@BindingAdapter("creation_date")
+fun TextView.setCreationDate(creationMillis: Long) {
+    text =
+        if (creationMillis != 0L)
+            DateUtils.getRelativeTimeSpanString(creationMillis, System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS)
+        else
+            context.getString(R.string.in_the_past)
 }
 
 @BindingAdapter("salary")

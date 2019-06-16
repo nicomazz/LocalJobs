@@ -91,6 +91,7 @@
             <TextView
                     android:text="Today"
                     android:id="@+id/date"
+                    app:creation_date="@{job.creationMillis}"
                     android:layout_width="0dp"
                     android:maxLines="1"
                     android:layout_height="wrap_content"
