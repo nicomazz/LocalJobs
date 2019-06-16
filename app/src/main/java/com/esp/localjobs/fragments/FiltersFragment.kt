@@ -15,7 +15,6 @@ import com.esp.localjobs.data.repository.MAX_RANGE_KM
 import com.esp.localjobs.fragments.map.LocationPickerFragment
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import kotlinx.android.synthetic.main.fragment_add.range_value
 import kotlinx.android.synthetic.main.fragment_filters.*
 import kotlinx.android.synthetic.main.fragment_filters.type_radio_group
 
@@ -57,7 +56,7 @@ class FiltersFragment :
     /**
      * Called when apply button is pressed in LocationPickerFragment
      */
-    override fun onLocationPicked(location: Location) {
+    override fun onLocationPicked(location: Location, distance: Int?) {
         userSelectedLocation = location
         val locationText =
             if (location.city != null) location.city
@@ -71,7 +70,6 @@ class FiltersFragment :
         // set hint based on requested type
         salary_view.hint = if (checkedId == R.id.radio_job) getString(R.string.minimum_salary_text)
             else getString(R.string.maximum_salary_text)
-        range_value.text = range.toString()
         range_seek_bar.progress = range
         min_salary_edit_text.setText(salary?.toString() ?: "")
         location?.let {
@@ -90,7 +88,7 @@ class FiltersFragment :
             JobFilter(
                 query = filterViewModel.query, // preserve query value
                 filteringJobs = userSelectedJob,
-                range = range_value.text.toString().toInt(),
+                range = range_seek_bar.progress,
                 salary = min_salary_edit_text.text.toString().toFloatOrNull(),
                 location = userSelectedLocation ?: filterViewModel.location
             )

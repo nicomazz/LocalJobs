@@ -13,9 +13,33 @@
             android:layout_height="0dp"
             mapbox:layout_constraintLeft_toLeftOf="parent"
             mapbox:layout_constraintTop_toTopOf="parent"
-            mapbox:layout_constraintBottom_toTopOf="@id/fragment_buttons"
+            mapbox:layout_constraintBottom_toTopOf="@id/range_div"
             android:layout_margin="20dp">
     </FrameLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/map_fragment"
+            app:layout_constraintBottom_toTopOf="@id/fragment_buttons"
+            android:id="@+id/range_div"
+            android:layout_margin="10dp"
+            android:visibility="gone">
+
+        <androidx.appcompat.widget.AppCompatSeekBar
+                android:id="@+id/range_seek_bar"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/range_value"/>
+
+        <TextView
+                android:id="@+id/range_value"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
