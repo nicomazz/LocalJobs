@@ -21,7 +21,8 @@
             android:layout_margin="10dp"
             android:src="@drawable/ic_location_searching_blue_900_48dp"
             android:padding="10dp"
-            tools:ignore="contentDescription"/>
+            tools:ignore="contentDescription"
+            app:backgroundTint="@color/colorAccent"/>
 
     <ImageView
             android:id="@+id/hovering_marker"

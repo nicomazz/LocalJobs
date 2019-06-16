@@ -1,6 +1,7 @@
 package com.esp.localjobs.viewModels
 
 import android.content.Context
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -93,7 +94,7 @@ class FilterViewModel : ViewModel() {
 
     private fun updateLastUsedFilter(context: Context, newFilter: JobFilter) {
         val sharedPreferences = context.getSharedPreferences("filter", Context.MODE_PRIVATE)
-        with(sharedPreferences.edit()) {
+        sharedPreferences.edit(commit = true) {
             putBoolean("filteringJobs", newFilter.filteringJobs)
             putInt("range", newFilter.range)
             newFilter.location?.let {
@@ -102,7 +103,6 @@ class FilterViewModel : ViewModel() {
                 putString("longitude", lng.toString())
                 putString("city", it.city)
             }
-            commit()
         }
     }
 }
