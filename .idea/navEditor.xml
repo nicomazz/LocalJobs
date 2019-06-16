@@ -42,6 +42,12 @@
                   <entry key="destination_edit">
                     <value>
                       <LayoutPositions>
+                        <option name="myPosition">
+                          <Point>
+                            <option name="x" value="12" />
+                            <option name="y" value="12" />
+                          </Point>
+                        </option>
                         <option name="myPositions">
                           <map>
                             <entry key="action_destination_edit_to_destination_job_details">
@@ -66,6 +72,11 @@
                         <option name="myPositions">
                           <map>
                             <entry key="action_destination_job_details_to_destination_edit">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                            <entry key="action_destination_job_details_to_destination_user_profile">
                               <value>
                                 <LayoutPositions />
                               </value>

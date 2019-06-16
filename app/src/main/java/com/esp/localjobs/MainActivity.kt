@@ -110,8 +110,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun animateRevealColorFromCoordinates(x: Int, y: Int): Animator {
+    private fun animateRevealColorFromCoordinates(x: Int, y: Int): Animator? {
         val viewRoot = mainActivityCoordinator
+        if (viewRoot.isTemporarilyDetached) return null
         val foreground = containerForAnimation
         val finalRadius = Math.hypot(viewRoot.width.toDouble(), viewRoot.height.toDouble()).toFloat()
 

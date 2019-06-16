@@ -60,6 +60,10 @@ object BitmapUtils {
         return byteArrayOutputStream.toByteArray()
     }
 
+    fun bitmapToByteArray(bitmap: Bitmap) = ByteArrayOutputStream().apply {
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, this)
+    }.toByteArray()
+
     fun decodeImageFromFiles(context: Context, uri: Uri, width: Int, height: Int): Bitmap {
         val options = BitmapFactory.Options()
         options.inPreferredConfig = Bitmap.Config.ARGB_8888

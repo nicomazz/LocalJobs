@@ -1,7 +1,6 @@
 package com.esp.localjobs.fragments
 
 import android.Manifest
-import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -22,15 +21,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import com.esafirm.imagepicker.features.ImagePicker
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.models.Localizable
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.fragments.map.LocationPickerFragment
-import com.esp.localjobs.utils.BitmapUtils
 import com.esp.localjobs.utils.AnimationsUtils
+import com.esp.localjobs.utils.BitmapUtils
 import com.esp.localjobs.utils.LoadingViewDialog
-import com.esp.localjobs.utils.MyGlideEngine
 import com.esp.localjobs.viewModels.AddViewModel
 import com.esp.localjobs.viewModels.LoginViewModel
 import com.esp.localjobs.viewModels.LoginViewModel.AuthenticationState.AUTHENTICATED
@@ -41,16 +40,15 @@ import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
-import com.zhihu.matisse.Matisse
-import com.zhihu.matisse.MimeType
+import id.zelory.compressor.Compressor
 import kotlinx.android.synthetic.main.fragment_add.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
-import kotlinx.android.synthetic.main.fragment_job_details.*
 
 /**
  * Fragment used to push a job/proposal to remote db
@@ -66,7 +64,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
     private val loginViewModel: LoginViewModel by activityViewModels()
 
     private var selectedLocation: Location? = null
-    private var selectedImage: Uri? = null
+    private var selectedImage: String? = null
     private lateinit var viewDialog: LoadingViewDialog
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) =
@@ -123,13 +121,11 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
                 askStoragePermissions()
                 return@setOnClickListener
             }
-            Matisse.from(this)
-                .choose(MimeType.of(MimeType.JPEG, MimeType.PNG))
-                .countable(true)
-                .maxSelectable(1)
-                .thumbnailScale(0.85f)
-                .imageEngine(MyGlideEngine())
-                .forResult(IMAGE_REQUEST_CODE)
+            ImagePicker.create(this)
+                .includeVideo(false) // Show video on image picker
+                .single() // single mode
+                .showCamera(true) // show camera or not (true by default)
+                .start(); // start image picker activity with request code
         }
     }
 
@@ -149,11 +145,12 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == IMAGE_REQUEST_CODE && resultCode == RESULT_OK) {
-            val mSelected = Matisse.obtainResult(data)
-            selectedImage = mSelected.firstOrNull()
-            image_edit_text.setText(selectedImage?.toString() ?: "")
-            Log.d("Matisse", "mSelected: $mSelected")
+        if (ImagePicker.shouldHandle(requestCode, resultCode, data)) {
+            val image = ImagePicker.getFirstImageOrNull(data)
+            image_edit_text.setText(image.name)
+            selectedImage = image.path
+            Log.d("imagePicker", "mSelected: ${image.path}")
+
         }
     }
 
@@ -246,15 +243,16 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         ).show()
     }
 
-    private suspend fun uploadImageToFirestore(uri: Uri): String? =
+    private suspend fun uploadImageToFirestore(path: String): String? =
         suspendCoroutine { continuation ->
 
             // Create a storage reference from our app
             val storageRef = FirebaseStorage.getInstance().reference
             // todo put images in a path with the tag of the job. Otherwise they can be replaced
-            val imageRef = storageRef.child("images/${uri.lastPathSegment}")
-            val bitmap = BitmapUtils.getCompressed(context!!, uri)
-            val uploadTask = imageRef.putBytes(bitmap)
+            val imageRef = storageRef.child("images/${File(path).name}")
+            val toImage = Compressor(context).compressToBitmap(File(path))
+            val bytes = BitmapUtils.bitmapToByteArray(toImage)
+            val uploadTask = imageRef.putBytes(bytes)
 
             if (!isActive) return@suspendCoroutine
 
