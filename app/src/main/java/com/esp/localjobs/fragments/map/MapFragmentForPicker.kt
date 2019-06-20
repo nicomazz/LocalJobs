@@ -39,19 +39,28 @@ class MapFragmentForPicker : MapFragment() {
         center_user_position_button.visibility = View.VISIBLE
 
         map.apply {
-            removeOnCameraIdleListener(mapIdleListener)
             addOnCameraIdleListener(mapIdleListener)
+            addOnCameraMoveListener(mapMoveListener)
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         mapboxMap.removeOnCameraIdleListener(mapIdleListener)
+        mapboxMap.removeOnCameraMoveListener(mapMoveListener)
     }
 
     private val mapIdleListener = {
-        if (isAdded) // checking if fragment is attached (otherwise it would throw IllegalStateException)
+        if (isAdded) {
             mapViewModel.setLocation(getCenterLocation())
+        }
+    }
+
+    private val mapMoveListener = {
+        if (isAdded) {
+            val metersPerPixel = mapboxMap.projection.getMetersPerPixelAtLatitude(getCenterLocation().l[0])
+            mapViewModel.setMetersPerPixel(metersPerPixel)
+        }
     }
 
     /**

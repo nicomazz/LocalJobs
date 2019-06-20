@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.data.repository.MAX_RANGE_KM
@@ -115,6 +116,10 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         apply_button.setOnClickListener { onApply() }
         cancel_button.setOnClickListener { dismiss() }
         startDistance?.let { setupDistanceSeekbarUI(it) }
+
+        mapViewModel.metersPerPixel.observe(viewLifecycleOwner, Observer {
+            updateCircleRadius(range_seek_bar.progress*1000)
+        })
     }
 
     override fun onResume() {
@@ -152,6 +157,7 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         max = MAX_RANGE_KM
         progress = initDistance
         range_value.text = getString(R.string.distance, progress)
+        updateCircleRadius(progress*1000)
         setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 
@@ -159,7 +165,21 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 range_value.text = getString(R.string.distance, progress)
+                updateCircleRadius(progress*1000)
             }
         })
+    }
+
+    /**
+     * Update circle size overlay
+     * @param radius Radius in meters
+     */
+    private fun updateCircleRadius(radius: Int) {
+        val location = mapViewModel.location.value
+        val metersPerPixel = mapViewModel.metersPerPixel.value
+        if (location != null && metersPerPixel != null) {
+            map_fragment.radius = (radius / metersPerPixel).toFloat()
+            map_fragment.invalidate()
+        }
     }
 }
