@@ -116,6 +116,7 @@ class MainActivity : AppCompatActivity() {
         val foreground = containerForAnimation
         val finalRadius = Math.hypot(viewRoot.width.toDouble(), viewRoot.height.toDouble()).toFloat()
 
+        if (!viewRoot.isAttachedToWindow) return null
         val anim = ViewAnimationUtils.createCircularReveal(viewRoot, x, y, 0f, finalRadius)
         anim.duration = 300
         val initialColor = ContextCompat.getColor(this, R.color.colorPrimary)

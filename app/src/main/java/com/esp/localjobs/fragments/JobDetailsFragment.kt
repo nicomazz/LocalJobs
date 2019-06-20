@@ -262,10 +262,10 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
 
     private fun setupAuthorDetails() = launch {
         val job = getOrFetchJob()
-        if (!isActive || job?.uid == null)
-            return@launch
-
+        if (job?.uid == null) return@launch
         val jobAuthor = userFirebaseRepository.getUserDetails(job.uid as String)
+        if (!isActive)
+            return@launch
         binding.setAuthor(jobAuthor)
         author.setOnClickListener { navigateToUserProfile(it, jobAuthor?.uid) }
     }
