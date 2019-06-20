@@ -150,7 +150,6 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
             image_edit_text.setText(image.name)
             selectedImage = image.path
             Log.d("imagePicker", "mSelected: ${image.path}")
-
         }
     }
 

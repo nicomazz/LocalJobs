@@ -46,13 +46,14 @@ object AnimationsUtils {
     }
 
     fun animateToFinalColor(view: View, colorFrom: Int, colorTo: Int, onEnd: () -> Unit = {}) {
-
-        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo)
-        colorAnimation.duration = 150 // milliseconds
-        colorAnimation.addUpdateListener { animator -> view.setBackgroundColor(animator.animatedValue as Int) }
-        colorAnimation.start()
-        colorAnimation.doOnEnd {
-            onEnd()
+        if (!view.isAttachedToWindow) return
+        ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo).apply {
+            duration = 150 // milliseconds
+            addUpdateListener { animator -> view.setBackgroundColor(animator.animatedValue as Int) }
+            doOnEnd {
+                onEnd()
+            }
+            start()
         }
     }
 }
