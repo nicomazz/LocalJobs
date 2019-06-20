@@ -7,7 +7,7 @@
                                                    tools:context=".fragments.map.LocationPickerFragment"
                                                    xmlns:mapbox="http://schemas.android.com/apk/res-auto">
 
-    <FrameLayout
+    <com.esp.localjobs.views.CircleOverlayView
             android:id="@+id/map_fragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -15,7 +15,7 @@
             mapbox:layout_constraintTop_toTopOf="parent"
             mapbox:layout_constraintBottom_toTopOf="@id/range_div"
             android:layout_margin="20dp">
-    </FrameLayout>
+    </com.esp.localjobs.views.CircleOverlayView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
