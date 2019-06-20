@@ -37,13 +37,9 @@ class CircleOverlayView : FrameLayout {
         return true
     }
 
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
-        bitmap = null
-    }
-
     private fun createWindowFrame(radius: Float) {
-        bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        if (bitmap == null)
+            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
         val osCanvas = Canvas(bitmap!!)
 
         val outerRectangle = RectF(0f, 0f, width.toFloat(), height.toFloat())
