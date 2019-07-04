@@ -64,12 +64,12 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
     /**
      * Center the map on a location. Last known position is used when target is null
      */
-    fun centerMap(targetLocation: Location? = null) {
+    fun centerMap(targetLocation: Location? = null, zoom: Double = 12.0) {
         if (targetLocation != null)
-            navigateToPosition(targetLocation)
+            navigateToPosition(targetLocation, zoom)
         else {
             PositionManager.getLastKnownPosition(context!!)?.let {
-                navigateToPosition(Location(it.latitude, it.longitude))
+                navigateToPosition(Location(it.latitude, it.longitude), zoom)
             } ?: Toast.makeText(context, getString(R.string.position_unknown_toast), Toast.LENGTH_LONG).show()
         }
     }
@@ -77,7 +77,7 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
     /**
      * Center the map view on given location.
      */
-    private fun navigateToPosition(location: Location) {
+    private fun navigateToPosition(location: Location, zoom: Double) {
         // center view on user location
         val cameraPosition = CameraPosition.Builder()
             .target(
@@ -86,9 +86,9 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
                     location.l[1]
                 )
             )
-            .zoom(12.0)
+            .zoom(zoom)
             .build()
-        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000)
+        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
 
     override fun onResume() {

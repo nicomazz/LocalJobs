@@ -14,7 +14,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
-import com.esp.localjobs.data.repository.MAX_RANGE_KM
 import com.esp.localjobs.utils.GeocodingUtils
 import com.esp.localjobs.viewModels.MapViewModel
 import kotlinx.android.synthetic.main.fragment_location_picker.*
@@ -22,6 +21,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.pow
 
 /**
  * A DialogFragment to pick a location displaying a map
@@ -77,6 +77,10 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
      * onLocationPicked is called when the apply button is pressed
      */
     interface OnLocationPickedListener {
+        /**
+         * @param location The picked location
+         * @param distance Distance range in kilometers
+         */
         fun onLocationPicked(location: Location, distance: Int?)
     }
 
@@ -118,7 +122,8 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         startDistance?.let { setupDistanceSeekbarUI(it) }
 
         mapViewModel.metersPerPixel.observe(viewLifecycleOwner, Observer {
-            updateCircleRadius(range_seek_bar.progress*1000)
+            val radius = seekbarToDistance(range_seek_bar.progress)
+            updateCircleRadius(radius)
         })
     }
 
@@ -134,7 +139,11 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
             progress_bar.visibility = View.VISIBLE
             launch {
                 it.city = GeocodingUtils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
-                val distance = if (startDistance != null) range_seek_bar.progress else null
+                val distance =
+                    if (startDistance != null) // if startDistance is null, distance seekbar is disabled
+                        seekbarToDistance(range_seek_bar.progress) / 1000
+                    else
+                        null
                 apply(it, distance)
             }
         }
@@ -142,6 +151,8 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
 
     /**
      * Return the picked location to the target fragment and dismiss this fragment
+     * @param location The picked location
+     * @param distance Distance range in kilometers
      */
     private fun apply(location: Location, distance: Int?) = CoroutineScope(Dispatchers.Main).launch {
         if (location.city == null)
@@ -154,20 +165,19 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
 
     private fun setupDistanceSeekbarUI(initDistance: Int) = with(range_seek_bar) {
         range_div.visibility = View.VISIBLE
-        max = MAX_RANGE_KM
-        progress = initDistance
-        range_value.text = getString(R.string.distance, progress)
-        updateCircleRadius(progress*1000)
         setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                range_value.text = getString(R.string.distance, progress)
-                updateCircleRadius(progress*1000)
+                val radius = seekbarToDistance(progress)
+                range_value.text = getString(R.string.distance, radius / 1000)
+                mapViewModel.setRadius(radius)
             }
         })
+
+        progress = initDistance
     }
 
     /**
@@ -175,11 +185,20 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
      * @param radius Radius in meters
      */
     private fun updateCircleRadius(radius: Int) {
-        val location = mapViewModel.location.value
         val metersPerPixel = mapViewModel.metersPerPixel.value
-        if (location != null && metersPerPixel != null) {
+        if (metersPerPixel != null) {
             map_fragment.radius = (radius / metersPerPixel).toFloat()
             map_fragment.invalidate()
         }
+    }
+
+    /**
+     * Convert 0-100 seekbar position into a distance in meters
+     * @param progress A value from 0 to 100
+     * @return Distance in meters
+     */
+    private fun seekbarToDistance(progress: Int): Int {
+        val progress = progress.toDouble()
+        return 10 * progress.pow(2.0).toInt() + 1000
     }
 }

@@ -3,11 +3,15 @@ package com.esp.localjobs.fragments.map
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.esp.localjobs.data.models.Location
 import com.esp.localjobs.viewModels.MapViewModel
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import kotlinx.android.synthetic.main.fragment_map.*
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.log2
 
 private const val ARG_START_LATITUDE = "start-location-latitude"
 private const val ARG_START_LONGITUDE = "start-location-longitude"
@@ -42,6 +46,13 @@ class MapFragmentForPicker : MapFragment() {
             addOnCameraIdleListener(mapIdleListener)
             addOnCameraMoveListener(mapMoveListener)
         }
+
+        mapViewModel.radius.observe(viewLifecycleOwner, Observer { radius ->
+            if (radius != null) {
+                val zoom = distanceToZoom(radius)
+                centerMap(mapViewModel.location.value, zoom)
+            }
+        })
     }
 
     override fun onDestroyView() {
@@ -64,12 +75,23 @@ class MapFragmentForPicker : MapFragment() {
     }
 
     /**
+     * Convert distance in meters to zoom level which contains that circle radius
+     * @param distance Distance in meters
+     * @return Corresponding zoom level
+     */
+    private fun distanceToZoom(distance: Int): Double {
+        val earthCircumference = 40075017
+        val latitude = mapboxMap.cameraPosition.target.latitude * PI / 180
+        return log2(earthCircumference*cos(latitude) / (distance*3))
+    }
+
+    /**
      * Get location coordinates of the center of the map-view
      * @return null if could not retrieve
      */
     private fun getCenterLocation(): Location {
         // get location coordinates of the center of the map-view
-        val latLng = mapboxMap.cameraPosition.target!!
+        val latLng = mapboxMap.cameraPosition.target
         return Location(latLng.latitude, latLng.longitude)
     }
 

@@ -176,7 +176,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
                 .includeVideo(false) // Show video on image picker
                 .single() // single mode
                 .showCamera(true) // show camera or not (true by default)
-                .start(); // start image picker activity with request code
+                .start() // start image picker activity with request code
         }
     }
 
