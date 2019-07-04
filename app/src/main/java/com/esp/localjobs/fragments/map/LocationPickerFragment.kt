@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * A DialogFragment to pick a location displaying a map
@@ -163,6 +164,9 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         dismiss()
     }
 
+    /**
+     * @param initDistance Initial distance range in kilometers
+     */
     private fun setupDistanceSeekbarUI(initDistance: Int) = with(range_seek_bar) {
         range_div.visibility = View.VISIBLE
         setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -177,7 +181,7 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
             }
         })
 
-        progress = initDistance
+        progress = distanceToSeekbar(initDistance)
     }
 
     /**
@@ -200,5 +204,15 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
     private fun seekbarToDistance(progress: Int): Int {
         val progress = progress.toDouble()
         return 10 * progress.pow(2.0).toInt() + 1000
+    }
+
+    /**
+     * Convert distance range into the corresponding value on seekbar
+     * @param distance Distance range in kilometers
+     * @return Seekbar position value from 0 to 100
+     */
+    private fun distanceToSeekbar(distance: Int): Int {
+        val distanceInMeters = distance * 1000.0
+        return sqrt((distanceInMeters - 1000) / 10).toInt() + 1
     }
 }
