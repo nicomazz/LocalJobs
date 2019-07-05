@@ -91,7 +91,7 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
             .zoom(zoom)
             .build()
 
-        if(animate)
+        if (animate)
             mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000)
         else
             mapboxMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
