@@ -14,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.data.repository.MAX_RANGE_KM
 import com.esp.localjobs.utils.GeocodingUtils
 import com.esp.localjobs.viewModels.MapViewModel
 import kotlinx.android.synthetic.main.fragment_location_picker.*
@@ -36,6 +37,8 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         const val ARG_START_DISTANCE = "start-distance"
         private const val TAG = "LocationPickerFragment"
         private const val REQUEST_CODE = 0
+        private const val SEEKBAR_STEPS = 40
+        private const val MIN_DISTANCE = 1000
 
         /**
          * Create a new instance and show dialog fragment
@@ -142,7 +145,7 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
                 it.city = GeocodingUtils.coordinatesToCity(context!!, it.latLng().first, it.latLng().second)
                 val distance =
                     if (startDistance != null) // if startDistance is null, distance seekbar is disabled
-                        seekbarToDistance(range_seek_bar.progress) / 1000
+                        seekbarToDistance(range_seek_bar.progress).metersToKm()
                     else
                         null
                 apply(it, distance)
@@ -169,6 +172,7 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
      */
     private fun setupDistanceSeekbarUI(initDistance: Int) = with(range_seek_bar) {
         range_div.visibility = View.VISIBLE
+        max = SEEKBAR_STEPS
         setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
 
@@ -176,19 +180,19 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 val radius = seekbarToDistance(progress)
-                range_value.text = getString(R.string.distance, radius / 1000)
+                range_value.text = getString(R.string.distance, radius.metersToKm())
                 mapViewModel.setRadius(radius)
             }
         })
 
-        progress = distanceToSeekbar(initDistance)
+        progress = distanceToSeekbar(initDistance.kmToMeters())
     }
 
     /**
      * Update circle size overlay
      * @param radius Radius in meters
      */
-    private fun updateCircleRadius(radius: Int) {
+    private fun updateCircleRadius(radius: Double) {
         val metersPerPixel = mapViewModel.metersPerPixel.value
         if (metersPerPixel != null) {
             map_fragment.radius = (radius / metersPerPixel).toFloat()
@@ -201,18 +205,20 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
      * @param progress A value from 0 to 100
      * @return Distance in meters
      */
-    private fun seekbarToDistance(progress: Int): Int {
-        val progress = progress.toDouble()
-        return 10 * progress.pow(2.0).toInt() + 1000
-    }
+    private fun seekbarToDistance(progress: Int): Double =
+        quadraticCoefficient() * progress.toDouble().pow(2) + MIN_DISTANCE // distance = k*progress^2 + c
 
     /**
      * Convert distance range into the corresponding value on seekbar
-     * @param distance Distance range in kilometers
+     * @param distance Distance range in meters
      * @return Seekbar position value from 0 to 100
      */
-    private fun distanceToSeekbar(distance: Int): Int {
-        val distanceInMeters = distance * 1000.0
-        return sqrt((distanceInMeters - 1000) / 10).toInt() + 1
-    }
+    private fun distanceToSeekbar(distance: Double): Int =
+        sqrt((distance - MIN_DISTANCE) / quadraticCoefficient()).toInt() + 1
+
+    private fun quadraticCoefficient() =
+        (MAX_RANGE_KM.kmToMeters() - MIN_DISTANCE) / SEEKBAR_STEPS.toDouble().pow(2)
+
+    private fun Double.metersToKm() = (this / 1000).toInt()
+    private fun Int.kmToMeters() = this.toDouble() * 1000.0
 }

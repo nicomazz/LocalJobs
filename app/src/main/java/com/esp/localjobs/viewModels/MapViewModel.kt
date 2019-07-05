@@ -9,7 +9,7 @@ class MapViewModel : ViewModel() {
 
     private val _location = MutableLiveData<Location?>()
     private val _metersPerPixel = MutableLiveData<Double?>()
-    private val _radius = MutableLiveData<Int?>()
+    private val _radius = MutableLiveData<Double?>()
 
     val location: LiveData<Location?>
         get() = _location
@@ -17,10 +17,10 @@ class MapViewModel : ViewModel() {
     val metersPerPixel: LiveData<Double?>
         get() = _metersPerPixel
 
-    val radius: LiveData<Int?>
+    val radius: LiveData<Double?>
         get() = _radius
 
     fun setLocation(newLocation: Location) = _location.postValue(newLocation)
     fun setMetersPerPixel(metersPerPixel: Double) = _metersPerPixel.postValue(metersPerPixel)
-    fun setRadius(radius: Int) = _radius.postValue(radius)
+    fun setRadius(radius: Double) = _radius.postValue(radius)
 }

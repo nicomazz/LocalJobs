@@ -50,7 +50,7 @@ class MapFragmentForPicker : MapFragment() {
         mapViewModel.radius.observe(viewLifecycleOwner, Observer { radius ->
             if (radius != null) {
                 val zoom = distanceToZoom(radius)
-                centerMap(mapViewModel.location.value, zoom)
+                centerMap(mapViewModel.location.value, zoom, false)
             }
         })
     }
@@ -64,14 +64,19 @@ class MapFragmentForPicker : MapFragment() {
     private val mapIdleListener = {
         if (isAdded) {
             mapViewModel.setLocation(getCenterLocation())
+            updateMetersPerPixel()
         }
     }
 
     private val mapMoveListener = {
         if (isAdded) {
-            val metersPerPixel = mapboxMap.projection.getMetersPerPixelAtLatitude(getCenterLocation().l[0])
-            mapViewModel.setMetersPerPixel(metersPerPixel)
+            updateMetersPerPixel()
         }
+    }
+
+    private fun updateMetersPerPixel() {
+        val metersPerPixel = mapboxMap.projection.getMetersPerPixelAtLatitude(getCenterLocation().l[0])
+        mapViewModel.setMetersPerPixel(metersPerPixel)
     }
 
     /**
@@ -79,7 +84,7 @@ class MapFragmentForPicker : MapFragment() {
      * @param distance Distance in meters
      * @return Corresponding zoom level
      */
-    private fun distanceToZoom(distance: Int): Double {
+    private fun distanceToZoom(distance: Double): Double {
         val earthCircumference = 40075017
         val latitude = mapboxMap.cameraPosition.target.latitude * PI / 180
         return log2(earthCircumference*cos(latitude) / (distance*3))
