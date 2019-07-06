@@ -49,6 +49,11 @@
                 app:exitAnim="@anim/slide_out_left"
                 app:popEnterAnim="@anim/slide_in_left"
                 app:popExitAnim="@anim/slide_out_right"/>
+        <argument
+                android:name="job"
+                app:argType="com.esp.localjobs.data.models.Job"
+                app:nullable="true"
+                android:defaultValue="@null"/>
     </fragment>
     <fragment
             android:id="@+id/destination_job_details"
