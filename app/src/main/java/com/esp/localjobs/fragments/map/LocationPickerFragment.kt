@@ -37,7 +37,7 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         const val ARG_START_DISTANCE = "start-distance"
         private const val TAG = "LocationPickerFragment"
         private const val REQUEST_CODE = 0
-        private const val SEEKBAR_STEPS = 40
+        private const val SEEKBAR_STEPS = 50
         private const val MIN_DISTANCE = 1000
 
         /**
@@ -123,12 +123,11 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
 
         apply_button.setOnClickListener { onApply() }
         cancel_button.setOnClickListener { dismiss() }
-        startDistance?.let { setupDistanceSeekbarUI(it) }
 
-        mapViewModel.metersPerPixel.observe(viewLifecycleOwner, Observer {
-            val radius = seekbarToDistance(range_seek_bar.progress)
-            updateCircleRadius(radius)
-        })
+        startDistance?.let { distance ->
+            setupDistanceSeekbarUI(distance)
+            setupCircleOverlay()
+        } ?: mapViewModel.setRadius(null)
     }
 
     override fun onResume() {
@@ -188,16 +187,22 @@ class LocationPickerFragment : DialogFragment(), CoroutineScope {
         progress = distanceToSeekbar(initDistance.kmToMeters())
     }
 
+    private fun setupCircleOverlay() {
+        mapViewModel.metersPerPixel.observe(viewLifecycleOwner, Observer { metersPerPixel ->
+            if (metersPerPixel != null) {
+                val radius = seekbarToDistance(range_seek_bar.progress)
+                updateCircleRadius(radius, metersPerPixel)
+            }
+        })
+    }
+
     /**
      * Update circle size overlay
      * @param radius Radius in meters
      */
-    private fun updateCircleRadius(radius: Double) {
-        val metersPerPixel = mapViewModel.metersPerPixel.value
-        if (metersPerPixel != null) {
-            map_fragment.radius = (radius / metersPerPixel).toFloat()
-            map_fragment.invalidate()
-        }
+    private fun updateCircleRadius(radius: Double, metersPerPixel: Double) {
+        map_fragment.radius = (radius / metersPerPixel).toFloat()
+        map_fragment.invalidate()
     }
 
     /**

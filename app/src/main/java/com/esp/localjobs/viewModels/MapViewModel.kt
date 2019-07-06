@@ -22,5 +22,5 @@ class MapViewModel : ViewModel() {
 
     fun setLocation(newLocation: Location) = _location.postValue(newLocation)
     fun setMetersPerPixel(metersPerPixel: Double) = _metersPerPixel.postValue(metersPerPixel)
-    fun setRadius(radius: Double) = _radius.postValue(radius)
+    fun setRadius(radius: Double?) = _radius.postValue(radius)
 }
