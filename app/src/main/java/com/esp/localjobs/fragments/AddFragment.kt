@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.esafirm.imagepicker.features.ImagePicker
 import com.esp.localjobs.R
 import com.esp.localjobs.data.models.Job
@@ -42,6 +43,13 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import id.zelory.compressor.Compressor
 import kotlinx.android.synthetic.main.fragment_add.*
+import kotlinx.android.synthetic.main.fragment_add.delete_button
+import kotlinx.android.synthetic.main.fragment_add.description_edit_text
+import kotlinx.android.synthetic.main.fragment_add.location_edit_text
+import kotlinx.android.synthetic.main.fragment_add.range_seekbar
+import kotlinx.android.synthetic.main.fragment_add.salary_edit_text
+import kotlinx.android.synthetic.main.fragment_add.title_edit_text
+import kotlinx.android.synthetic.main.fragment_edit.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
@@ -51,7 +59,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 /**
- * Fragment used to push a job/proposal to remote db
+ * Fragment used to create or edit a job. If a job is provided in the args then the fragment will be in 'edit mode'
  */
 class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener, CoroutineScope {
 
@@ -62,6 +70,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
     private val IMAGE_REQUEST_CODE: Int = 42
     private val addViewModel: AddViewModel by activityViewModels()
     private val loginViewModel: LoginViewModel by activityViewModels()
+    private val args: AddFragmentArgs by navArgs()
 
     private var selectedLocation: Location? = null
     private var selectedImage: String? = null
@@ -80,14 +89,26 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_navigation, menu)
         menu.forEach { it.isVisible = false }
+        if (args.job != null) {
+            inflater.inflate(R.menu.menu_save, menu)
+            val saveItem = menu.findItem(R.id.menu_save_item)
+            saveItem.setOnMenuItemClickListener {
+                onSaveClick()
+                true
+            }
+        }
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         ensureLogin()
+
+        args.job?.let {
+            setupEditMode(it)
+        } ?: setupAddMode()
 
         setupDistanceSeekbarUI()
         submit_button.setOnClickListener { onSubmit() }
@@ -127,6 +148,35 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
                 .showCamera(true) // show camera or not (true by default)
                 .start(); // start image picker activity with request code
         }
+    }
+
+    /**
+     * Show and set delete and save button, set job data
+     */
+    private fun setupEditMode(job: Job) = with(job) {
+        selectedLocation = Location(latitude(), longitude(), city)
+        if (itIsJob != false) {
+            type_radio_group.check(R.id.radio_proposal)
+            range_div.visibility = View.VISIBLE
+        }
+        else
+            type_radio_group.check(R.id.radio_job)
+
+        title_edit_text.setText(title)
+        description_edit_text.setText(description)
+        range?.let { range_seekbar.progress = it }
+        location_edit_text.setText(city)
+        salary_edit_text.setText(salary)
+
+        delete_button.visibility = View.VISIBLE
+        delete_button.setOnClickListener { onDeleteClick() }
+    }
+
+    /**
+     * Show and set publish button
+     */
+    private fun setupAddMode() {
+        submit_button.visibility = View.VISIBLE
     }
 
     private fun askStoragePermissions() {
@@ -185,6 +235,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
     }
 
     private fun setupDistanceSeekbarUI() {
+
         setRangeTextView(range_seekbar.progress)
         range_seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
@@ -332,6 +383,86 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
             imagesUri = listOf(uploadedImageUri)
 
         return this
+    }
+
+    /**
+     * Update modified fields of the job
+     */
+    private fun onSaveClick() {
+        val location = selectedLocation
+        if (!validateForm() || location == null)
+            return
+
+        val newJob = parseJobFromView(location, "")
+        newJob.id = args.job?.id ?: return
+
+        if (newJob == args.job) {
+            Snackbar.make(
+                activity!!.findViewById<View>(android.R.id.content),
+                getString(R.string.edit_no_changes_detected),
+                Snackbar.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        // called after completion of add task
+        val onItemEditSuccess: () -> Unit = {
+            viewDialog.hideDialog()
+            Snackbar.make(
+                activity!!.findViewById<View>(android.R.id.content),
+                getString(R.string.edit_job_success),
+                Snackbar.LENGTH_SHORT
+            ).show()
+
+            // navigate to jobDetails showing updated job
+            val action = AddFragmentDirections.actionDestinationAddToDestinationJobDetails(newJob)
+            findNavController().navigate(action.actionId, action.arguments)
+        }
+
+        val onItemEditFailure = { e: Exception ->
+            viewDialog.hideDialog()
+            Snackbar.make(
+                activity!!.findViewById<View>(android.R.id.content),
+                getString(R.string.edit_job_failure) + e.toString(),
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+        Log.d(TAG, "old job: ${args.job}\nnew job: $newJob")
+
+        viewDialog.showDialog()
+
+        addViewModel.update(
+            id = newJob.id,
+            newJob = newJob,
+            onSuccess = onItemEditSuccess,
+            onFailure = onItemEditFailure
+        )
+    }
+
+    private fun onDeleteClick() {
+        val onItemDeleteSuccess: () -> Unit = {
+            viewDialog.hideDialog()
+            Snackbar.make(
+                activity!!.findViewById<View>(android.R.id.content),
+                getString(R.string.delete_job_success),
+                Snackbar.LENGTH_SHORT
+            ).show()
+            findNavController().navigate(R.id.destination_jobs)
+        }
+
+        val onItemDeleteFailure = { e: Exception ->
+            viewDialog.hideDialog()
+            Snackbar.make(
+                activity!!.findViewById<View>(android.R.id.content),
+                getString(R.string.delete_job_failure) + e.toString(),
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+        viewDialog.showDialog()
+        args.job?.let {
+            addViewModel.delete(it.id, onSuccess = onItemDeleteSuccess, onFailure = onItemDeleteFailure)
+        }
+
     }
 
     companion object {
