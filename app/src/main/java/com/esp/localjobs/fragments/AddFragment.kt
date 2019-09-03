@@ -63,7 +63,6 @@ import kotlin.coroutines.suspendCoroutine
  * Fragment used to create or edit a job. If a job is provided in the args then the fragment will be in 'edit mode'
  */
 class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener, CoroutineScope {
-    // TODO fix image edit on edit mode
     private lateinit var mJob: kotlinx.coroutines.Job
     override val coroutineContext: kotlin.coroutines.CoroutineContext
         get() = mJob + Dispatchers.Main
