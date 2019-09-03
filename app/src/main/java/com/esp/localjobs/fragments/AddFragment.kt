@@ -127,8 +127,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         selectedLocation = Location(latitude(), longitude(), city)
         if (itIsJob == true) {
             type_radio_group.check(R.id.radio_job)
-        }
-        else {
+        } else {
             type_radio_group.check(R.id.radio_proposal)
             range_div.visibility = View.VISIBLE
         }
@@ -401,7 +400,7 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         } else {
             uploadImageToFirestore(selectedImage as String) ?: ""
         }
-        //if (!isActive) return@launch
+        if (!isActive) return@launch
 
         val newJob = parseJobFromView(location, imageUploadedUri)
         newJob.id = args.job?.id ?: return@launch
@@ -452,7 +451,6 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         args.job?.let {
             addViewModel.delete(it.id, onSuccess = onItemDeleteSuccess, onFailure = onItemDeleteFailure)
         }
-
     }
 
     companion object {
