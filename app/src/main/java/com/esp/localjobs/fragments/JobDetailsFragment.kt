@@ -278,7 +278,7 @@ class JobDetailsFragment : Fragment(), CoroutineScope {
         menu.findItem(R.id.menu_edit_item).also {
             it.setOnMenuItemClickListener {
                 val action =
-                    JobDetailsFragmentDirections.actionDestinationJobDetailsToDestinationEdit(args.job)
+                    JobDetailsFragmentDirections.actionDestinationJobDetailsToDestinationAdd(args.job)
                 findNavController().navigate(action.actionId, action.arguments)
                 true
             }

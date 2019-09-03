@@ -33,7 +33,7 @@ import kotlinx.android.synthetic.main.fragment_edit.title_edit_text
 import kotlinx.android.synthetic.main.fragment_job_details.*
 
 class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener {
-    private val args: EditFragmentArgs by navArgs()
+//    private val args: EditFragmentArgs by navArgs()
     private val editViewModel: EditViewModel by activityViewModels()
     private var selectedLocation: Location? = null
     private lateinit var viewDialog: LoadingViewDialog
@@ -54,9 +54,9 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        with(args.job) {
-            selectedLocation = Location(latitude(), longitude(), city)
-        }
+//        with(args.job) {
+//            selectedLocation = Location(latitude(), longitude(), city)
+//        }
         viewDialog = LoadingViewDialog(activity!!)
         setupDistanceSeekbarUI()
         setupLocationEditTextUI()
@@ -68,7 +68,8 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     }
 
     private fun setView() {
-        with(args.job) {
+//        with(args.job) {
+        with(Job()) {
             title_edit_text.setText(title)
             location_edit_text.setText(city)
             salary_edit_text.setText(salary?.toString() ?: "")
@@ -119,14 +120,14 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
         val newJob = parseJobFromView(location)
 
-        if (newJob == args.job) {
-            Snackbar.make(
-                activity!!.findViewById<View>(android.R.id.content),
-                getString(R.string.edit_no_changes_detected),
-                Snackbar.LENGTH_SHORT
-            ).show()
-            return
-        }
+//        if (newJob == args.job) {
+//            Snackbar.make(
+//                activity!!.findViewById<View>(android.R.id.content),
+//                getString(R.string.edit_no_changes_detected),
+//                Snackbar.LENGTH_SHORT
+//            ).show()
+//            return
+//        }
 
         // called after completion of add task
         val onItemEditSuccess: () -> Unit = {
@@ -138,8 +139,8 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
             ).show()
 
             // navigate to jobDetails showing updated job
-            val action = EditFragmentDirections.actionDestinationEditToDestinationJobDetails(newJob)
-            findNavController().navigate(action.actionId, action.arguments)
+//            val action = EditFragmentDirections.actionDestinationEditToDestinationJobDetails(newJob)
+//            findNavController().navigate(action.actionId, action.arguments)
         }
 
         val onItemEditFailure = { e: Exception ->
@@ -151,7 +152,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
             ).show()
         }
 
-        Log.d(TAG, "old job: ${args.job}\nnew job: $newJob")
+//        Log.d(TAG, "old job: ${args.job}\nnew job: $newJob")
 
         viewDialog.showDialog()
 
@@ -183,7 +184,7 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
             ).show()
         }
         viewDialog.showDialog()
-        editViewModel.delete(args.job.id, onSuccess = onItemDeleteSuccess, onFailure = onItemDeleteFailure)
+//        editViewModel.delete(args.job.id, onSuccess = onItemDeleteSuccess, onFailure = onItemDeleteFailure)
     }
 
     private fun setupDistanceSeekbarUI() {
@@ -250,20 +251,20 @@ class EditFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     private fun parseJobFromView(location: Localizable): Job = Job().apply {
         val userSelectedJob = edit_type_radio_group.checkedRadioButtonId == R.id.radio_job
 
-        id = args.job.id
-        title = title_edit_text.text.toString()
-        description = description_edit_text.text.toString()
-        l = location.latLng().toList()
-        city = location_edit_text.text.toString()
-        salary = salary_edit_text.text.toString()
-        active = true
-        itIsJob = userSelectedJob
-        creationMillis = args.job.creationMillis
-        uid = args.job.uid
-        imagesUri = args.job.imagesUri
-        if (!userSelectedJob) { // if it's a proposal set range
-            range = range_seekbar.progress
-        }
+//        id = args.job.id
+//        title = title_edit_text.text.toString()
+//        description = description_edit_text.text.toString()
+//        l = location.latLng().toList()
+//        city = location_edit_text.text.toString()
+//        salary = salary_edit_text.text.toString()
+//        active = true
+//        itIsJob = userSelectedJob
+//        creationMillis = args.job.creationMillis
+//        uid = args.job.uid
+//        imagesUri = args.job.imagesUri
+//        if (!userSelectedJob) { // if it's a proposal set range
+//            range = range_seekbar.progress
+//        }
 
         return this
     }

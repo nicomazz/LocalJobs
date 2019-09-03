@@ -184,6 +184,7 @@
     </ScrollView>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
@@ -199,5 +200,25 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"/>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:visibility="gone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="80dp"
+            android:text="@string/delete_button"
+            app:icon="@drawable/ic_delete_black_24dp"
+            app:backgroundTint="@color/design_default_color_error"
+            android:textColor="@android:color/white"
+            android:textAlignment="center"
+            android:foregroundGravity="center_horizontal"
+            android:gravity="center"
+            android:id="@+id/delete_button"
+            app:layout_constraintTop_toBottomOf="@id/scroll_container"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
