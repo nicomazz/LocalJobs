@@ -137,8 +137,10 @@ class AddFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener,
         location_edit_text.setText(city)
         salary_edit_text.setText(salary)
 
-        delete_button.visibility = View.VISIBLE
-        delete_button.setOnClickListener { onDeleteClick() }
+        delete_button.apply {
+            visibility = View.VISIBLE
+            setOnClickListener { onDeleteClick() }
+        }
     }
 
     /**
