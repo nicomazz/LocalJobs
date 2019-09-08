@@ -206,7 +206,7 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
         jobs_type_radio_group.check(toCheck)
         jobs_type_radio_group.setOnCheckedChangeListener { _, checkedId ->
-            if(checkedId == R.id.radio_job) {
+            if (checkedId == R.id.radio_job) {
                 loadJobs(JobsRepository.JobFilter(
                     uid = user.uid,
                     filteringJobs = true
