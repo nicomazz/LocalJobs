@@ -8,15 +8,18 @@ import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.esp.localjobs.R
 import com.esp.localjobs.adapters.JobItem
 import com.esp.localjobs.data.models.Location
+import com.esp.localjobs.data.models.User
 import com.esp.localjobs.data.repository.JobsRepository
 import com.esp.localjobs.fragments.FiltersFragment.Companion.FILTER_FRAGMENT_TAG
 import com.esp.localjobs.fragments.map.LocationPickerFragment
@@ -30,13 +33,16 @@ import kotlinx.android.synthetic.main.fragment_jobs.view.*
 import kotlinx.coroutines.InternalCoroutinesApi
 
 /**
- * Fragment used to display a list of jobs
+ * Fragment used to display a list of jobs. If arguments include an User then the fragment
+ * shows the user's jobs/proposals
  */
 @InternalCoroutinesApi
 class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener {
 
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
+
+    private val args: JobsFragmentArgs by navArgs()
 
     val adapter = GroupAdapter<ViewHolder>()
 
@@ -56,7 +62,10 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         setupAdapter()
 
         observeChangesInJobList()
-        observeFilters()
+
+        args.user?.let {
+            setupUserJobsView(it)
+        } ?: observeFilters()
     }
 
     private fun setupUI(view: View) = with(view) {
@@ -137,6 +146,11 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        // hide menu actions if we are showing some user's jobs/proposals
+        args.user?.let {
+            menu.forEach { it.isVisible = false }
+            return
+        }
         inflater.inflate(R.menu.menu_search, menu)
         val searchView = menu.findItem(R.id.action_search_item).actionView as SearchView
         setupSearchView(searchView)
@@ -179,6 +193,40 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
                 filterViewModel.range
             )
         }
+    }
+
+    private fun setupUserJobsView(user: User) {
+        activity?.title = getString(R.string.user_jobs_title, user.displayName)
+        val fromJobs = filterViewModel.filteringJobs ?: true
+
+        val toCheck = if (fromJobs)
+            R.id.radio_job
+        else
+            R.id.radio_proposal
+
+        jobs_type_radio_group.check(toCheck)
+        jobs_type_radio_group.setOnCheckedChangeListener { _, checkedId ->
+            if(checkedId == R.id.radio_job) {
+                loadJobs(JobsRepository.JobFilter(
+                    uid = user.uid,
+                    filteringJobs = true
+                ))
+            } else {
+                loadJobs(JobsRepository.JobFilter(
+                    uid = user.uid,
+                    filteringJobs = false
+                ))
+            }
+        }
+
+        fabAdd.visibility = View.GONE
+        active_filters.visibility = View.GONE
+        jobs_type_radio_group.visibility = View.VISIBLE
+
+        loadJobs(JobsRepository.JobFilter(
+            uid = user.uid,
+            filteringJobs = fromJobs
+        ))
     }
 
     override fun onLocationPicked(location: Location, distance: Int?) {
