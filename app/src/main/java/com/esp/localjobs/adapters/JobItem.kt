@@ -15,6 +15,7 @@ import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.ItemJobBinding
 import com.esp.localjobs.fragments.JobDetailsFragment
 import com.esp.localjobs.fragments.JobsFragmentDirections
+import com.esp.localjobs.utils.IFavoritesManager
 import com.esp.localjobs.utils.favoritesManager
 import com.xwray.groupie.databinding.BindableItem
 import kotlinx.coroutines.Dispatchers
@@ -24,6 +25,10 @@ import kotlinx.coroutines.launch
 
 @InternalCoroutinesApi
 class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
+
+    companion object {
+        private val favManager: IFavoritesManager = favoritesManager
+    }
 
     override fun getId() = job.uid.hashCode().toLong()
 
@@ -39,7 +44,7 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
         }
 
         GlobalScope.launch(Dispatchers.IO) {
-            val favorites = favoritesManager.get()
+            val favorites = favManager.get()
             Log.d("favorites", "List: $favorites")
             if (favorites.contains(this@JobItem.job)) {
                 Log.d("favorites", "toggling: $this@JobItem.job")
@@ -49,11 +54,11 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
         favToggle.setOnFavoriteChangeListener { _, isChecked ->
             if (!isChecked) {
                 Log.d("favorites", "removing: $this@JobItem.job")
-                favoritesManager.remove(this@JobItem.job)
+                favManager.remove(this@JobItem.job)
             }
             else {
                 Log.d("favorites", "adding: $this@JobItem.job")
-                favoritesManager.add(this@JobItem.job)
+                favManager.add(this@JobItem.job)
             }
         }
 
