@@ -43,10 +43,10 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
             Log.d("favorites", "List: $favorites")
             if (favorites.contains(this@JobItem.job)) {
                 Log.d("favorites", "toggling: $this@JobItem.job")
-                launch(Dispatchers.Main) { favToggle.toggle() }
+                launch(Dispatchers.Main) { favToggle.toggleFavorite() }
             }
         }
-        favToggle.setOnCheckedChangeListener { _, isChecked ->
+        favToggle.setOnFavoriteChangeListener { _, isChecked ->
             if (!isChecked) {
                 Log.d("favorites", "removing: $this@JobItem.job")
                 favoritesManager.remove(this@JobItem.job)
