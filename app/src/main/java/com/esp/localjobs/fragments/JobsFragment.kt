@@ -33,7 +33,6 @@ import kotlinx.android.synthetic.main.fragment_jobs.*
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -257,10 +256,8 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
         if (jobs.isEmpty()) {
             no_jobs_title.text = getString(R.string.empty_favorites_title)
             no_jobs_message.text = ""
-        }
-        else
-            adapter.update(jobs.map { JobItem(it) } )
-
+        } else
+            adapter.update(jobs.map { JobItem(it) })
     }
 
     override fun onLocationPicked(location: Location, distance: Int?) {

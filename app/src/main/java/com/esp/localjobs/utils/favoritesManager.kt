@@ -8,8 +8,6 @@ import com.esp.localjobs.LocalJobsApplication
 import com.esp.localjobs.data.base.BaseRepository
 import com.esp.localjobs.data.models.Job
 import com.esp.localjobs.data.repository.JobsRepository
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 
 object favoritesManager : IFavoritesManager {
     private const val FAV_KEY = "favourites_ids"

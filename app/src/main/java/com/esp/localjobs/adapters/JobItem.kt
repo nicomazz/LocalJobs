@@ -1,10 +1,8 @@
 package com.esp.localjobs.adapters
 
 import android.text.format.DateUtils
-import android.util.Log
 import android.view.View
 import android.widget.TextView
-import androidx.annotation.UiThread
 import androidx.databinding.BindingAdapter
 import androidx.navigation.Navigation.findNavController
 import com.bumptech.glide.Glide
@@ -21,7 +19,6 @@ import com.xwray.groupie.databinding.BindableItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @InternalCoroutinesApi
@@ -56,8 +53,6 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
                     favManager.add(this@JobItem.job)
             }
         }
-
-
 
         this@JobItem.job.imagesUri.firstOrNull()?.let {
             Glide.with(cardView.context).load(it).placeholder(R.drawable.placeholder).into(imageView)
