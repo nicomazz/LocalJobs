@@ -66,5 +66,14 @@
                 android:visibility="gone"
                 android:text="@string/jobs_and_proposals_button" />
 
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/favorites_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/default_margins"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:visibility="gone"
+                android:text="@string/favorites_button" />
+
     </LinearLayout>
 </layout>

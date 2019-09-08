@@ -23,6 +23,7 @@ import com.esp.localjobs.data.models.User
 import com.esp.localjobs.data.repository.JobsRepository
 import com.esp.localjobs.fragments.FiltersFragment.Companion.FILTER_FRAGMENT_TAG
 import com.esp.localjobs.fragments.map.LocationPickerFragment
+import com.esp.localjobs.utils.favoritesManager
 import com.esp.localjobs.viewModels.FilterViewModel
 import com.esp.localjobs.viewModels.JobsViewModel
 import com.xwray.groupie.GroupAdapter
@@ -30,14 +31,23 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.fragment_filter_status.*
 import kotlinx.android.synthetic.main.fragment_jobs.*
 import kotlinx.android.synthetic.main.fragment_jobs.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Fragment used to display a list of jobs. If arguments include an User then the fragment
  * shows the user's jobs/proposals
  */
 @InternalCoroutinesApi
-class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener {
+class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener, CoroutineScope {
+    private lateinit var mJob: kotlinx.coroutines.Job
+    override val coroutineContext: CoroutineContext
+        get() = mJob + Dispatchers.Main
 
     private val jobsViewModel: JobsViewModel by activityViewModels()
     private val filterViewModel: FilterViewModel by activityViewModels()
@@ -63,9 +73,16 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
 
         observeChangesInJobList()
 
-        args.user?.let {
-            setupUserJobsView(it)
-        } ?: observeFilters()
+        when {
+            args.user != null -> setupUserJobsView(args.user as User)
+            args.showFavorites -> showFavorites()
+            else -> observeFilters()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mJob = kotlinx.coroutines.Job()
     }
 
     private fun setupUI(view: View) = with(view) {
@@ -146,8 +163,8 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        // hide menu actions if we are showing some user's jobs/proposals
-        args.user?.let {
+        // hide menu actions if we are showing some user's jobs/proposals or favorites
+        if (args.user != null || args.showFavorites) {
             menu.forEach { it.isVisible = false }
             return
         }
@@ -227,6 +244,23 @@ class JobsFragment : Fragment(), LocationPickerFragment.OnLocationPickedListener
             uid = user.uid,
             filteringJobs = fromJobs
         ))
+    }
+
+    private fun showFavorites() = launch {
+        activity?.title = getString(R.string.favorites_title)
+        fabAdd.visibility = View.GONE
+        active_filters.visibility = View.GONE
+
+        val deferredJobs = async(Dispatchers.IO) { favoritesManager.get() }
+        adapter.clear()
+        val jobs = deferredJobs.await()
+        if (jobs.isEmpty()) {
+            no_jobs_title.text = getString(R.string.empty_favorites_title)
+            no_jobs_message.text = ""
+        }
+        else
+            adapter.update(jobs.map { JobItem(it) } )
+
     }
 
     override fun onLocationPicked(location: Location, distance: Int?) {

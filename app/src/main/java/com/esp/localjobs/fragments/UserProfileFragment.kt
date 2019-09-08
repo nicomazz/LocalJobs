@@ -77,8 +77,11 @@ class UserProfileFragment : Fragment(), CoroutineScope {
         } else {
             binding.user = user
             setupUserJobsButton(user)
+            setupFavoritesButton()
 
             logout.visibility = View.VISIBLE
+            favorites_button.visibility = View.VISIBLE
+
             login.visibility = View.GONE
         }
 
@@ -107,6 +110,17 @@ class UserProfileFragment : Fragment(), CoroutineScope {
         user_jobs.setOnClickListener {
             val action =
                 UserProfileFragmentDirections.actionDestinationUserProfileToDestinationJobs(user)
+            findNavController().navigate(action)
+        }
+    }
+
+    private fun setupFavoritesButton() {
+        favorites_button.setOnClickListener {
+            val action =
+                UserProfileFragmentDirections.actionDestinationUserProfileToDestinationJobs(
+                    null,
+                    true
+                )
             findNavController().navigate(action)
         }
     }

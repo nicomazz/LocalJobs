@@ -21,6 +21,7 @@ import com.xwray.groupie.databinding.BindableItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.InternalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @InternalCoroutinesApi
@@ -45,22 +46,17 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
 
         GlobalScope.launch(Dispatchers.IO) {
             val favorites = favManager.get()
-            Log.d("favorites", "List: $favorites")
             if (favorites.contains(this@JobItem.job)) {
-                Log.d("favorites", "toggling: $this@JobItem.job")
-                launch(Dispatchers.Main) { favToggle.toggleFavorite() }
+                favToggle.isFavorite = true
+            }
+            favToggle.setOnFavoriteChangeListener { _, isChecked ->
+                if (!isChecked)
+                    favManager.remove(this@JobItem.job)
+                else
+                    favManager.add(this@JobItem.job)
             }
         }
-        favToggle.setOnFavoriteChangeListener { _, isChecked ->
-            if (!isChecked) {
-                Log.d("favorites", "removing: $this@JobItem.job")
-                favManager.remove(this@JobItem.job)
-            }
-            else {
-                Log.d("favorites", "adding: $this@JobItem.job")
-                favManager.add(this@JobItem.job)
-            }
-        }
+
 
 
         this@JobItem.job.imagesUri.firstOrNull()?.let {

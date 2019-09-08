@@ -2,6 +2,7 @@ package com.esp.localjobs.utils
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import androidx.core.content.edit
 import com.esp.localjobs.LocalJobsApplication
 import com.esp.localjobs.data.base.BaseRepository
@@ -25,17 +26,27 @@ object favoritesManager : IFavoritesManager {
         val favKeys = sharedPreferences.getStringSet(FAV_KEY, mutableSetOf<String>())
             ?: mutableSetOf<String>()
         favKeys.add(job.id)
+        Log.d("favorites", "adding: ${job.id}")
         sharedPreferences.edit(commit = true) {
+            // stringSet is bugged so i must do this :/
+            remove(FAV_KEY)
+            apply()
             putStringSet(FAV_KEY, favKeys)
+            apply()
         }
         favorites?.add(job)
     }
 
     override fun remove(job: Job) {
-        val favKeys = sharedPreferences.getStringSet(FAV_KEY, null) ?: return
+        val favKeys = sharedPreferences.getStringSet(FAV_KEY, mutableSetOf<String>()) ?: return
         favKeys.remove(job.id)
+        Log.d("favorites", "removing: ${job.id}")
         sharedPreferences.edit(commit = true) {
+            // stringSet is bugged so i must do this :/
+            remove(FAV_KEY)
+            apply()
             putStringSet(FAV_KEY, favKeys)
+            apply()
         }
         favorites?.remove(job)
     }
@@ -44,11 +55,12 @@ object favoritesManager : IFavoritesManager {
         if (favorites == null) {
             favorites = load()
         }
-        return favorites as Set<Job>
+        return (favorites as MutableSet<Job>).toSet()
     }
 
     private suspend fun load(): MutableSet<Job> {
         val favKeys = sharedPreferences.getStringSet(FAV_KEY, mutableSetOf<String>())
+        Log.d("favorites", "loading: $favKeys")
         val favList = mutableSetOf<Job>()
         favKeys?.forEach { key -> loader.get(key)?.let { favList.add(it) } }
         return favList

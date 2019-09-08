@@ -34,6 +34,10 @@
                 app:argType="com.esp.localjobs.data.models.User"
                 app:nullable="true"
                 android:defaultValue="@null" />
+        <argument
+                android:name="showFavorites"
+                app:argType="boolean"
+                android:defaultValue="false" />
     </fragment>
     <fragment
             android:id="@+id/destination_add"

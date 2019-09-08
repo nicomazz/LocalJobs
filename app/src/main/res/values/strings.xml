@@ -72,4 +72,7 @@
     <string name="in_the_past">In the past</string>
     <string name="user_jobs_title">%1$s\'s stuff</string>
     <string name="jobs_and_proposals_button">Jobs and proposals</string>
+    <string name="favorites_button">Favorites</string>
+    <string name="favorites_title">Favorites</string>
+    <string name="empty_favorites_title">Empty favorites!</string>
 </resources>
