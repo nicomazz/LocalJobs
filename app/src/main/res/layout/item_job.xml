@@ -72,6 +72,18 @@
                     android:background="@drawable/gradient_shape"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView"/>
 
+            <!-- todo use heart icon-->
+            <ToggleButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/fav_toggle"
+                    android:textOn="on"
+                    android:textOff="off"
+                    app:layout_constraintTop_toTopOf="@id/imageView"
+                    app:layout_constraintEnd_toEndOf="@id/imageView"
+                    android:layout_margin="@dimen/default_margins"
+                />
+
             <TextView
                     android:text="@{job.title}"
                     android:id="@+id/title"

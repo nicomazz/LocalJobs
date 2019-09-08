@@ -1,8 +1,10 @@
 package com.esp.localjobs.adapters
 
 import android.text.format.DateUtils
+import android.util.Log
 import android.view.View
 import android.widget.TextView
+import androidx.annotation.UiThread
 import androidx.databinding.BindingAdapter
 import androidx.navigation.Navigation.findNavController
 import com.bumptech.glide.Glide
@@ -13,6 +15,7 @@ import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.ItemJobBinding
 import com.esp.localjobs.fragments.JobDetailsFragment
 import com.esp.localjobs.fragments.JobsFragmentDirections
+import com.esp.localjobs.utils.favoritesManager
 import com.xwray.groupie.databinding.BindableItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -34,6 +37,26 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
             } ?: User(displayName = "Unknown user")
             setAuthor(author)
         }
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val favorites = favoritesManager.get()
+            Log.d("favorites", "List: $favorites")
+            if (favorites.contains(this@JobItem.job)) {
+                Log.d("favorites", "toggling: $this@JobItem.job")
+                launch(Dispatchers.Main) { favToggle.toggle() }
+            }
+        }
+        favToggle.setOnCheckedChangeListener { _, isChecked ->
+            if (!isChecked) {
+                Log.d("favorites", "removing: $this@JobItem.job")
+                favoritesManager.remove(this@JobItem.job)
+            }
+            else {
+                Log.d("favorites", "adding: $this@JobItem.job")
+                favoritesManager.add(this@JobItem.job)
+            }
+        }
+
 
         this@JobItem.job.imagesUri.firstOrNull()?.let {
             Glide.with(cardView.context).load(it).placeholder(R.drawable.placeholder).into(imageView)
