@@ -63,13 +63,16 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
 
     /**
      * Center the map on a location. Last known position is used when target is null
+     * @param targetLocation Location on which to center the map
+     * @param zoom Zoom level
+     * @param animate Animate the transition or move instantly
      */
-    fun centerMap(targetLocation: Location? = null) {
+    fun centerMap(targetLocation: Location? = null, zoom: Double = 12.0, animate: Boolean = true) {
         if (targetLocation != null)
-            navigateToPosition(targetLocation)
+            navigateToPosition(targetLocation, zoom, animate)
         else {
             PositionManager.getLastKnownPosition(context!!)?.let {
-                navigateToPosition(Location(it.latitude, it.longitude))
+                navigateToPosition(Location(it.latitude, it.longitude), zoom, animate)
             } ?: Toast.makeText(context, getString(R.string.position_unknown_toast), Toast.LENGTH_LONG).show()
         }
     }
@@ -77,8 +80,7 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
     /**
      * Center the map view on given location.
      */
-    private fun navigateToPosition(location: Location) {
-        // center view on user location
+    private fun navigateToPosition(location: Location, zoom: Double, animate: Boolean) {
         val cameraPosition = CameraPosition.Builder()
             .target(
                 LatLng(
@@ -86,9 +88,13 @@ open class MapFragment : Fragment(), OnMapReadyCallback {
                     location.l[1]
                 )
             )
-            .zoom(12.0)
+            .zoom(zoom)
             .build()
-        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000)
+
+        if (animate)
+            mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition), 1000)
+        else
+            mapboxMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
     }
 
     override fun onResume() {

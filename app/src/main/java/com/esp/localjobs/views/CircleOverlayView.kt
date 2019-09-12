@@ -50,7 +50,7 @@ class CircleOverlayView : FrameLayout {
         osCanvas.drawRect(outerRectangle, paint)
 
         paint.color = ContextCompat.getColor(context, R.color.colorPrimary)
-        paint.alpha = 99
+        paint.alpha = 70
         val centerX = (width / 2).toFloat()
         val centerY = (height / 2).toFloat()
         osCanvas.drawCircle(centerX, centerY, radius, paint)
