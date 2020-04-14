@@ -65,9 +65,9 @@ It is far from being a final product, but showcase several interesting and recen
 * [View bindings](https://developer.android.com/docs)
 * [Mapbox](https://www.mapbox.com/)
 
-If you are following this couse, and need to create a new project, consider to use the following tools to it:
+If you are following this couse, and need to create a new project, consider to use the followings:
 
-* [Ktlint](https://github.com/pinterest/ktlint), to automatically format your kotlin files
+* [Ktlint](https://github.com/pinterest/ktlint), to automatically format your kotlin code
 * [Travis](https://travis-ci.org/) or [CirlceCI](https://circleci.com/) to automatically run tests, and generate apks
 * [Robolectric](http://robolectric.org/) to write UI unit tests 
 
