@@ -30,25 +30,27 @@
 
 </p>
 
-<style>
-.shadowed {
-   margin:20px;
-   box-shadow: 5px 5px 10px grey;
-}
-</style>
-
 <!-- TABLE OF CONTENTS -->
 
-[TOC]
+- [LocalJobs](#localjobs)
+  - [About The Project](#about-the-project)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+    - [Installation](#installation)
+  - [Usage](#usage)
+  - [Roadmap](#roadmap)
+  - [Contributing](#contributing)
+  - [License](#license)
+  - [Contact](#contact)
+  - [Acknowledgements](#acknowledgements)
+
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
 <!-- Usage gif -->
-<div style="text-align:right">
+<img class="shadowed" src="https://i.imgur.com/ixX4wGu.gif"  width="250" style="float: right; margin:20px; box-shadow: 5px 5px 10px grey;" align="right">
 
-<img class="shadowed" src="https://i.imgur.com/ixX4wGu.gif"  width="250" style="float: right;">
-</div>
 
 LocalJobs is an Android application developed as project for the  *Embedded System* course at the University of Padua during 2019.
 It is far from being a final product, but showcase several interesting and recent android aspects, such as:
@@ -94,13 +96,11 @@ cd LocalJobs
 
 
 
-<img class="shadowed" src="https://i.imgur.com/E3s9780.jpg"  width="297" >
-<img class="shadowed" src="https://i.imgur.com/b7B8w85.jpg"  width="297" >
+<img class="shadowed" src="https://i.imgur.com/E3s9780.jpg"  width="297" > <img class="shadowed" src="https://i.imgur.com/b7B8w85.jpg"  width="297" >
 
 * Send your interest to any job or proposal! If the recipient accepts your request you will be able to contact him:
 
-<img  class="shadowed" src="https://i.imgur.com/qHYPCFJ.jpg"  width="297">
-<img  class="shadowed" src="https://i.imgur.com/hdXcFsv.jpg"  width="297">
+<img  class="shadowed" src="https://i.imgur.com/qHYPCFJ.jpg"  width="297"> <img  class="shadowed" src="https://i.imgur.com/hdXcFsv.jpg"  width="297">
 
 * Filter jobs and proposals according with your criterias:
 <div style="text-align:center">
