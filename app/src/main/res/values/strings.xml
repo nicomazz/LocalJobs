@@ -70,4 +70,6 @@
     <string name="interested_people">Interested people:</string>
     <string name="job_author">Author:</string>
     <string name="in_the_past">In the past</string>
+    <string name="user_jobs_title">%1$s\'s stuff</string>
+    <string name="jobs_and_proposals_button">Jobs and proposals</string>
 </resources>

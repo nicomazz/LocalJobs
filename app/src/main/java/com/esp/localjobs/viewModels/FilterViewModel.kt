@@ -39,6 +39,9 @@ class FilterViewModel : ViewModel() {
     val query: String?
         get() = activeFilters.value?.query
 
+    val filteringJobs: Boolean?
+        get() = activeFilters.value?.filteringJobs
+
     init {
         val context = LocalJobsApplication.applicationContext()
         val filter = retrieveLastUsedFilter(context)

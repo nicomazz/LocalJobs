@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.esp.localjobs.R
+import com.esp.localjobs.data.models.User
 import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.FragmentUserProfileBinding
 import com.esp.localjobs.viewModels.LoginViewModel
@@ -60,21 +61,23 @@ class UserProfileFragment : Fragment(), CoroutineScope {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val userId = args.userID
 
-        if (userId == null)
-            setupCurrentUserProfile()
-        else
-            setupUserDetails(userId)
+        args.userID?.let {
+            setupUserDetails(it)
+        } ?: setupCurrentUserProfile()
     }
 
     private fun setupCurrentUserProfile() {
-        name.text = getString(R.string.not_logged_in)
-        logout.visibility = View.GONE
-        login.visibility = View.VISIBLE
+        val user = loginViewModel.getCurrentUser()
 
-        loginViewModel.getCurrentUser()?.let {
-            binding.user = it
+        if (user == null) {
+            name.text = getString(R.string.not_logged_in)
+            logout.visibility = View.GONE
+            login.visibility = View.VISIBLE
+        } else {
+            binding.user = user
+            setupUserJobsButton(user)
+
             logout.visibility = View.VISIBLE
             login.visibility = View.GONE
         }
@@ -93,7 +96,19 @@ class UserProfileFragment : Fragment(), CoroutineScope {
         if (!isActive)
             return@launch
 
-        binding.user = user
+        user?.let {
+            binding.user = it
+            setupUserJobsButton(it)
+        }
+    }
+
+    private fun setupUserJobsButton(user: User) {
+        user_jobs.visibility = View.VISIBLE
+        user_jobs.setOnClickListener {
+            val action =
+                UserProfileFragmentDirections.actionDestinationUserProfileToDestinationJobs(user)
+            findNavController().navigate(action)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
