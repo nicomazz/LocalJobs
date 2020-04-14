@@ -48,7 +48,7 @@
 ## About The Project
 
 <!-- Usage gif -->
-<img class="shadowed" src="https://i.imgur.com/ixX4wGu.gif"  width="250" style="float: right; margin:20px; box-shadow: 5px 5px 10px grey;" align="right">
+<img class="shadowed" src="https://i.imgur.com/ixX4wGu.gif"  width="300" style="float: right; margin:20px; box-shadow: 5px 5px 10px grey;" align="right">
 
 
 LocalJobs is an Android application developed as project for the  *Embedded System* course at the University of Padua during 2019.
@@ -63,9 +63,13 @@ It is far from being a final product, but showcase several interesting and recen
 * [Jetpack](https://developer.android.com/jetpack)
 * CI from [Travis](https://travis-ci.org/)
 * [View bindings](https://developer.android.com/docs)
-* How to write UI tests with [robolectric](http://robolectric.org/)
 * [Mapbox](https://www.mapbox.com/)
 
+If you are following this couse, and need to create a new project, consider to use the following tools to it:
+
+* [Ktlint](https://github.com/pinterest/ktlint), to automatically format your kotlin files
+* [Travis](https://travis-ci.org/) or [CirlceCI](https://circleci.com/) to automatically run tests, and generate apks
+* [Robolectric](http://robolectric.org/) to write UI unit tests 
 
 ## Getting Started
 
