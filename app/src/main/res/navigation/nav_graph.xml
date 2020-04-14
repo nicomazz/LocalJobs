@@ -29,6 +29,15 @@
                     android:name="job"
                     app:argType="com.esp.localjobs.data.models.Job"/>
         </action>
+        <argument
+                android:name="user"
+                app:argType="com.esp.localjobs.data.models.User"
+                app:nullable="true"
+                android:defaultValue="@null" />
+        <argument
+                android:name="showFavorites"
+                app:argType="boolean"
+                android:defaultValue="false" />
     </fragment>
     <fragment
             android:id="@+id/destination_add"
@@ -108,6 +117,13 @@
                 app:argType="string"
                 app:nullable="true"
                 android:defaultValue="@null"/>
+        <action
+                android:id="@+id/action_destination_user_profile_to_destination_jobs"
+                app:destination="@id/destination_jobs"
+                app:enterAnim="@anim/slide_in_right"
+                app:exitAnim="@anim/slide_out_left"
+                app:popEnterAnim="@anim/slide_in_left"
+                app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment

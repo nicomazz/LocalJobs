@@ -72,6 +72,18 @@
                     android:background="@drawable/gradient_shape"
                     app:layout_constraintBottom_toBottomOf="@+id/imageView"/>
 
+            <!-- todo use heart icon-->
+            <com.github.ivbaranov.mfb.MaterialFavoriteButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:mfb_color="white"
+                    app:mfb_type="heart"
+                    android:id="@+id/fav_toggle"
+                    app:layout_constraintTop_toTopOf="@id/imageView"
+                    app:layout_constraintEnd_toEndOf="@id/imageView"
+                    android:layout_margin="@dimen/default_margins"
+                />
+
             <TextView
                     android:text="@{job.title}"
                     android:id="@+id/title"

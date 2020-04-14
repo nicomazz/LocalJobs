@@ -146,9 +146,18 @@
                       <LayoutPositions>
                         <option name="myPosition">
                           <Point>
-                            <option name="x" value="-333" />
-                            <option name="y" value="470" />
+                            <option name="x" value="-883" />
+                            <option name="y" value="-857" />
                           </Point>
+                        </option>
+                        <option name="myPositions">
+                          <map>
+                            <entry key="action_destination_user_profile_to_destination_jobs">
+                              <value>
+                                <LayoutPositions />
+                              </value>
+                            </entry>
+                          </map>
                         </option>
                       </LayoutPositions>
                     </value>

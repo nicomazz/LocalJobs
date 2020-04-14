@@ -20,6 +20,36 @@
                 android:layout_height="50dp"
                 android:id="@+id/active_filters"/>
 
+        <RadioGroup
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_margin="10dp"
+                android:id="@+id/jobs_type_radio_group"
+                android:checkedButton="@id/radio_job">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_type"/>
+
+            <RadioButton
+                    android:id="@+id/radio_job"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/radio_job"
+                    android:tag="@string/type_tag_job"/>
+
+            <RadioButton
+                    android:id="@+id/radio_proposal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/radio_proposal"
+                    android:tag="@string/type_tag_proposal"/>
+        </RadioGroup>
+
+
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/job_list"
                 android:layout_width="match_parent"
@@ -38,6 +68,7 @@
                 android:padding="50dp">
 
             <TextView
+                    android:id="@+id/no_jobs_title"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -45,6 +76,7 @@
                     style="@style/TextAppearance.MaterialComponents.Headline5"/>
 
             <TextView
+                    android:id="@+id/no_jobs_message"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"

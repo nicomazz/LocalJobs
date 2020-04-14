@@ -118,6 +118,9 @@ dependencies {
 
     // intro tutorial
     implementation 'com.github.AppIntro:AppIntro:5.1.0'
+
+    // fav button
+    implementation 'com.github.ivbaranov:materialfavoritebutton:0.1.5'
 }
 
 // ktlint

@@ -13,6 +13,8 @@ import com.esp.localjobs.data.repository.userFirebaseRepository
 import com.esp.localjobs.databinding.ItemJobBinding
 import com.esp.localjobs.fragments.JobDetailsFragment
 import com.esp.localjobs.fragments.JobsFragmentDirections
+import com.esp.localjobs.utils.IFavoritesManager
+import com.esp.localjobs.utils.favoritesManager
 import com.xwray.groupie.databinding.BindableItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -21,6 +23,10 @@ import kotlinx.coroutines.launch
 
 @InternalCoroutinesApi
 class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
+
+    companion object {
+        private val favManager: IFavoritesManager = favoritesManager
+    }
 
     override fun getId() = job.uid.hashCode().toLong()
 
@@ -33,6 +39,19 @@ class JobItem(val job: Job) : BindableItem<ItemJobBinding>() {
                 userFirebaseRepository.getUserDetails(it)
             } ?: User(displayName = "Unknown user")
             setAuthor(author)
+        }
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val favorites = favManager.get()
+            if (favorites.contains(this@JobItem.job)) {
+                favToggle.isFavorite = true
+            }
+            favToggle.setOnFavoriteChangeListener { _, isChecked ->
+                if (!isChecked)
+                    favManager.remove(this@JobItem.job)
+                else
+                    favManager.add(this@JobItem.job)
+            }
         }
 
         this@JobItem.job.imagesUri.firstOrNull()?.let {
