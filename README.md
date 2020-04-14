@@ -22,7 +22,6 @@
   <p align="center">
     Browse jobs and proposals close to you
     <br />
-    ·
     <a href="https://github.com/nicomazz/LocalJobs/issues">Report Bug</a>
     ·
     <a href="https://github.com/nicomazz/LocalJobs/issues">Request Feature</a>
@@ -92,17 +91,20 @@ cd LocalJobs
 <!-- USAGE EXAMPLES -->
 ## Usage
 
+* Accept permission requests:
+
+<img class="shadowed" src="https://i.imgur.com/gMarS1R.gif"  width="297" >
+
 * Browse jobs and proposals close to you:
-
-
 
 <img class="shadowed" src="https://i.imgur.com/E3s9780.jpg"  width="297" > <img class="shadowed" src="https://i.imgur.com/b7B8w85.jpg"  width="297" >
 
 * Send your interest to any job or proposal! If the recipient accepts your request you will be able to contact him:
 
-<img  class="shadowed" src="https://i.imgur.com/qHYPCFJ.jpg"  width="297"> <img  class="shadowed" src="https://i.imgur.com/hdXcFsv.jpg"  width="297">
+<img  class="shadowed" src="https://i.imgur.com/HiyyXVI.jpg"  width="297"> <img  class="shadowed" src="https://i.imgur.com/hdXcFsv.jpg"  width="297">
 
 * Filter jobs and proposals according with your criterias:
+
 <div style="text-align:center">
 <img class="shadowed" src="https://i.imgur.com/U5OWoy9.jpg"  width="297">
 </div>
