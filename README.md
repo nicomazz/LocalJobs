@@ -15,7 +15,7 @@
 
 <p align="center">
   <a href="https://github.com/nicomazz/LocalJobs">
-    <img src="app/src/main/ic_launcher-web.png" alt="Logo" width="100" height="100">
+    <img src="local_jobs.svg" alt="Logo" width="250" height="250">
   </a>
   <h3 align="center">LocalJobs</h3>
 
@@ -30,8 +30,10 @@
 </p>
 
 <!-- TABLE OF CONTENTS -->
+## Table of contents
 
 - [LocalJobs](#localjobs)
+  - [Table of contents](#table-of-contents)
   - [About The Project](#about-the-project)
   - [Getting Started](#getting-started)
     - [Prerequisites](#prerequisites)
